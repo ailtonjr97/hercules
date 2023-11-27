@@ -3,14 +3,14 @@
 <div style="padding-top: 1.5%">
   <div class="row">
     <div class="col-md-4">
-        <a class="button-8 mb-2" href="/usuarios/novo-usuario">Novo usuário</a>
-        <a class="button-8 mb-2" href="/usuarios/inativos">Inativos</a>
+        <router-link class="button-8 mb-2" to="/usuarios/novo">Novo usuário</router-link>
+        <a class="button-8" href="/usuarios/inativos">Inativos</a>
     </div>
     <div class="col-lg-6">
     </div>
     <div class="col-sm-2">
       <button type="button" class="button-8 mb-2" id="result" style="float: right;">
-        <span class="counter-value"></span>
+        <span class="counter-value">{{ resultados }}</span>
         resultados
       </button>
     </div>
@@ -42,15 +42,16 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
+        <div v-if="carregando" id="loading"></div>
+        <tr v-for="usuario in usuarios" :key="usuario.id">
           <td>
-              <p></p>
+            <p>{{ usuario.id }}</p>
           </td>
           <td>
-            <p></p>
+            <p>{{ usuario.name }}</p>
           </td>
           <td>
-            <p></p>
+            <p>{{ usuario.email }}</p>
           </td>
           <td>
             <p></p>
@@ -70,3 +71,22 @@
   </div>
 </div>
 </template>
+
+<script>
+ export default{
+  data(){
+    return{
+      carregando: true,
+      usuarios: [],
+      resultados: null
+    }
+  },
+  async created(){
+    const response = await fetch('http://192.168.2.5:5000/user/get_all')
+    const responseJson = await response.json()
+    this.usuarios = responseJson
+    this.carregando = false
+    this.resultados = responseJson.length
+  }
+ }
+</script>
