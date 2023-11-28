@@ -11,7 +11,7 @@ const router = createRouter({
       { path: '/home', component: Home},
       { path: '/usuarios', component: Usuarios },
       { path: '/usuarios/novo', component: UsuariosNovo },
-      { path: '/:notFound(.*)', component: null }
+      { path: '/:notFound(.*)', redirect: '/home' }
     ]
   });
 

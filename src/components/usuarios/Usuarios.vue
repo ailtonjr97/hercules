@@ -1,7 +1,7 @@
 <template>
 
 <div style="padding-top: 1.5%">
-  <div class="row">
+  <div class="row" style="width: 99.8%; margin-left: 0.2%;">
     <div class="col-md-4">
         <router-link class="button-8 mb-2" to="/usuarios/novo">Novo usuário</router-link>
         <a class="button-8" href="/usuarios/inativos">Inativos</a>
@@ -15,7 +15,7 @@
       </button>
     </div>
   </div>
-  <div class="row mb-2">
+  <div class="row mb-2" style="width: 99.8%; margin-left: 0.2%;">
     <div class="col">
       <div class="form-floating">
         <input type="text" class="form-control" id="procuraBtn0" onkeyup="procura(0, 'procuraBtn0')"/>
@@ -73,6 +73,8 @@
 </template>
 
 <script>
+
+
  export default{
   data(){
     return{
@@ -82,7 +84,7 @@
     }
   },
   async created(){
-    const response = await fetch('http://192.168.2.5:5000/user/get_all')
+    const response = await fetch(`${import.meta.env.VITE_DOTNET_IP}/User/get_all`)
     const responseJson = await response.json()
     this.usuarios = responseJson
     this.carregando = false
