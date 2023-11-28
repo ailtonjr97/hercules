@@ -1,9 +1,10 @@
 <template>
-  <navbar></navbar>
+  <navbar v-if="!$route.meta.hideNavbar"></navbar>
   <router-view></router-view>
 </template>
 
 <script>
+
 import Navbar from './components/navbar/navbar.vue';
 
 export default{

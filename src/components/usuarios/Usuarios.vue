@@ -36,8 +36,6 @@
           <th>ID</th>
           <th>Nome</th>
           <th>E-mail</th>
-          <th>Admin</th>
-          <th>DPO</th>
           <th>Ações</th>
         </tr>
       </thead>
@@ -52,12 +50,6 @@
           </td>
           <td>
             <p>{{ usuario.email }}</p>
-          </td>
-          <td>
-            <p></p>
-          </td>
-          <td>
-            <p></p>
           </td>
           <td style="padding-bottom: 15px;">
             <a class="button-8" href="/usuarios/editar/<%=user.id%>">Editar</a>

@@ -28,7 +28,7 @@
                 default: 'Inserir Value'
             },
             name:{
-                type: Array,
+                type: String,
                 required: true,
                 default: 'Inserir Name'
             }
