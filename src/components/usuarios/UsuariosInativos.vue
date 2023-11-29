@@ -50,7 +50,7 @@
             <p>{{ usuario.email }}</p>
           </td>
           <td style="padding-bottom: 15px;">
-            <a class="button-8" @click="ativar">Ativar</a>
+            <a class="button-8" @click="ativar(usuario.id)">Ativar</a>
           </td>
         </tr>
       </tbody>
@@ -74,16 +74,38 @@ import axios from 'axios'
     }
   },
   methods: {
-    async ativar(){
-        await axios.post(`${import.meta.env.VITE_BACKEND_IP}/users/reactivate`)
+    async ativar(id){
+      try {
+        this.carregando = true;
+          const response = await axios.post(`${import.meta.env.VITE_BACKEND_IP}/users/reactivate/${id}`);
+          if(response.status == 200){
+            this.atualizarUsuarios();
+          }
+      } catch (error) {
+        console.log(error)
+        alert("Erro ao inativar usuário.")
+      }
+
+    },
+    async atualizarUsuarios(){
+      try {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_IP}/users/get_all/inactive`);
+        const responseJson = await response.json();
+        this.usuarios = responseJson;
+        this.resultados = responseJson.length;
+        this.carregando = false;
+      } catch (error) {
+        console.log(error)
+        alert("Erro ao reativar usuário.")
+      }
     }
   },
   async created(){
-    const response = await fetch(`${import.meta.env.VITE_BACKEND_IP}/users/get_all/inactive`)
-    const responseJson = await response.json()
-    this.usuarios = responseJson
-    this.carregando = false
-    this.resultados = responseJson.length
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_IP}/users/get_all/inactive`);
+    const responseJson = await response.json();
+    this.usuarios = responseJson;
+    this.carregando = false;
+    this.resultados = responseJson.length;
   }
  }
 </script>

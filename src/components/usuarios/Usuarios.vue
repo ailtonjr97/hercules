@@ -1,9 +1,9 @@
 <template>
 
-<div style="padding-top: 1.5%">
+<div style="padding-top: 1.5%; z-index: 1;">
   <div class="row" style="width: 99.8%; margin-left: 0.2%;">
     <div class="col-md-4">
-        <router-link class="button-8 mb-2" to="/usuarios/novo">Novo usuário</router-link>
+        <button  class="button-8 mb-2" data-bs-toggle="modal" data-bs-target='#novoUsuarioModal'>Novo Usuário</button>
         <router-link class="button-8 mb-2" to="/usuarios/inativos">Inativos</router-link>
     </div>
     <div class="col-lg-6">
@@ -52,7 +52,7 @@
             <p>{{ usuario.email }}</p>
           </td>
           <td style="padding-bottom: 15px;">
-            <a class="button-8" href="/usuarios/editar/<%=user.id%>">Editar</a>
+            <button  class="button-8 mb-2" data-bs-toggle="modal" data-bs-target="#editarModal" @click="infoEditarModal(usuario.id)">Editar</button>
             <a class="button-8" href="/usuarios/inativar/<%=user.id%>">Inativar</a>
             <a class="button-8" href="/usuarios/mudarsenha/<%=user.id%>">Mudar Senha</a>
           </td>
@@ -62,17 +62,216 @@
     </table>
   </div>
 </div>
+
+<modal-bootstrap :id="'novoUsuarioModal'" :titulo="'Novo Usuario'">
+  <template v-slot:body>
+    <div class="row mt-3" style="width: 99.8%; margin-left: 0.2%;">
+        <div class="col">
+            <div class="form-floating">
+                <input type="text" class="form-control" :id="colunaNoBanco[0]" :placeholder="placeholder[0]" v-model="form.name" required>
+                <label :for="colunaNoBanco[0]">{{ placeholder[0] }}</label>
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-floating">
+                <input type="text" class="form-control" :id="colunaNoBanco[1]" :placeholder="placeholder[1]" v-model="form.email" required>
+                <label :for="colunaNoBanco[1]">{{ placeholder[1] }}</label>
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-floating">
+                <select class="form-select" :id="colunaNoBanco[2]" v-model="form.admin" required>
+                    <option v-for="option in optionsAdmin" v-bind:value="option.valor" >{{ option.descri }}</option>
+                </select>
+                <label :for="placeholder[2]">{{ placeholder[2] }}</label>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-2" style="width: 99.8%; margin-left: 0.2%;">
+        <div class="col">
+            <div class="form-floating">
+                <input type="password" class="form-control" :id="colunaNoBanco[3]" :placeholder="placeholder[3]" v-model="form.password" required>
+                <label :for="colunaNoBanco[3]">{{ placeholder[3] }}</label>
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-floating">
+                <select class="form-select" :id="colunaNoBanco[4]" v-model="form.setor" required>
+                    <option v-for="option in optionsSetores" v-bind:value="option.valor" >{{ option.descri }}</option>
+                </select>
+                <label :for="colunaNoBanco[4]">{{ placeholder[4] }}</label>
+            </div>
+        </div>
+    </div>
+  </template>
+  <template v-slot:fechar>
+    <button type="button" class="button-8" data-bs-dismiss="modal" id="fechar">Fechar</button>
+  </template>
+  <template v-slot:confirmar>
+    <button type="button" class="button-8" @click="submit">Executar</button>
+  </template>
+</modal-bootstrap>
+
+<modal-bootstrap :id="'editarModal'" :titulo="'Editar Usuário'">
+  <template v-if="carregandoinfoUsuario" v-slot:carregando>
+    <img style="width: 50%; height: 50%; margin-left: 25%;" src="../../../images/spinning.gif" alt="">
+  </template>
+  <template v-slot:body v-if="!carregandoinfoUsuario">
+    <div class="row">
+      <div class="col">
+        <div class="form-floating">
+          <input type="text" class="form-control" :id="colunaNoBancoUsuario[0]" :placeholder="placeholder[0]" v-model="editar.name" required>
+          <label :for="colunaNoBancoUsuario[0]">{{ placeholder[0] }}</label>
+        </div>
+      </div>
+      <div class="col">
+        <div class="form-floating">
+          <input type="email" class="form-control" :id="colunaNoBancoUsuario[1]" :placeholder="placeholder[1]" v-model="editar.email" required>
+          <label :for="colunaNoBancoUsuario[1]">{{ placeholder[1] }}</label>
+        </div>
+      </div>
+      <div class="col">
+        <div class="form-floating">
+            <select class="form-select" :id="colunaNoBancoUsuario[2]" v-model="editar.admin" required>
+                <option v-for="option in optionsAdmin" v-bind:value="option.valor" >{{ option.descri }}</option>
+            </select>
+            <label :for="placeholder[2]">{{ placeholder[2] }}</label>
+        </div>
+      </div>
+    </div>
+    <div class="row mt-2">
+      <div class="col">
+        <div class="form-floating">
+            <select class="form-select" :id="colunaNoBancoUsuario[3]" v-model="editar.dpo" required>
+                <option v-for="option in optionsAdmin" v-bind:value="option.valor" >{{ option.descri }}</option>
+            </select>
+            <label :for="colunaNoBancoUsuario[3]">{{ placeholder[5] }}</label>
+        </div>
+      </div>
+      <div class="col">
+        <div class="form-floating">
+            <select class="form-select" :id="colunaNoBancoUsuario[4]" v-model="editar.setor" required>
+                <option v-for="option in optionsSetores" v-bind:value="option.valor" >{{ option.descri }}</option>
+            </select>
+            <label :for="colunaNoBancoUsuario[4]">{{ placeholder[4] }}</label>
+        </div>
+      </div>
+    </div>
+  </template>
+  <template v-if="!carregandoinfoUsuario" v-slot:fechar>
+    <button type="button" class="button-8" data-bs-dismiss="modal" id="fecharUser">Fechar</button>
+  </template>
+  <template v-if="!carregandoinfoUsuario" v-slot:confirmar>
+    <button type="button" class="button-8" @click="submitUser(idSubmitUser)">Executar</button>
+  </template>
+</modal-bootstrap>
+
 </template>
 
 <script>
-
+import ModalBootstrap from '../ui/ModalBootstrap.vue';
+import axios from 'axios'
 
  export default{
+  components: {
+    ModalBootstrap
+  },
   data(){
     return{
+      idSubmitUser: null,
+      carregandoinfoUsuario: false,
       carregando: true,
       usuarios: [],
-      resultados: null
+      informacoes: [],
+      resultados: null,
+      form: {
+          name: '',
+          email: '',
+          admin: '',
+          password: '',
+          setor: ''
+      },
+      editar: {
+        name: '',
+        email: '',
+        admin: null,
+        dpo: null,
+        setor: ''
+      }
+    }
+  },
+  computed: {
+      placeholder(){
+          return ["Nome:", "E-mail:", "É admin?", "Senha:", "Setor:", "É DPO?"];
+      },
+      colunaNoBanco(){
+          return ["name", "email", "admin", "password", "setor"];
+      },
+      colunaNoBancoUsuario(){
+          return ["user-name", "user-email", "user-admin", "user-dpo", "user-setor"];
+      },
+      optionsAdmin(){
+          return [{valor: 0, descri: 'Não'}, {valor: 1, descri: 'Sim'}];
+      },
+      optionsSetores(){
+          return [
+              {valor: "Tecnologia da Informação", descri: 'Tecnologia da Informação'},
+              {valor: "Engenharia de Processos", descri: 'Engenharia de Processos'},
+              {valor: "Controladoria", descri: 'Controladoria'},
+              {valor: "Qualidade", descri: 'Qualidade'},
+              {valor: "PCP", descri: 'PCP'},
+              {valor: "Produção", descri: 'Produção'},
+          ];
+      },
+  },
+  methods: {
+    async submit(){
+        try {
+            document.getElementById('fechar').click();
+            this.carregando = true;
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_IP}/users/register`, this.form);
+            if(response.status == 200){
+              const response = await fetch(`${import.meta.env.VITE_BACKEND_IP}/users/get_all`)
+              const responseJson = await response.json()
+              this.usuarios = responseJson
+              this.resultados = responseJson.length
+              this.carregando = false
+            }
+        } catch (error) {
+          console.log(error)
+            if(error.response.status == 401){
+                alert("Usuário já existe.")
+            }else{
+                alert("Erro ao cadastrar usuário.")
+            };
+        }
+    },
+    async submitUser(id){
+      try {
+          this.carregando = true;
+          document.getElementById('fecharUser').click();
+          await axios.post(`${import.meta.env.VITE_BACKEND_IP}/users/alter/${id}`, this.editar);
+          const response = await fetch(`${import.meta.env.VITE_BACKEND_IP}/users/get_all`)
+          const responseJson = await response.json()
+          this.usuarios = responseJson
+          this.resultados = responseJson.length
+          this.carregando = false
+      } catch (error) {
+          console.log(error)
+          alert("Erro ao editar usuário")
+      }
+    },
+    async infoEditarModal(id){
+      try {
+        this.idSubmitUser = id;
+        this.carregandoinfoUsuario = true;
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/users/${id}`);
+        this.editar = response.data[0];
+        this.carregandoinfoUsuario = false;
+      } catch (error) {
+        console.log(error)
+        alert("Erro ao mostrar informações")
+      }
     }
   },
   async created(){
