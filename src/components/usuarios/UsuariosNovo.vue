@@ -84,15 +84,14 @@ import axios from 'axios';
         methods: {
             async submit(){
                 try {
-                    await axios.post(`${import.meta.env.VITE_DOTNET_IP}/auth/register`, this.form);
-                    this.$router.push({path: '/usuarios'})
+                    await axios.post(`${import.meta.env.VITE_BACKEND_IP}/users/register`, this.form);
+                    this.$router.push({path: '/usuarios'});
                 } catch (error) {
-                    if(error.response.data == 'This user already exists'){
-                        alert("Esse usuário já existe.")
-                    }
-                    else{
-                        alert("Erro ao cadastrar usuário. Favor tentar mais tarde.")
-                    }
+                    if(error.response.status == 401){
+                        alert("Usuário já existe.")
+                    }else{
+                        alert("Erro ao cadastrar usuário.")
+                    };
                 }
             }
         }

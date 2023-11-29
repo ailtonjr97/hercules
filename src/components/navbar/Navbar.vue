@@ -16,7 +16,7 @@
                         <router-link to="/usuarios" class="nav-link">
                             <div class="item">
                                 <i class="fa-solid fa-user" style="margin-left: 22%;"></i>
-                                <span class="caption">Usuarios</span>
+                                <span class="caption">Usuários</span>
                             </div>
                         </router-link>
 					</li>

@@ -1,10 +1,8 @@
 <template>
-
-<div style="padding-top: 1.5%">
+    <div style="padding-top: 1.5%">
   <div class="row" style="width: 99.8%; margin-left: 0.2%;">
     <div class="col-md-4">
-        <router-link class="button-8 mb-2" to="/usuarios/novo">Novo usuário</router-link>
-        <router-link class="button-8 mb-2" to="/usuarios/inativos">Inativos</router-link>
+        <router-link class="button-8 mb-2" to="/usuarios">Ativos</router-link>
     </div>
     <div class="col-lg-6">
     </div>
@@ -52,9 +50,7 @@
             <p>{{ usuario.email }}</p>
           </td>
           <td style="padding-bottom: 15px;">
-            <a class="button-8" href="/usuarios/editar/<%=user.id%>">Editar</a>
-            <a class="button-8" href="/usuarios/inativar/<%=user.id%>">Inativar</a>
-            <a class="button-8" href="/usuarios/mudarsenha/<%=user.id%>">Mudar Senha</a>
+            <a class="button-8" @click="ativar">Ativar</a>
           </td>
         </tr>
       </tbody>
@@ -65,6 +61,8 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 
 
  export default{
@@ -75,8 +73,13 @@
       resultados: null
     }
   },
+  methods: {
+    async ativar(){
+        await axios.post(`${import.meta.env.VITE_BACKEND_IP}/users/reactivate`)
+    }
+  },
   async created(){
-    const response = await fetch(`${import.meta.env.VITE_BACKEND_IP}/users/get_all`)
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_IP}/users/get_all/inactive`)
     const responseJson = await response.json()
     this.usuarios = responseJson
     this.carregando = false
