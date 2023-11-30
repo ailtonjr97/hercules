@@ -2,7 +2,8 @@
 <div id="cabecalho">
     <div class="row"  style="width: 99.8%; margin-left: 0.2%; height: 100vh;">
       <div class="col-md-6 offset-md-3" style="width: 40%; margin-left: 30%;">
-        <div class="card my-5" style="margin-top: 30% !important; ">
+        <form v-on:submit.prevent="submit">
+        <div class="card my-5" style="margin-top: 29% !important; ">
           <span class="card-body cardbody-color p-lg-5">
             <div class="mb-3">
               <input type="email" class="form-control" id="Username" aria-describedby="emailHelp" placeholder="Email" v-model="form.email">
@@ -11,11 +12,12 @@
               <input type="password" class="form-control" id="password" placeholder="Senha" v-model="form.password">
             </div>
             <div class="text-center">
-              <button v-if="!logador" type="submit" class="btn btn-color px-5 mb-2 w-100" @click="submit">Login</button>
-              <button v-if="logador" type="submit" class="btn btn-color px-5 mb-2 w-100" disabled>Fazendo login</button>
+              <button type="submit" class="btn btn-color px-5 mb-2 w-100">Login</button>
+              <div id="loading" v-if="logador" style="margin-bottom: 50%;"></div>
             </div>
           </span>
         </div>
+      </form>
       </div>
     </div>
   </div>

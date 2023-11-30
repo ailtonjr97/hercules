@@ -18,21 +18,31 @@ const router = createRouter({
     ]
   });
 
-  router.beforeEach(function(to, _, next) {
-    var jwt = document.cookie.replace('jwt=','');
-    if(jwt.length != 0 || !to.meta.requiresAuth){
-      const response = axios.get(`${import.meta.env.VITE_BACKEND_IP}/users/verify-jwt/${jwt}`);
-      console.log(response);
-      // if (to.meta.requiresAuth && !store.getters.isAuthenticated) {
-      //   next('/auth');
-      // } else if (to.meta.requiresUnauth && store.getters.isAuthenticated) {
-      //   next('/coaches');
-      // } else {
-      //   next();
-      // }
+router.beforeEach(async function(to, from, next) {
+  let loggedIn = false;
+  if(to.path == '/login'){
+    next();
+  }else{
+    if(document.cookie == 0){
+      return next('/login')
     }else{
-      next('/login')
+      var jwt = document.cookie.replace('jwt=','');
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/users/verify-jwt/${jwt}`);
+      if(response.status == 200){
+        loggedIn = true;
+      }else{
+        loggedIn = false;
+      }
+
+      if (!loggedIn) {
+        return next('/login');
+      } else if (loggedIn) {
+        return next();
+      } else{
+        next()
+      }
     }
-  });
+  }
+});
 
 export default router;
