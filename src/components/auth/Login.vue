@@ -2,7 +2,7 @@
 <div id="cabecalho">
     <div class="row"  style="width: 99.8%; margin-left: 0.2%; height: 100vh;">
       <div class="col-md-6 offset-md-3" style="width: 40%; margin-left: 30%;">
-        <div class="card my-5">
+        <div class="card my-5" style="margin-top: 30% !important; ">
           <span class="card-body cardbody-color p-lg-5">
             <div class="mb-3">
               <input type="email" class="form-control" id="Username" aria-describedby="emailHelp" placeholder="Email" v-model="form.email">
@@ -10,7 +10,10 @@
             <div class="mb-3">
               <input type="password" class="form-control" id="password" placeholder="Senha" v-model="form.password">
             </div>
-            <div class="text-center"><button type="submit" class="btn btn-color px-5 mb-2 w-100" @click="submit">Login</button></div>
+            <div class="text-center">
+              <button v-if="!logador" type="submit" class="btn btn-color px-5 mb-2 w-100" @click="submit">Login</button>
+              <button v-if="logador" type="submit" class="btn btn-color px-5 mb-2 w-100" disabled>Fazendo login</button>
+            </div>
           </span>
         </div>
       </div>
@@ -23,6 +26,7 @@ import axios from 'axios';
 export default{
     data(){
         return {
+          logador: false,
             form: {
                 email: '',
                 password: ''
@@ -32,18 +36,20 @@ export default{
     methods: {
         async submit(){
             try {
-                const response = await axios.post(`${import.meta.env.VITE_DOTNET_IP}/auth/login`, this.form);
-                document.cookie = `jwt=${response.data.token}`;
-
+                this.logador = true;
+                const response = await axios.post(`${import.meta.env.VITE_BACKEND_IP}/users/login`, this.form);
+                document.cookie = `jwt=${response.data}`;
+                setTimeout(()=>{
+                  this.$router.push('/home')
+                }, 2000)
             } catch (error) {
-                if(error.response.data == 'User not found or inactive.'){
-                    alert("Usuário não encontrado ou inativo.")
-                } else if(error.response.data == 'Incorrect password!'){
-                    alert("Senha incorreta.")
-                }
-                else{
-                    alert("Erro ao fazer login. Favor tentar mais tarde.")
-                }
+              if(error.response.status == 404){
+                alert(error.response.data)
+                this.logador = false;
+              }else if (error.response.status == 401){
+                alert(error.response.data)
+                this.logador = false;
+              }
             }
         }
     }

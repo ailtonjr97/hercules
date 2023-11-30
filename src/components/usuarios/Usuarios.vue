@@ -9,13 +9,13 @@
     <div class="col-lg-6">
     </div>
     <div class="col-sm-2">
-      <button type="button" class="button-8 mb-2" id="result" style="float: right;">
+      <button type="button" class="button-8" id="result" style="float: right; margin-right: 0;">
         <span class="counter-value">{{ resultados }}</span>
         resultados
       </button>
     </div>
   </div>
-  <div class="row mb-2" style="width: 99.8%; margin-left: 0.2%;">
+  <div class="row mb-2" style="width: 99.8%; margin-left: 0.1%;">
     <div class="col">
       <div class="form-floating">
         <input type="text" class="form-control" id="procuraBtn0" onkeyup="procura(0, 'procuraBtn0')"/>
@@ -29,7 +29,7 @@
       </div>
     </div>
   </div>
-  <div class="table-wrapper table-responsive table-striped">
+  <div class="table-wrapper table-responsive table-striped" style="padding: 0% 0.9%;">
     <table class="fl-table" id="myTable">
       <thead>
         <tr style="height: 25px">
@@ -52,9 +52,9 @@
             <p>{{ usuario.email }}</p>
           </td>
           <td style="padding-bottom: 15px;">
-            <button  class="button-8 mb-2" data-bs-toggle="modal" data-bs-target="#editarModal" @click="infoEditarModal(usuario.id)">Editar</button>
-            <a class="button-8" href="/usuarios/inativar/<%=user.id%>">Inativar</a>
-            <a class="button-8" href="/usuarios/mudarsenha/<%=user.id%>">Mudar Senha</a>
+            <button  class="button-8" data-bs-toggle="modal" data-bs-target="#editarModal" @click="infoEditarModal(usuario.id)">Editar</button>
+            <button class="button-8" @click="inactivate(usuario.id)">Inativar</button>
+            <button class="button-8" @click="passwordReset(usuario.id)">Resetar Senha</button>
           </td>
         </tr>
       </tbody>
@@ -225,6 +225,39 @@ import axios from 'axios'
       },
   },
   methods: {
+    async passwordReset(id){
+      try {
+        this.carregando = true;
+          const response = await axios.post(`${import.meta.env.VITE_BACKEND_IP}/users/password-reset/${id}`);
+          if(response.status == 200){
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_IP}/users/get_all`)
+            const responseJson = await response.json()
+            this.usuarios = responseJson
+            this.resultados = responseJson.length
+            this.carregando = false
+          }
+      } catch (error) {
+          console.log(error);
+          alert("Falha ao resetar senha do usuário.");
+      }
+    },
+    async inactivate(id){
+      try {
+        this.carregando = true;
+        const response = await axios.post(`${import.meta.env.VITE_BACKEND_IP}/users/inactivate/${id}`)
+        if(response.status == 200){
+          const response = await fetch(`${import.meta.env.VITE_BACKEND_IP}/users/get_all`)
+          const responseJson = await response.json()
+          this.usuarios = responseJson
+          this.resultados = responseJson.length
+          this.carregando = false
+        }else{
+          throw new Error();
+        }
+      } catch (error) {
+        alert('Falha ao inativar usuário');
+      }
+    },
     async submit(){
         try {
             document.getElementById('fechar').click();
