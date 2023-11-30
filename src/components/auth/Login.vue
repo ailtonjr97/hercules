@@ -39,7 +39,7 @@ export default{
         async submit(){
             try {
                 this.logador = true;
-                const response = await axios.post(`${import.meta.env.VITE_BACKEND_IP}/users/login`, this.form);
+                const response = await axios.post(`${import.meta.env.VITE_BACKEND_IP}/auth/login`, this.form);
                 document.cookie = `jwt=${response.data}`;
                 setTimeout(()=>{
                   this.$router.push('/home')

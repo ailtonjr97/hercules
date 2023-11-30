@@ -27,7 +27,7 @@ router.beforeEach(async function(to, from, next) {
       return next('/login')
     }else{
       var jwt = document.cookie.replace('jwt=','');
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/users/verify-jwt/${jwt}`);
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/auth/verify-jwt/${jwt}`);
       if(response.status == 200){
         loggedIn = true;
       }else{

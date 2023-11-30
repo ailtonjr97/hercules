@@ -63,7 +63,11 @@
 <script>
 import axios from 'axios'
 
-
+let config = {
+  headers: {
+    'Authorization': document.cookie.replace('jwt=', ''),
+  }
+}
 
  export default{
   data(){
@@ -77,35 +81,30 @@ import axios from 'axios'
     async ativar(id){
       try {
         this.carregando = true;
-          const response = await axios.post(`${import.meta.env.VITE_BACKEND_IP}/users/reactivate/${id}`);
+          const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/users/reactivate/${id}`, config);
           if(response.status == 200){
             this.atualizarUsuarios();
           }
       } catch (error) {
         console.log(error)
-        alert("Erro ao inativar usuário.")
+        alert("Erro ao reativar usuário.")
       }
 
     },
     async atualizarUsuarios(){
       try {
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_IP}/users/get_all/inactive`);
-        const responseJson = await response.json();
-        this.usuarios = responseJson;
-        this.resultados = responseJson.length;
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/users/get_all/inactive`, config);
+        this.usuarios = response.data;
+        this.resultados = response.data.length;
         this.carregando = false;
       } catch (error) {
         console.log(error)
-        alert("Erro ao reativar usuário.")
+        alert("Erro ao consultar usuários usuário.")
       }
     }
   },
   async created(){
-    const response = await fetch(`${import.meta.env.VITE_BACKEND_IP}/users/get_all/inactive`);
-    const responseJson = await response.json();
-    this.usuarios = responseJson;
-    this.carregando = false;
-    this.resultados = responseJson.length;
+    this.atualizarUsuarios();
   }
  }
 </script>

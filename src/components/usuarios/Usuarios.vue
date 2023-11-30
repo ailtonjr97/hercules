@@ -1,6 +1,6 @@
-<template>
-
-<div style="padding-top: 1.5%; z-index: 1;">
+<template >
+<div v-if="carregando" id="loading"></div>
+<div v-if="fullLoad" style="padding-top: 1.5%; z-index: 1;">
   <div class="row" style="width: 99.8%; margin-left: 0.2%;">
     <div class="col-md-4">
         <button  class="button-8 mb-2" data-bs-toggle="modal" data-bs-target='#novoUsuarioModal'>Novo Usuário</button>
@@ -40,7 +40,6 @@
         </tr>
       </thead>
       <tbody>
-        <div v-if="carregando" id="loading"></div>
         <tr v-for="usuario in usuarios" :key="usuario.id">
           <td>
             <p>{{ usuario.id }}</p>
@@ -172,12 +171,19 @@
 import ModalBootstrap from '../ui/ModalBootstrap.vue';
 import axios from 'axios'
 
+let config = {
+  headers: {
+    'Authorization': document.cookie.replace('jwt=', ''),
+  }
+}
+
  export default{
   components: {
     ModalBootstrap
   },
   data(){
     return{
+      fullLoad: false,
       idSubmitUser: null,
       carregandoinfoUsuario: false,
       carregando: true,
@@ -225,16 +231,24 @@ import axios from 'axios'
       },
   },
   methods: {
+    async pageRefresh(){
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/users/get_all`, config)
+        this.usuarios = response.data
+        this.resultados = response.data.length
+        this.carregando = false
+        this.fullLoad = true;
+      } catch (error) {
+        console.log(error);
+        alert('Falha ao recarregar usuários')
+      }
+    },
     async passwordReset(id){
       try {
         this.carregando = true;
-          const response = await axios.post(`${import.meta.env.VITE_BACKEND_IP}/users/password-reset/${id}`);
+          const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/users/password-reset/${id}`, config);
           if(response.status == 200){
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_IP}/users/get_all`)
-            const responseJson = await response.json()
-            this.usuarios = responseJson
-            this.resultados = responseJson.length
-            this.carregando = false
+            this.pageRefresh()
           }
       } catch (error) {
           console.log(error);
@@ -244,13 +258,9 @@ import axios from 'axios'
     async inactivate(id){
       try {
         this.carregando = true;
-        const response = await axios.post(`${import.meta.env.VITE_BACKEND_IP}/users/inactivate/${id}`)
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/users/inactivate/${id}`, config)
         if(response.status == 200){
-          const response = await fetch(`${import.meta.env.VITE_BACKEND_IP}/users/get_all`)
-          const responseJson = await response.json()
-          this.usuarios = responseJson
-          this.resultados = responseJson.length
-          this.carregando = false
+          this.pageRefresh()
         }else{
           throw new Error();
         }
@@ -262,13 +272,9 @@ import axios from 'axios'
         try {
             document.getElementById('fechar').click();
             this.carregando = true;
-            const response = await axios.post(`${import.meta.env.VITE_BACKEND_IP}/users/register`, this.form);
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_IP}/users/register`, this.form, config);
             if(response.status == 200){
-              const response = await fetch(`${import.meta.env.VITE_BACKEND_IP}/users/get_all`)
-              const responseJson = await response.json()
-              this.usuarios = responseJson
-              this.resultados = responseJson.length
-              this.carregando = false
+              this.pageRefresh()
             }
         } catch (error) {
           console.log(error)
@@ -283,12 +289,10 @@ import axios from 'axios'
       try {
           this.carregando = true;
           document.getElementById('fecharUser').click();
-          await axios.post(`${import.meta.env.VITE_BACKEND_IP}/users/alter/${id}`, this.editar);
-          const response = await fetch(`${import.meta.env.VITE_BACKEND_IP}/users/get_all`)
-          const responseJson = await response.json()
-          this.usuarios = responseJson
-          this.resultados = responseJson.length
-          this.carregando = false
+          const response = await axios.post(`${import.meta.env.VITE_BACKEND_IP}/users/alter/${id}`, this.editar, config);
+          if(response.status == 200){
+            this.pageRefresh();
+          }
       } catch (error) {
           console.log(error)
           alert("Erro ao editar usuário")
@@ -298,7 +302,7 @@ import axios from 'axios'
       try {
         this.idSubmitUser = id;
         this.carregandoinfoUsuario = true;
-        const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/users/${id}`);
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/users/${id}`, config);
         this.editar = response.data[0];
         this.carregandoinfoUsuario = false;
       } catch (error) {
@@ -308,11 +312,21 @@ import axios from 'axios'
     }
   },
   async created(){
-    const response = await fetch(`${import.meta.env.VITE_BACKEND_IP}/users/get_all`)
-    const responseJson = await response.json()
-    this.usuarios = responseJson
-    this.carregando = false
-    this.resultados = responseJson.length
+    try {
+      let config = {
+        headers: {
+          'Authorization': document.cookie.replace('jwt=', ''),
+        }
+      }
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/users/get_all`, config)
+      this.usuarios = response.data
+      this.resultados = response.data.length
+      this.carregando = false
+      this.fullLoad = true;
+    } catch (error) {
+      console.log(error)
+      alert('Erro ao carregar página.')
+    }
   }
  }
 </script>

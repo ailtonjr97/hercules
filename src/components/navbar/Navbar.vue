@@ -20,12 +20,41 @@
                             </div>
                         </router-link>
 					</li>
+                    <li class="nav-item pl-1" @click="logout">
+                        <a href="#" class="nav-link">
+                            <div class="item">
+                                <i class="fa-solid fa-right-from-bracket"></i>
+                                <span class="caption">Sair</span>
+                            </div>
+                        </a>
+					</li>
 				</ul>
 			</div>
 		</div>
 	</nav>
 	<!--# Navbar #-->
 </template>
+
+<script>
+export default{
+    methods: {
+        async logout(){
+            function deleteAllCookies() {
+                    const cookies = document.cookie.split(";");
+
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i];
+                        const eqPos = cookie.indexOf("=");
+                        const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+                        document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+                }
+            }
+            deleteAllCookies();
+            this.$router.push('/login')
+        }
+    }
+}
+</script>
 
 <style>
 .fa-solid{
