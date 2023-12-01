@@ -21,13 +21,22 @@
       </div>
     </div>
   </div>
+  <modal-err v-if="error" :title="'Erro:'" :body="'Credenciais incorretas.'">
+    <template v-slot:close><button class="button-8" @click="close">Fechar</button></template>
+  </modal-err>
 </template>
 
 <script>
+import ModalErr from '../ui/ModalErr.vue';
+
 import axios from 'axios';
 export default{
+  components: {
+    ModalErr
+  },
     data(){
         return {
+          error: false,
           logador: false,
             form: {
                 email: '',
@@ -36,6 +45,9 @@ export default{
         }
     },
     methods: {
+        close(){
+          this.error = false
+        },
         async submit(){
             try {
                 this.logador = true;
@@ -46,10 +58,10 @@ export default{
                 }, 2000)
             } catch (error) {
               if(error.response.status == 404){
-                alert(error.response.data)
+                this.error = true;
                 this.logador = false;
               }else if (error.response.status == 401){
-                alert(error.response.data)
+                this.error = true;
                 this.logador = false;
               }
             }

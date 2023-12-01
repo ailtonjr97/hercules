@@ -93,6 +93,11 @@ let config = {
     },
     async atualizarUsuarios(){
       try {
+        let config = {
+          headers: {
+            'Authorization': document.cookie.replace('jwt=', ''),
+          }
+        }
         const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/users/get_all/inactive`, config);
         this.usuarios = response.data;
         this.resultados = response.data.length;

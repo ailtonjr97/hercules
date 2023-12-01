@@ -168,8 +168,8 @@
 </template>
 
 <script>
-import ModalBootstrap from '../ui/ModalBootstrap.vue';
 import axios from 'axios'
+import ModalBootstrap from '../ui/ModalBootstrap.vue';
 
 let config = {
   headers: {

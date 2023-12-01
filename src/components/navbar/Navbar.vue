@@ -36,22 +36,18 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default{
     methods: {
         async logout(){
-            function deleteAllCookies() {
-                    const cookies = document.cookie.split(";");
-
-                    for (let i = 0; i < cookies.length; i++) {
-                        const cookie = cookies[i];
-                        const eqPos = cookie.indexOf("=");
-                        const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-                        document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
-                }
-            }
-            deleteAllCookies();
+            document.cookie = "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
             this.$router.push('/login')
         }
+    },
+    async created(){
+        const token = document.cookie.replace('jwt=', '')
+        console.log(token)
     }
 }
 </script>
