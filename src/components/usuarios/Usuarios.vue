@@ -307,7 +307,7 @@ let config = {
         this.carregandoinfoUsuario = false;
       } catch (error) {
         console.log(error)
-        alert("Erro ao mostrar informações")
+        alert("Erro ao mostrar informações. Favor tentar novamente.")
       }
     }
   },
