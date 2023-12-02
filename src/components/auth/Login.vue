@@ -21,18 +21,18 @@
       </div>
     </div>
   </div>
-  <modal-err v-if="error" :title="'Erro:'" :body="'Credenciais incorretas.'">
+  <modal v-if="error" :title="'Erro:'" :body="'Credenciais incorretas.'">
     <template v-slot:close><button class="button-8" @click="close">Fechar</button></template>
-  </modal-err>
+  </modal>
 </template>
 
 <script>
-import ModalErr from '../ui/ModalErr.vue';
+import Modal from '../ui/Modal.vue';
 
 import axios from 'axios';
 export default{
   components: {
-    ModalErr
+    Modal
   },
     data(){
         return {
@@ -72,7 +72,7 @@ export default{
 
 <style scoped>
 #cabecalho{
-    background-image: url('../../../images/bg.jpg');
+  background-image: url('../../../images/bg.jpg');
 }
 .btn-color{
   background-color: #0e1c36;

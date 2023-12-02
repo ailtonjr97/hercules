@@ -12,24 +12,30 @@
                       </i>
                     </div>
                   </a>
-                  <router-link to="/usuarios" class="nav_link">
-                    <i class="bx bx-home-alt-2 nav_icon"></i>
+                  <router-link to="/home" class="nav_link">
+                    <i class="fa-solid fa-house"></i>
                     <span class="nav_name">
                       Home
                     </span>
                   </router-link>
+                  <router-link to="/qualidade" class="nav_link">
+                    <i class="fa-solid fa-file-circle-check" style="margin-left: 10%;"></i>
+                    <span class="nav_name">
+                      Qualidade
+                    </span>
+                  </router-link>
                   <router-link to="/usuarios" class="nav_link" v-if="isAdmin != 0">
-                    <i class='bx bx-user nav_icon'></i>
+                    <i class="fa-solid fa-user" style="margin-left: 15%;"></i>
                     <span class="nav_name">
                       Usuário
                     </span>
                   </router-link>
-                  <router-link to="/usuarios" class="nav_link" style="padding-left: 21%;">
-                    <i class='bx bx-log-out-circle nav_icon'></i>
+                  <div class="nav_link" style="cursor: pointer;" @click="logout">
+                    <i class="fa-solid fa-arrow-right-from-bracket fa-rotate-180" style="margin-right: 5%;"></i>
                     <span class="nav_name">
-                      Sair
+                      Home
                     </span>
-                  </router-link>
+                  </div>
               </div>
           </div>
       </nav>
@@ -287,7 +293,7 @@ a {
 @media screen and (min-width: 768px)
     {
         body {
-            padding-left: calc(var(--nav-width) - 1.8rem)
+            padding-left: calc(var(--nav-width) + 0.4rem)
         }
         
         .header{

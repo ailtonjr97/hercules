@@ -7,9 +7,11 @@
       <h3>{{ title }}</h3>
     </div>
     <div class="modal-body">
-      <p>{{ body }}</p>
+      <slot name="body"></slot>
       <br />
-      <slot name="close"></slot>
+      <div style="text-align: center;">
+        <slot name="buttons"></slot>
+      </div>
     </div>
   </div>
 </div>
@@ -27,11 +29,6 @@
         }
     },
     props: {
-        body: {
-           type: String,
-           required: true,
-           default: "Use body." 
-        },
         title: {
             type: String,
             required: true,
@@ -74,9 +71,10 @@
 
 .modal-box {
   position: relative;
-  width: 80%;
-  max-width: 920px;
-  margin: 100px auto;
+  width: 100%;
+  max-width: 95%;
+  margin-top: 10%;
+  margin-left: 2%;
   animation-name: modalbox;
   animation-duration: .4s;
   animation-timing-function: cubic-bezier(0,0,.3,1.6);

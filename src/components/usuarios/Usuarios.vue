@@ -3,7 +3,7 @@
 <div v-if="fullLoad">
   <div class="row mt-2">
     <div class="col-md-4">
-        <button  class="button-8 mb-2" data-bs-toggle="modal" data-bs-target='#novoUsuarioModal'>Novo Usuário</button>
+        <button class="button-8 mb-2" @click="openNewUserModal">Novo Usuário</button>
         <router-link class="button-8 mb-2" to="/usuarios/inativos">Inativos</router-link>
     </div>
     <div class="col-lg-6">
@@ -57,59 +57,9 @@
           </td>
         </tr>
       </tbody>
-      <tbody></tbody>
     </table>
   </div>
 </div>
-
-<modal-bootstrap :id="'novoUsuarioModal'" :titulo="'Novo Usuario'">
-  <template v-slot:body>
-    <div class="row mt-3" style="width: 99.8%; margin-left: 0.2%;">
-        <div class="col">
-            <div class="form-floating">
-                <input type="text" class="form-control" :id="colunaNoBanco[0]" :placeholder="placeholder[0]" v-model="form.name" required>
-                <label :for="colunaNoBanco[0]">{{ placeholder[0] }}</label>
-            </div>
-        </div>
-        <div class="col">
-            <div class="form-floating">
-                <input type="text" class="form-control" :id="colunaNoBanco[1]" :placeholder="placeholder[1]" v-model="form.email" required>
-                <label :for="colunaNoBanco[1]">{{ placeholder[1] }}</label>
-            </div>
-        </div>
-        <div class="col">
-            <div class="form-floating">
-                <select class="form-select" :id="colunaNoBanco[2]" v-model="form.admin" required>
-                    <option v-for="option in optionsAdmin" v-bind:value="option.valor" >{{ option.descri }}</option>
-                </select>
-                <label :for="placeholder[2]">{{ placeholder[2] }}</label>
-            </div>
-        </div>
-    </div>
-    <div class="row mt-2" style="width: 99.8%; margin-left: 0.2%;">
-        <div class="col">
-            <div class="form-floating">
-                <input type="password" class="form-control" :id="colunaNoBanco[3]" :placeholder="placeholder[3]" v-model="form.password" required>
-                <label :for="colunaNoBanco[3]">{{ placeholder[3] }}</label>
-            </div>
-        </div>
-        <div class="col">
-            <div class="form-floating">
-                <select class="form-select" :id="colunaNoBanco[4]" v-model="form.setor" required>
-                    <option v-for="option in optionsSetores" v-bind:value="option.valor" >{{ option.descri }}</option>
-                </select>
-                <label :for="colunaNoBanco[4]">{{ placeholder[4] }}</label>
-            </div>
-        </div>
-    </div>
-  </template>
-  <template v-slot:fechar>
-    <button type="button" class="button-8" data-bs-dismiss="modal" id="fechar">Fechar</button>
-  </template>
-  <template v-slot:confirmar>
-    <button type="button" class="button-8" @click="submit">Executar</button>
-  </template>
-</modal-bootstrap>
 
 <modal-bootstrap :id="'editarModal'" :titulo="'Editar Usuário'">
   <template v-if="carregandoinfoUsuario" v-slot:carregando>
@@ -163,13 +113,63 @@
   <template v-if="!carregandoinfoUsuario" v-slot:confirmar>
     <button type="button" class="button-8" @click="submitUser(idSubmitUser)">Executar</button>
   </template>
+
 </modal-bootstrap>
+
+<modal v-if="newUserModal" :title="'Cadastrar Novo Usuário:'">
+  <template v-slot:body>
+    <div class="row mt-3">
+        <div class="col">
+          <form-floating :placeholder="'Nome:'" :id="'name'" :type="'text'" v-model="form.name"></form-floating>
+        </div>
+        <div class="col">
+            <div class="form-floating">
+                <input type="text" class="form-control" :id="colunaNoBanco[1]" :placeholder="placeholder[1]" v-model="form.email" required>
+                <label :for="colunaNoBanco[1]">{{ placeholder[1] }}</label>
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-floating">
+                <select class="form-select" :id="colunaNoBanco[2]" v-model="form.admin" required>
+                    <option v-for="option in optionsAdmin" v-bind:value="option.valor" >{{ option.descri }}</option>
+                </select>
+                <label :for="placeholder[2]">{{ placeholder[2] }}</label>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-2" style="width: 99.8%; margin-left: 0.2%;">
+        <div class="col">
+            <div class="form-floating">
+                <input type="password" class="form-control" :id="colunaNoBanco[3]" :placeholder="placeholder[3]" v-model="form.password" required>
+                <label :for="colunaNoBanco[3]">{{ placeholder[3] }}</label>
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-floating">
+                <select class="form-select" :id="colunaNoBanco[4]" v-model="form.setor" required>
+                    <option v-for="option in optionsSetores" v-bind:value="option.valor" >{{ option.descri }}</option>
+                </select>
+                <label :for="colunaNoBanco[4]">{{ placeholder[4] }}</label>
+            </div>
+        </div>
+    </div>
+  </template>
+  <div class="row">
+    <div class="col"></div>
+  </div>
+  <template v-slot:buttons>
+        <button class="button-8" @click="openNewUserModal">Fechar</button>
+        <button type="button" class="button-8" @click="submit">Executar</button>
+  </template>
+</modal>
 
 </template>
 
 <script>
 import axios from 'axios'
 import ModalBootstrap from '../ui/ModalBootstrap.vue';
+import Modal from '../ui/Modal.vue';
+import FormFloating from '../ui/FormFloating.vue';
 
 let config = {
   headers: {
@@ -179,10 +179,13 @@ let config = {
 
  export default{
   components: {
-    ModalBootstrap
+    ModalBootstrap,
+    Modal,
+    FormFloating
   },
   data(){
     return{
+      newUserModal: false,
       fullLoad: false,
       idSubmitUser: null,
       carregandoinfoUsuario: false,
@@ -231,6 +234,9 @@ let config = {
       },
   },
   methods: {
+    async openNewUserModal(){
+      this.newUserModal ? this.newUserModal = false : this.newUserModal = true;
+    },
     async pageRefresh(){
       try {
         const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/users/get_all`, config)
@@ -270,7 +276,7 @@ let config = {
     },
     async submit(){
         try {
-            document.getElementById('fechar').click();
+            this.newUserModal = false
             this.carregando = true;
             const response = await axios.post(`${import.meta.env.VITE_BACKEND_IP}/users/register`, this.form, config);
             if(response.status == 200){

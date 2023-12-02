@@ -1,11 +1,10 @@
 <template>
-    <div class="col">
-        <div class="form-floating">
-            <input type="password" class="form-control" :id="id" :placeholder="placeholder" :name="name" :value="value">
-            <label :for="id">{{ placeholder }}</label>
-        </div>
+    <div class="form-floating">
+        <input :type="type" class="form-control" :id="id" :placeholder="placeholder" :name="id" :value="modelValue" @input="$emit('update:modelValue', $event.target.value)">
+        <label :for="id">{{ placeholder }}</label>
     </div>
 </template>
+
 
 <script>
     export default {
@@ -18,17 +17,16 @@
             id: {
                 type: String,
                 required: true,
-                default: 'Inserir ID aqui'
+                default: 'Inserir ID'
             },
-            name: {
+            type: {
                 type: String,
                 required: true,
-                default: 'Inserir Name aqui'
+                default: "Inserir tipo do input"
             },
-            value: {
+            modelValue: {
                 type: String,
                 required: true,
-                default: ''
             }
         }
     }
