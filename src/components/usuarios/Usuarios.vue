@@ -1,7 +1,7 @@
 <template >
 <div v-if="carregando" id="loading"></div>
-<div v-if="fullLoad" style="padding-top: 1.5%; z-index: 1;">
-  <div class="row" style="width: 99.8%; margin-left: 0.2%;">
+<div v-if="fullLoad">
+  <div class="row mt-2">
     <div class="col-md-4">
         <button  class="button-8 mb-2" data-bs-toggle="modal" data-bs-target='#novoUsuarioModal'>Novo Usuário</button>
         <router-link class="button-8 mb-2" to="/usuarios/inativos">Inativos</router-link>
@@ -15,7 +15,7 @@
       </button>
     </div>
   </div>
-  <div class="row mb-2" style="width: 99.8%; margin-left: 0.1%;">
+  <div class="row mb-2">
     <div class="col">
       <div class="form-floating">
         <input type="text" class="form-control" id="procuraBtn0" onkeyup="procura(0, 'procuraBtn0')"/>
@@ -29,7 +29,7 @@
       </div>
     </div>
   </div>
-  <div class="table-wrapper table-responsive table-striped" style="padding: 0% 0.9%;">
+  <div class="table-wrapper table-responsive table-striped">
     <table class="fl-table" id="myTable">
       <thead>
         <tr style="height: 25px">

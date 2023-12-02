@@ -10,7 +10,7 @@
         <div class="row">
             <div class="col d-flex justify-content-start">
                 <li class="nav-item" style="width: 90px;">
-                    <router-link to="/qualidade" class="nav-link" style="padding: 0 8px;">
+                    <router-link to="/home" class="nav-link" style="padding: 0 8px;">
                         <div class="item">
                             <img src="/images/logo_fibracem_F_1.png" alt="" style="width: 130%;">
                         </div>

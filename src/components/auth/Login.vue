@@ -6,10 +6,10 @@
         <div class="card my-5" style="margin-top: 29% !important; ">
           <span class="card-body cardbody-color p-lg-5">
             <div class="mb-3">
-              <input type="email" class="form-control" id="Username" aria-describedby="emailHelp" placeholder="Email" v-model="form.email">
+              <input type="email" class="form-control" id="Username" aria-describedby="emailHelp" placeholder="Email" name="email" v-model="form.email">
             </div>
             <div class="mb-3">
-              <input type="password" class="form-control" id="password" placeholder="Senha" v-model="form.password">
+              <input type="password" class="form-control" id="password" placeholder="Senha" v-model="form.password" name="password">
             </div>
             <div class="text-center">
               <button type="submit" class="btn btn-color px-5 mb-2 w-100">Login</button>
