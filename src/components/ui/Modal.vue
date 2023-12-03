@@ -7,6 +7,8 @@
       <h3>{{ title }}</h3>
     </div>
     <div class="modal-body">
+      <slot name="carregando">
+        </slot>
       <slot name="body"></slot>
       <br />
       <div style="text-align: center;">

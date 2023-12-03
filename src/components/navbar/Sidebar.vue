@@ -161,10 +161,6 @@ a {
     text-decoration: none
 }
 
-.card{
-    background-color: #161616;
-}
-
 .header {
     width: 100%;
     height: var(--header-height);

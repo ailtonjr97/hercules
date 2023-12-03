@@ -1,7 +1,10 @@
 <template>
-    <div class="form-floating">
-        <input :type="type" class="form-control" :id="id" :placeholder="placeholder" :name="id" :value="modelValue" @input="$emit('update:modelValue', $event.target.value)">
+    <div class="col">
+        <div class="form-floating">
+            
+            <input :type="type" class="form-control" :id="id" :placeholder="placeholder" :name="id" :value="modelValue" @input="$emit('update:modelValue', $event.target.value)">
         <label :for="id">{{ placeholder }}</label>
+    </div>
     </div>
 </template>
 
