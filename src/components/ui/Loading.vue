@@ -1,3 +1,3 @@
 <template>
-    <img style="width: 20%; height: 20%; margin-left: 40%;" src="../../../images/spinning.gif" alt="">
+    <img style="width: 10%; height: 10%; margin-left: 45%;" src="../../../images/spinning.gif" alt="">
 </template>

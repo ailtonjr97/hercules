@@ -1,34 +1,29 @@
 <template>
     <div class="col">
         <div class="form-floating">
-            <input :readonly="readonly" :type="type" class="form-control" :id="id" :placeholder="placeholder" :name="id" :value="modelValue" @input="$emit('update:modelValue', $event.target.value)">
-        <label :for="id">{{ placeholder }}</label>
-    </div>
+            <textarea class="form-control" :placeholder="placeholder" :id="id" @input="$emit('update:modelValue', $event.target.value)" :readonly="readonly">{{ modelValue }}</textarea>
+            <label :for="id">{{ placeholder }}</label>
+        </div>
     </div>
 </template>
 
-
 <script>
-    export default {
+    export default{
         props: {
-            placeholder: {
-                type: String,
-                required: false,
-                default: 'Inserir Placeholder'
-            },
             id: {
                 type: String,
                 required: true,
-                default: 'Inserir ID'
+                default: 'Inserir ID.'
             },
-            type: {
+            placeholder: {
                 type: String,
                 required: true,
-                default: "Inserir tipo do input"
+                default: 'Inserir Placeholder.'
             },
             modelValue: {
                 type: String,
                 required: true,
+                default: 'Inserir texto padrão.'
             },
             readonly: {
                 type: Boolean,

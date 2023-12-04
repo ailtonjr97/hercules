@@ -44,19 +44,19 @@
 </div>
 
 <modal v-if="editUserModal" :title="'Editar usuário'">
-  <loading v-if="carregandoinfoUsuario"></loading>
   <template v-slot:body>
-    <div class="row">
+    <loading v-if="carregandoinfoUsuario"></loading>
+    <div class="row" v-if="!carregandoinfoUsuario">
       <form-floating :placeholder="'Nome:'" :id="'user-name'" :type="'text'" v-model="editar.name"></form-floating>
       <form-floating :placeholder="'Email:'" :id="'user-email'" :type="'email'" v-model="editar.email"></form-floating>
       <select-floating :placeholder="'É admin?'" :id="'user-admin'" :options="optionsAdmin" v-model="editar.admin"></select-floating>
     </div>
-    <div class="row mt-2">
+    <div class="row mt-2" v-if="!carregandoinfoUsuario">
       <select-floating :placeholder="'É DPO?'" :id="'user-dpo'" :options="optionsAdmin" v-model="editar.dpo"></select-floating>
       <select-floating :placeholder="'Setor'" :id="'user-setor'" :options="optionsSetores" v-model="editar.setor"></select-floating>
     </div>
   </template>
-  <template v-slot:buttons>
+  <template v-slot:buttons v-if="!carregandoinfoUsuario">
         <button class="button-8" @click="closeEditUserModal">Fechar</button>
         <button type="button" class="button-8" @click="submitUser(idSubmitUser)">Executar</button>
   </template>
