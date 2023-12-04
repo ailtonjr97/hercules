@@ -8,6 +8,7 @@ import Login from './components/auth/Login.vue';
 import UsuariosInativos from './components/usuarios/UsuariosInativos.vue';
 import Controladoria from './components/controladoria/Controladoria.vue';
 import Qualidade from './components/qualidade/Qualidade.vue';
+import QualidadeDocumentos from './components/qualidade/QualidadeDocumentos.vue'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -18,6 +19,7 @@ const router = createRouter({
       { path: '/usuarios', component: Usuarios},
       { path: '/controladoria', component: Controladoria, meta: {carregando: true}},
       { path: '/qualidade', component: Qualidade, meta: {carregando: true}},
+      { path: '/qualidade/documentos', component: QualidadeDocumentos, meta: {carregando: true}},
       { path: '/usuarios/inativos', component: UsuariosInativos },
       { path: '/:notFound(.*)', redirect: '/home' }
     ]

@@ -1,6 +1,6 @@
 <template>
 <!-- Modal -->
-<div class="modal" id="modal-name" :style="[close ? {'display': 'none'} : {'display': 'block'}]">
+<div class="modal mb-5" id="modal-name" :style="[close ? {'display': 'none'} : {'display': 'block'}]">
   <div class="modal-sandbox"></div>
   <div class="modal-box">
     <div class="modal-header">
@@ -75,7 +75,8 @@
   position: relative;
   width: 100%;
   max-width: 95%;
-  margin-top: 10%;
+  margin-top: 1%;
+  margin-bottom: 2%;
   margin-left: 2%;
   animation-name: modalbox;
   animation-duration: .4s;

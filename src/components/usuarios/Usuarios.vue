@@ -84,7 +84,6 @@
 
 <script>
 import axios from 'axios';
-import ModalBootstrap from '../ui/ModalBootstrap.vue';
 import Modal from '../ui/Modal.vue';
 import FormFloating from '../ui/FormFloating.vue';
 import SelectFloating from '../ui/SelectFloating.vue';
@@ -100,7 +99,6 @@ let config = {
 
  export default{
   components: {
-    ModalBootstrap,
     Modal,
     FormFloating,
     SelectFloating,
@@ -240,7 +238,6 @@ let config = {
         this.carregandoinfoUsuario = true;
         const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/users/${id}`, config);
         this.editar = response.data[0];
-        console.log(this.editar)
         this.carregandoinfoUsuario = false;
       } catch (error) {
         console.log(error)
