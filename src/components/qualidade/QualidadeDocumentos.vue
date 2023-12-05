@@ -41,8 +41,8 @@
                     <button class="button-8" @click="verDocumento(documento.id)">Visualizar</button>
                     <button class="button-8" @click="openModalEdp(documento.id)" v-if="documento.edp_preenchido == 0 && userSetor == 'Engenharia de Processos'">Preencher EDP</button>
                     <button class="button-8" @click="openModalPcp(documento.id)" v-if="documento.edp_preenchido == 1 && documento.pcp_preenchido == 0 && userSetor == 'PCP'">Preencher PCP</button>
-                    <button class="button-8" @click="openModalEdp(documento.id)" v-if="documento.pcp_preenchido == 1 && documento.producao_preenchido == 0 && userSetor == 'Producao'">Preencher Produção</button>
-                    <button class="button-8" @click="openModalEdp(documento.id)" v-if="documento.producao_preenchido == 1 && userSetor == 'Qualidade'">Preencher Qualidade</button>
+                    <button class="button-8" @click="openModalProducao(documento.id)" v-if="documento.pcp_preenchido == 1 && documento.producao_preenchido == 0 && userSetor == 'Producao'">Preencher Produção</button>
+                    <button class="button-8" @click="openModalQualidade(documento.id)" v-if="documento.producao_preenchido == 1 && documento.qualidade_preenchido == 0 && userSetor == 'Qualidade'">Preencher Qualidade</button>
                 </td>
                 </tr>
             </tbody>
@@ -184,6 +184,29 @@
         </template>
     </modal>
 
+    <modal v-if="modalProducao" :title="'Produção:'">
+        <template v-slot:body>
+            <loading v-if="carregandoinfo"></loading>
+            <div class="row" v-if="!carregandoinfo">
+                <form-floating :placeholder="'Tempo Realizado:'" :id="'prod_tempo_realizado'" :type="'text'" v-model="modalProducaoBody.prod_tempo_realizado"></form-floating>
+                <form-floating :placeholder="'Insumos:'" :id="'prod_insumos'" :type="'text'" v-model="modalProducaoBody.prod_insumos"></form-floating>
+                <form-floating :placeholder="'Sucata:'" :id="'prod_sucata'" :type="'text'" v-model="modalProducaoBody.prod_sucata"></form-floating>
+            </div>
+            <div class="row mt-2" v-if="!carregandoinfo">
+                <select-floating :placeholder="'Responsável:'" :id="'prod_responsavel'" :options="producao_responsaveis" v-model="modalProducaoBody.prod_responsavel"></select-floating>
+                <form-floating :placeholder="'Data:'" :id="'prod_data'" :type="'date'" v-model="modalProducaoBody.prod_data"></form-floating>
+                <select-floating :placeholder="'Status:'" :id="'prod_status'" :options="[{valor: 'OK', descri: 'OK'}, {valor: 'Nao OK', descri: 'Nao OK'}, {valor: 'N/A', descri: 'N/A'}]" v-model="modalProducaoBody.prod_status"></select-floating>
+            </div>
+            <div class="row mt-2" v-if="!carregandoinfo">
+                <textarea-floating :placeholder="'Observações da Produção:'" :id="'pcp_obs'" v-model="modalProducaoBody.prod_obs"></textarea-floating>
+            </div>
+        </template>
+        <template v-slot:buttons v-if="!carregandoinfo">
+            <button class="button-8" @click="closeModalProducao">Fechar</button>
+            <button class="button-8" @click="enviarProducao">Executar</button>
+        </template>
+    </modal>
+
 
     
     </template>
@@ -223,6 +246,7 @@
                 whereId: null,
                 modalEdp: false,
                 modalPcp: false,
+                modalProducao: false,
                 modalNovoDocumento: false,
                 carregando: true,
                 documentos: [],
@@ -257,6 +281,15 @@
                     pcp_responsavel: '',
                     pcp_data: '',
                     pcp_obs: ''
+                },
+                modalProducaoBody: {
+                    prod_tempo_realizado: '',
+                    prod_insumos: '',
+                    prod_sucata: '',
+                    prod_obs: '',
+                    prod_responsavel: '',
+                    prod_data: '',
+                    prod_status: ''
                 },
             }
         },
@@ -317,12 +350,36 @@
                 response.data.forEach(element => {
                     this.pcp_responsaveis.push({descri: element.name, valor: element.name})
                 });
-                console.log(this.pcp_responsaveis)
                 this.carregandoinfo = false;
             },
             async closeModalPcp(){
                 this.modalPcp = false;
                 this.pcp_responsaveis = [];
+            },
+            async enviarProducao(){
+                try {
+                    this.closeModalProducao();
+                    await axios.post(`${import.meta.env.VITE_BACKEND_IP}/qualidade/documentos/editarProducao/${this.whereId}`, this.modalProducaoBody, config);
+                    this.pageRefresh();
+                } catch (error) {
+                    console.log(error)
+                    alert("Falha ao preenchar campos da Produção.");
+                    this.carregando = false;
+                }
+            },
+            async openModalProducao(id){
+                this.whereId = id;
+                this.carregandoinfo = true;
+                this.modalProducao = true;
+                const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/qualidade/inspetores/${'Producao'}`, config);
+                response.data.forEach(element => {
+                    this.producao_responsaveis.push({descri: element.name, valor: element.name})
+                });
+                this.carregandoinfo = false;
+            },
+            async closeModalProducao(){
+                this.modalProducao = false;
+                this.producao_responsaveis = [];
             },
             async pageRefresh(){
                 try {

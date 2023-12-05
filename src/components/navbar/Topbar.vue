@@ -25,26 +25,22 @@
 </template>
 
 <script>
-import axios from 'axios';
-
 export default{
     data(){
         return{
             isAdmin: 0
         }
     },
-	computed: {
-		goHome(){
+    methods: {
+		async goHome(){
 			this.$router.push('/home')
 		},
-		goUsuarios(){
+		async goUsuarios(){
 			this.$router.push('/usuarios')
 		},
-		goQualidade(){
+		async goQualidade(){
 			this.$router.push('/qualidade')
-		}
-	},
-    methods: {
+		},
         async logout(){
             document.cookie = "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
             this.$router.push('/login');
@@ -58,7 +54,7 @@ export default{
 	 display: inline-block;
 	 min-height: 100vh;
 	 width: 50px;
-	 background-color: #22577a;
+	 background-color: #00253d;
 	 float: left;
 }
  .sidebar-navigation ul {

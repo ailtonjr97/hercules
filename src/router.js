@@ -67,7 +67,7 @@ router.beforeEach(async function(to, from, next) {
           if(isAdmin != 0){
             return next();
           }else{
-            return next(from.path);
+            return next('/home');
           }
         }
         return next();

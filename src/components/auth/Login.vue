@@ -21,8 +21,11 @@
       </div>
     </div>
   </div>
-  <modal v-if="error" :title="'Erro:'" :body="'Credenciais incorretas.'">
-    <template v-slot:close><button class="button-8" @click="close">Fechar</button></template>
+  <modal v-if="error" :title="'Erro:'">
+    <template v-slot:body>
+      <h5>Credenciais incorretas</h5>
+    </template>
+    <template v-slot:buttons><button class="button-8" @click="close">Fechar</button></template>
   </modal>
 </template>
 
@@ -53,21 +56,15 @@ export default{
             try {
                 this.logador = true;
                 const response = await axios.post(`${import.meta.env.VITE_BACKEND_IP}/auth/login`, this.form);
-                console.log(response.data)
-                if(document.cookie.length == 0){
-                  document.cookie = `jwt=${response.data}`;
-                }
+                document.cookie = `jwt=${response.data}`;
                 setTimeout(()=>{
                   this.$router.push('/home')
                 }, 2000)
             } catch (error) {
-              if(error.response.status == 404){
+              if(error.response.status == 404 || error.response.status == 401){
                 this.error = true;
                 this.logador = false;
-              }else if (error.response.status == 401){
-                this.error = true;
-                this.logador = false;
-              }else{
+              }else if (error.response.status == 500){
                 alert("Erro na autenticação. Favor tentar novamente.")
                 location.reload();
                 console.log(error)
