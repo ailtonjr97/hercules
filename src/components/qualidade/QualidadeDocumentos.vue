@@ -39,7 +39,10 @@
             </td>
             <td>
                 <button class="button-8" @click="verDocumento(documento.id)">Visualizar</button>
-                <button class="button-8" @click="openModalEdp(documento.id)">Preencher EDP</button>
+                <button class="button-8" @click="openModalEdp(documento.id)" v-if="documento.edp_preenchido == 0 && userSetor == 'Engenharia de Processos'">Preencher EDP</button>
+                <button class="button-8" @click="openModalEdp(documento.id)" v-if="documento.edp_preenchido == 1 && userSetor == 'PCP'">Preencher PCP</button>
+                <button class="button-8" @click="openModalEdp(documento.id)" v-if="documento.pcp_preenchido == 1 && userSetor == 'Producao'">Preencher Produção</button>
+                <button class="button-8" @click="openModalEdp(documento.id)" v-if="documento.producao_preenchido == 1 && userSetor == 'Qualidade'">Preencher Qualidade</button>
             </td>
             </tr>
         </tbody>
@@ -53,64 +56,64 @@
     <div v-if="!carregandoinfo">
         <div class="row">
             <h3>Qualidade:</h3>
-            <form-floating :placeholder="'Data:'" :id="'data'" :type="'date'" v-model="visualizar.data" :readonly="true"></form-floating>
-            <form-floating :placeholder="'Inspetor:'" :id="'inspetor'" :type="'text'" v-model="visualizar.inspetor" :readonly="true"></form-floating>
-            <form-floating :placeholder="'Código Produto:'" :id="'cod_prod'" :type="'text'" v-model="visualizar.cod_prod" :readonly="true"></form-floating>
-            <form-floating :placeholder="'Descrição:'" :id="'descri'" :type="'text'" v-model="visualizar.descri" :readonly="true"></form-floating>
+            <form-floating :placeholder="'Data:'" :id="'data'" :type="'date'" v-model="visualizar.data" ></form-floating>
+            <form-floating :placeholder="'Inspetor:'" :id="'inspetor'" :type="'text'" v-model="visualizar.inspetor" ></form-floating>
+            <form-floating :placeholder="'Código Produto:'" :id="'cod_prod'" :type="'text'" v-model="visualizar.cod_prod" ></form-floating>
+            <form-floating :placeholder="'Descrição:'" :id="'descri'" :type="'text'" v-model="visualizar.descri" ></form-floating>
         </div>
         <div class="row mt-2" v-if="!carregandoinfo">
-            <form-floating :placeholder="'Lote/ODF:'" :id="'lote_odf'" :type="'text'" v-model="visualizar.lote_odf" :readonly="true"></form-floating>
-            <form-floating :placeholder="'Lance:'" :id="'lance'" :type="'text'" v-model="visualizar.lance" :readonly="true"></form-floating>
-            <form-floating :placeholder="'Quantidade Metragem:'" :id="'quantidade_metragem'" :type="'text'" v-model="visualizar.quantidade_metragem" :readonly="true"></form-floating>
-            <form-floating :placeholder="'CPNC Número:'" :id="'cpnc_numero'" :type="'text'" v-model="visualizar.cpnc_numero" :readonly="true"></form-floating>
+            <form-floating :placeholder="'Lote/ODF:'" :id="'lote_odf'" :type="'text'" v-model="visualizar.lote_odf" ></form-floating>
+            <form-floating :placeholder="'Lance:'" :id="'lance'" :type="'text'" v-model="visualizar.lance" ></form-floating>
+            <form-floating :placeholder="'Quantidade Metragem:'" :id="'quantidade_metragem'" :type="'text'" v-model="visualizar.quantidade_metragem" ></form-floating>
+            <form-floating :placeholder="'CPNC Número:'" :id="'cpnc_numero'" :type="'text'" v-model="visualizar.cpnc_numero" ></form-floating>
         </div>
         <div class="row mt-2" v-if="!carregandoinfo">
-            <textarea-floating :placeholder="'Motivo da NC:'" :id="'motivo_nc'" v-model="visualizar.motivo_nc" :readonly="true"></textarea-floating>
+            <textarea-floating :placeholder="'Motivo da NC:'" :id="'motivo_nc'" v-model="visualizar.motivo_nc" ></textarea-floating>
             <hr class="mt-2">
         </div>
         <div class="row">
             <h3>EDP:</h3>
-            <form-floating :placeholder="'Responsável:'" :id="'edp_responsavel'" :type="'text'" v-model="visualizar.edp_responsavel" :readonly="true"></form-floating>
-            <form-floating :placeholder="'Data:'" :id="'edp_data'" :type="'date'" v-model="visualizar.edp_data" :readonly="true"></form-floating>
-            <form-floating :placeholder="'Tempo Previsto:'" :id="'tempo_previsto'" :type="'text'" v-model="visualizar.tempo_previsto" :readonly="true"></form-floating>
+            <form-floating :placeholder="'Responsável:'" :id="'edp_responsavel'" :type="'text'" v-model="visualizar.edp_responsavel" ></form-floating>
+            <form-floating :placeholder="'Data:'" :id="'edp_data'" :type="'date'" v-model="visualizar.edp_data" ></form-floating>
+            <form-floating :placeholder="'Tempo Previsto:'" :id="'tempo_previsto'" :type="'text'" v-model="visualizar.tempo_previsto" ></form-floating>
         </div>
         <div class="row mt-2" v-if="!carregandoinfo">
-            <textarea-floating :placeholder="'Motivo da NC:'" :id="'instrucao_reprocesso'" v-model="visualizar.instrucao_reprocesso" :readonly="true"></textarea-floating>
+            <textarea-floating :placeholder="'Motivo da NC:'" :id="'instrucao_reprocesso'" v-model="visualizar.instrucao_reprocesso" ></textarea-floating>
             <hr class="mt-2">
         </div>
         <div class="row">
             <h3>PCP:</h3>
-            <form-floating :placeholder="'Responsável:'" :id="'pcp_responsavel'" :type="'text'" v-model="visualizar.pcp_responsavel" :readonly="true"></form-floating>
-            <form-floating :placeholder="'Data:'" :id="'pcp_data'" :type="'date'" v-model="visualizar.pcp_data" :readonly="true"></form-floating>
-            <form-floating :placeholder="'ODF Retrabalho:'" :id="'pcp_odf_retrabalho'" :type="'text'" v-model="visualizar.pcp_odf_retrabalho" :readonly="true"></form-floating>
+            <form-floating :placeholder="'Responsável:'" :id="'pcp_responsavel'" :type="'text'" v-model="visualizar.pcp_responsavel" ></form-floating>
+            <form-floating :placeholder="'Data:'" :id="'pcp_data'" :type="'date'" v-model="visualizar.pcp_data" ></form-floating>
+            <form-floating :placeholder="'ODF Retrabalho:'" :id="'pcp_odf_retrabalho'" :type="'text'" v-model="visualizar.pcp_odf_retrabalho" ></form-floating>
         </div>
         <div class="row mt-2" v-if="!carregandoinfo">
-            <textarea-floating :placeholder="'Motivo da NC:'" :id="'instrucao_reprocesso'" v-model="visualizar.instrucao_reprocesso" :readonly="true"></textarea-floating>
+            <textarea-floating :placeholder="'Motivo da NC:'" :id="'instrucao_reprocesso'" v-model="visualizar.instrucao_reprocesso" ></textarea-floating>
             <hr class="mt-2">
         </div>
         <div class="row">
             <h3>Produção:</h3>
-            <form-floating :placeholder="'Tempo Realizado:'" :id="'prod_tempo_realizado'" :type="'text'" v-model="visualizar.prod_tempo_realizado" :readonly="true"></form-floating>
-            <form-floating :placeholder="'Insumos:'" :id="'prod_insumos'" :type="'text'" v-model="visualizar.prod_insumos" :readonly="true"></form-floating>
-            <form-floating :placeholder="'Sucata:'" :id="'prod_sucata'" :type="'text'" v-model="visualizar.prod_sucata" :readonly="true"></form-floating>
+            <form-floating :placeholder="'Tempo Realizado:'" :id="'prod_tempo_realizado'" :type="'text'" v-model="visualizar.prod_tempo_realizado" ></form-floating>
+            <form-floating :placeholder="'Insumos:'" :id="'prod_insumos'" :type="'text'" v-model="visualizar.prod_insumos" ></form-floating>
+            <form-floating :placeholder="'Sucata:'" :id="'prod_sucata'" :type="'text'" v-model="visualizar.prod_sucata" ></form-floating>
         </div>
         <div class="row mt-2">
-            <form-floating :placeholder="'Responsável:'" :id="'prod_responsavel'" :type="'text'" v-model="visualizar.prod_responsavel" :readonly="true"></form-floating>
-            <form-floating :placeholder="'Data:'" :id="'prod_data'" :type="'date'" v-model="visualizar.prod_data" :readonly="true"></form-floating>
-            <form-floating :placeholder="'Status:'" :id="'prod_status'" :type="'text'" v-model="visualizar.prod_status" :readonly="true"></form-floating>
+            <form-floating :placeholder="'Responsável:'" :id="'prod_responsavel'" :type="'text'" v-model="visualizar.prod_responsavel" ></form-floating>
+            <form-floating :placeholder="'Data:'" :id="'prod_data'" :type="'date'" v-model="visualizar.prod_data" ></form-floating>
+            <form-floating :placeholder="'Status:'" :id="'prod_status'" :type="'text'" v-model="visualizar.prod_status" ></form-floating>
         </div>
         <div class="row mt-2" v-if="!carregandoinfo">
-            <textarea-floating :placeholder="'Observações da Produção:'" :id="'prod_obs'" v-model="visualizar.prod_obs" :readonly="true"></textarea-floating>
+            <textarea-floating :placeholder="'Observações da Produção:'" :id="'prod_obs'" v-model="visualizar.prod_obs" ></textarea-floating>
             <hr class="mt-2">
         </div>
         <div class="row">
             <h3>Qualidade:</h3>
-            <form-floating :placeholder="'Responsável:'" :id="'quali_responsavel'" :type="'text'" v-model="visualizar.quali_responsavel" :readonly="true"></form-floating>
-            <form-floating :placeholder="'Data:'" :id="'quali_data'" :type="'date'" v-model="visualizar.quali_data" :readonly="true"></form-floating>
-            <form-floating :placeholder="'Status:'" :id="'quali_status'" :type="'text'" v-model="visualizar.quali_status" :readonly="true"></form-floating>
+            <form-floating :placeholder="'Responsável:'" :id="'quali_responsavel'" :type="'text'" v-model="visualizar.quali_responsavel" ></form-floating>
+            <form-floating :placeholder="'Data:'" :id="'quali_data'" :type="'date'" v-model="visualizar.quali_data" ></form-floating>
+            <form-floating :placeholder="'Status:'" :id="'quali_status'" :type="'text'" v-model="visualizar.quali_status" ></form-floating>
         </div>
         <div class="row mt-2" v-if="!carregandoinfo">
-            <textarea-floating :placeholder="'Observações da Qualidade:'" :id="'quali_parecer'" v-model="visualizar.quali_parecer" :readonly="true"></textarea-floating>
+            <textarea-floating :placeholder="'Observações da Qualidade:'" :id="'quali_parecer'" v-model="visualizar.quali_parecer" ></textarea-floating>
             <hr class="mt-2">
         </div>
     </div>
@@ -149,12 +152,12 @@
     <template v-slot:body>
         <loading v-if="carregandoinfo"></loading>
         <div class="row" v-if="!carregandoinfo">
-            <select-floating :placeholder="'Responsável'" :id="'edp_responsavel'" :options="edp_responsaveis" v-model="modalEdpBody.responsavel"></select-floating>
+            <select-floating :placeholder="'Responsável:'" :id="'edp_responsavel'" :options="edp_responsaveis" v-model="modalEdpBody.edp_responsavel"></select-floating>
             <form-floating :placeholder="'Data:'" :id="'edp_data'" :type="'date'" v-model="modalEdpBody.edp_data"></form-floating>
             <form-floating :placeholder="'Tempo Previsto:'" :id="'tempo_previsto'" :type="'text'" v-model="modalEdpBody.tempo_previsto"></form-floating>
         </div>
         <div class="row mt-2" v-if="!carregandoinfo">
-            <textarea-floating :placeholder="'Motivo da NC:'" :id="'instrucao_reprocesso'" v-model="modalEdpBody.instrucao_reprocesso"></textarea-floating>
+            <textarea-floating :placeholder="'Instrução de Reprocesso:'" :id="'instrucao_reprocesso'" v-model="modalEdpBody.instrucao_reprocesso"></textarea-floating>
         </div>
     </template>
     <template v-slot:buttons v-if="!carregandoinfo">
@@ -178,7 +181,7 @@ import TextareaFloating from '../ui/TextareaFloating.vue';
 
 const config = {
     headers: {
-    'Authorization': document.cookie.replace('jwt=', ''),
+    'Authorization': document.cookie,
     }
 }
 
@@ -194,6 +197,8 @@ export default {
     },
     data(){
         return{
+            userSetor: null,
+            whereId: null,
             modalEdp: false,
             modalNovoDocumento: false,
             carregando: true,
@@ -225,14 +230,23 @@ export default {
     },
     methods: {
         async enviarEdp(){
-
+            try {
+                this.closeModalEdp();
+                await axios.post(`${import.meta.env.VITE_BACKEND_IP}/qualidade/documentos/editarEdp/${this.whereId}`, this.modalEdpBody, config);
+                this.pageRefresh();
+            } catch (error) {
+                console.log(error)
+                alert("Falha ao preenchar campos do EDP.");
+                this.carregando = false;
+            }
         },
-        async openModalEdp(){
+        async openModalEdp(id){
+            this.whereId = id;
             this.carregandoinfo = true;
             this.modalEdp = true;
             const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/qualidade/inspetores/${'Engenharia de Processos'}`, config);
             response.data.forEach(element => {
-                this.edp_responsaveis.push({descri: element.name})
+                this.edp_responsaveis.push({descri: element.name, valor: element.name})
             });
             this.carregandoinfo = false;
         },
@@ -251,6 +265,9 @@ export default {
                 var self = this;
                 Object.keys(this.criar).forEach(function(key, index) {
                     self.criar[key] = '';
+                });
+                Object.keys(this.modalEdpBody).forEach(function(key, index) {
+                    self.modalEdpBody[key] = '';
                 });
             } catch (error) {
                console.log(error)
@@ -310,16 +327,19 @@ export default {
         try {
             const config = {
                 headers: {
-                'Authorization': document.cookie.replace('jwt=', ''),
+                'Authorization': document.cookie,
                 }
             }
+            const loggedIn = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/auth/logado`, config);
+            this.userSetor = loggedIn.data[0].setor;
             const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/qualidade/documentos/get_all`, config);
             this.documentos = response.data;
-            this.resultados = response.data.length
+            this.resultados = response.data.length;
             this.fullLoad = true;
             this.carregando = false;
         } catch (error) {
-            alert("Erro ao carregar página. Favor tentar mais tarde.")
+            console.log(error)
+            alert("Erro ao carregar página. Favor tentar mais tarde.");
             this.carregando = false;
         }
     }

@@ -34,8 +34,13 @@ router.beforeEach(async function(to, from, next) {
     if(document.cookie == 0){
       return next('/login')
     }else{
-      var jwt = document.cookie.replace('jwt=','');
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/auth/verify-jwt/${jwt}`);
+      const token = document.cookie
+      let config = {
+          headers: {
+              'Authorization': token
+          }
+      }
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/auth/verify-jwt`, config);
       if(response.status == 200){
         loggedIn = true;
       }else{
@@ -46,7 +51,7 @@ router.beforeEach(async function(to, from, next) {
         return next('/login');
       } else if (loggedIn) {
         if(to.path == '/usuarios'){
-          const token = document.cookie.replace('jwt=', '')
+          const token = document.cookie
           let config = {
               headers: {
                   'Authorization': token

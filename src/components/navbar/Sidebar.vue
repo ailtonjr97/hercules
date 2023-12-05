@@ -61,17 +61,13 @@ export default{
         }
     },
     async created(){
-        this.carregando = true;
-        const token = document.cookie.replace('jwt=', '')
-        let config = {
+        const config = {
             headers: {
-                'Authorization': token
+            'Authorization': document.cookie,
             }
         }
-        const decoded = jwtDecode(token);
-
-        const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/users/${decoded.id}`, config)
-        this.isAdmin = response.data[0].admin        
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/auth/logado`, config)
+        this.isAdmin = response.data[0].admin;
     }
 }
 

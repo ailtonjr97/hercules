@@ -36,6 +36,7 @@ export default{
   },
     data(){
         return {
+          reload: 1,
           error: false,
           logador: false,
             form: {
@@ -52,7 +53,9 @@ export default{
             try {
                 this.logador = true;
                 const response = await axios.post(`${import.meta.env.VITE_BACKEND_IP}/auth/login`, this.form);
-                document.cookie = `jwt=${response.data}`;
+                if(document.cookie.length == 0){
+                  document.cookie = `jwt=${response.data}`;
+                }
                 setTimeout(()=>{
                   this.$router.push('/home')
                 }, 2000)
@@ -66,7 +69,7 @@ export default{
               }
             }
         }
-    }
+    },
 }
 </script>
 

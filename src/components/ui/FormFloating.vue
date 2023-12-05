@@ -27,8 +27,8 @@
                 default: "Inserir tipo do input"
             },
             modelValue: {
-                type: String,
-                required: true,
+                type: null,
+                required: false,
             },
             readonly: {
                 type: Boolean,

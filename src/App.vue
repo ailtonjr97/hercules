@@ -2,7 +2,7 @@
   <sidebar v-if="!$route.meta.hideNavbar">
     <template v-slot:content><router-view></router-view></template>
   </sidebar>
-  <router-view v-else></router-view>
+  <router-view v-if="$route.meta.hideNavbar"></router-view>
 </template>
 
 <script>
