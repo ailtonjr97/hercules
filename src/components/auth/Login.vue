@@ -53,6 +53,7 @@ export default{
             try {
                 this.logador = true;
                 const response = await axios.post(`${import.meta.env.VITE_BACKEND_IP}/auth/login`, this.form);
+                console.log(response.data)
                 if(document.cookie.length == 0){
                   document.cookie = `jwt=${response.data}`;
                 }
@@ -66,6 +67,10 @@ export default{
               }else if (error.response.status == 401){
                 this.error = true;
                 this.logador = false;
+              }else{
+                alert("Erro na autenticação. Favor tentar novamente.")
+                location.reload();
+                console.log(error)
               }
             }
         }

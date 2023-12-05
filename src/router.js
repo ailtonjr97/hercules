@@ -34,6 +34,10 @@ router.beforeEach(async function(to, from, next) {
     if(document.cookie == 0){
       return next('/login')
     }else{
+      function delete_cookie(name) {
+        document.cookie = name +'=; Path=/qualidade; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+      }
+      delete_cookie('jwt')
       const token = document.cookie
       let config = {
           headers: {

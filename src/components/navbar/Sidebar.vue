@@ -57,7 +57,7 @@ export default{
     methods: {
         async logout(){
             document.cookie = "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
-            this.$router.push('/login')
+            this.$router.push('/login');
         }
     },
     async created(){

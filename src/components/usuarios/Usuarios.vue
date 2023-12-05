@@ -1,47 +1,46 @@
 <template >
-<div v-if="carregando" id="loading"></div>
-<div v-if="fullLoad">
-  <table-top :resultados="resultados">
-      <template v-slot:tableButtons>
-        <button class="button-8 mb-2" @click="openNewUserModal">Novo Usuário</button>
-        <router-link class="button-8 mb-2" to="/usuarios/inativos">Inativos</router-link>
-      </template>
-  </table-top>
-  <div class="row mb-2">
-    <table-search :id="'procuraBtn0'" :num="0" :placeholder="'ID:'"></table-search>
-    <table-search :id="'procuraBtn1'" :num="1" :placeholder="'Nome:'"></table-search>
-  </div>
-  <div class="table-wrapper table-responsive table-striped">
-    <table class="fl-table" id="myTable">
-      <thead>
-        <tr style="height: 25px">
-          <th>ID</th>
-          <th>Nome</th>
-          <th>E-mail</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="usuario in usuarios" :key="usuario.id">
-          <td>
-            <p>{{ usuario.id }}</p>
-          </td>
-          <td>
-            <p>{{ usuario.name }}</p>
-          </td>
-          <td>
-            <p>{{ usuario.email }}</p>
-          </td>
-          <td style="padding-bottom: 15px;">
-            <button class="button-8" @click="infoEditarModal(usuario.id)">Editar</button>
-            <button class="button-8" @click="inactivate(usuario.id)">Inativar</button>
-            <button class="button-8" @click="passwordReset(usuario.id)">Resetar Senha</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
+      <div v-if="carregando" id="loading"></div>
+      <div v-if="fullLoad">
+        <table-top :resultados="resultados">
+            <template v-slot:tableButtons>
+              <button class="button-8 mb-2" @click="openNewUserModal">Novo Usuário</button>
+            </template>
+        </table-top>
+        <div class="row mb-2">
+          <table-search :id="'procuraBtn0'" :num="0" :placeholder="'ID:'"></table-search>
+          <table-search :id="'procuraBtn1'" :num="1" :placeholder="'Nome:'"></table-search>
+        </div>
+        <div class="table-wrapper table-responsive table-striped">
+          <table class="fl-table" id="myTable">
+            <thead>
+              <tr style="height: 25px">
+                <th>ID</th>
+                <th>Nome</th>
+                <th>E-mail</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="usuario in usuarios" :key="usuario.id">
+                <td>
+                  <p>{{ usuario.id }}</p>
+                </td>
+                <td>
+                  <p>{{ usuario.name }}</p>
+                </td>
+                <td>
+                  <p>{{ usuario.email }}</p>
+                </td>
+                <td style="padding-bottom: 15px;">
+                  <button class="button-8" @click="infoEditarModal(usuario.id)">Editar</button>
+                  <button class="button-8" @click="inactivate(usuario.id)">Inativar</button>
+                  <button class="button-8" @click="passwordReset(usuario.id)">Resetar Senha</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
 
 <modal v-if="editUserModal" :title="'Editar usuário'">
   <template v-slot:body>
@@ -90,6 +89,7 @@ import SelectFloating from '../ui/SelectFloating.vue';
 import Loading from '../ui/Loading.vue';
 import TableTop from '../ui/TableTop.vue';
 import TableSearch from '../ui/TableSearch.vue';
+import Topbar from '../navbar/Topbar.vue';
 
 let config = {
   headers: {
@@ -99,6 +99,7 @@ let config = {
 
  export default{
   components: {
+    Topbar,
     Modal,
     FormFloating,
     SelectFloating,

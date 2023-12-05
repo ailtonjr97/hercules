@@ -1,11 +1,11 @@
 <template>
-<div class="row mt-2">
-    <div class="col-md-4">
+<div class="row" style="position: relative;">
+    <div class="col-md-4 mt-2">
         <slot name="tableButtons"></slot>
     </div>
-    <div class="col-lg-6">
+    <div class="col-lg-6 mt-2">
     </div>
-    <div class="col-sm-2">
+    <div class="col-sm-2 mt-2">
         <button type="button" class="button-8" id="result" style="float: right; margin-right: 0;">
         <span class="counter-value">{{ resultados }}</span>
         resultados
@@ -25,8 +25,3 @@
         }
     }
 </script>
-
-<!-- <div class="col-md-4">
-    <button class="button-8 mb-2" @click="openNewUserModal">Novo Usuário</button>
-    <router-link class="button-8 mb-2" to="/usuarios/inativos">Inativos</router-link>
-</div> -->
