@@ -54,6 +54,7 @@
                     <button class="button-8" @click="openModalQualidade(documento.id)" v-if="documento.producao_preenchido == 1 && documento.qualidade_preenchido == 0 && userSetor == 'Qualidade'">Preencher Qualidade</button>
                     <button class="button-8" @click="openModalNc(documento.id)" v-if="documento.motivo_nc_preenchido == 0">Motivo NC</button>
                     <button class="button-8" @click="inactivateDocument(documento.id)" v-if="documento.edp_preenchido == 1 && documento.pcp_preenchido == 1 && documento.producao_preenchido == 1 && documento.qualidade_preenchido == 1 && documento.motivo_nc_preenchido == 1">Arquivar</button>
+                    <button class="button-8" @click="openAnexoModal(documento.id)">Anexos</button>
                 </td>
                 </tr>
             </tbody>
@@ -165,7 +166,7 @@
                 <form-floating :placeholder="'Tempo Previsto:'" :id="'tempo_previsto'" :type="'text'" v-model="modalEdpBody.tempo_previsto"></form-floating>
             </div>
             <div class="row mt-2" v-if="!carregandoinfo">
-                <anex-floating :id="'edp_anexo'" :type="'file'"></anex-floating>
+                <input type="file" @change="uploadFile" ref="file">
             </div>
             <div class="row mt-2" v-if="!carregandoinfo">
                 <textarea-floating :placeholder="'Instrução de Reprocesso:'" :id="'instrucao_reprocesso'" v-model="modalEdpBody.instrucao_reprocesso"></textarea-floating>
@@ -248,6 +249,18 @@
             <button class="button-8" @click="enviarNc">Executar</button>
         </template>
     </modal>
+
+    <modal v-if="anexosModal" :title="'Anexos:'">
+        <template v-slot:body>
+            <loading v-if="carregandoinfo"></loading>
+            <div class="row mt-2" v-if="!carregandoinfo">
+                <a :href="anexoEndereco"> {{ anexoEndereco }}</a>
+            </div>
+        </template>
+        <template v-slot:buttons v-if="!carregandoinfo">
+            <button class="button-8" @click="closeAnexoModal">Fechar</button>
+        </template>
+    </modal>
     
     </template>
     
@@ -284,6 +297,9 @@
         },
         data(){
             return{
+                anexoEndereco: '',
+                anexosModal: false,
+                images: null,
                 userSetor: null,
                 whereId: null,
                 modalEdp: false,
@@ -318,7 +334,6 @@
                     instrucao_reprocesso: '',
                     edp_responsavel: '',
                     edp_data: '',
-                    edp_anexo: ''
                 },
                 modalPcpBody: {
                     pcp_odf_retrabalho: '',
@@ -347,6 +362,27 @@
             }
         },
         methods: {
+            async openAnexoModal(id){
+                try {
+                    this.whereId = id;
+                    this.carregandoinfo = true;
+                    this.anexosModal = true;
+                    const config = {
+                        headers: {
+                        'Authorization': document.cookie,
+                        }
+                    }
+                    const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/qualidade/documentos/${this.whereId}`, config);
+                    this.anexoEndereco = response.data[0].edp_anexo
+                    this.carregandoinfo = false;
+                } catch (error) {
+                    console.log(error)
+                    alert("Falha ao abrir anexos. Favor tentar mais tarde.")
+                }
+            },
+            async closeAnexoModal(){
+                this.anexosModal = false;
+            },
             async inactivateDocument(id){
                 try {
                     await axios.get(`${import.meta.env.VITE_BACKEND_IP}/qualidade/documentos/inactivate/${id}`, config);
@@ -381,16 +417,26 @@
                 this.modalEdp = false;
                 this.edp_responsaveis = [];
             },
+            async uploadFile() {
+                this.Images = this.$refs.file.files[0];
+            },
+            async submitFile() {
+                const formData = new FormData();
+                formData.append('edp_anexo', this.Images);
+                const headers = { 'Content-Type': 'multipart/form-data', 'Authorization': document.cookie };
+                await axios.post(`${import.meta.env.VITE_BACKEND_IP}/qualidade/documentos/editarEdpAnexo/${this.whereId}`, formData, { headers });
+            },
             async enviarEdp(){
                 try {
                     const config = {
                         headers: {
-                        'Content-Type': 'multipart/form-data',
                         'Authorization': document.cookie,
                         }
                     }
                     this.closeModalEdp();
+                    console.log(this.modalEdpBody)
                     await axios.post(`${import.meta.env.VITE_BACKEND_IP}/qualidade/documentos/editarEdp/${this.whereId}`, this.modalEdpBody, config);
+                    this.submitFile();
                     this.pageRefresh();
                 } catch (error) {
                     console.log(error)
