@@ -7,7 +7,7 @@
 		</li>
 		<li @click="goQualidade">
 			<i class="fa-solid fa-file-circle-check" style="margin-left: 10%;"></i>
-			<span class="tooltip">Quali.</span>
+			<span class="tooltip">Qualidade</span>
 		</li>
 		<li @click="goUsuarios">
 			<i class="fa-solid fa-user"></i>

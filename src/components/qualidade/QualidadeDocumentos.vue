@@ -207,7 +207,23 @@
         </template>
     </modal>
 
-
+    <modal v-if="modalQualidade" :title="'Qualidade:'">
+        <template v-slot:body>
+            <loading v-if="carregandoinfo"></loading>
+            <div class="row" v-if="!carregandoinfo">
+                <select-floating :placeholder="'Responsável:'" :id="'quali_responsavel'" :options="qualidade_responsaveis" v-model="modalQualidadeBody.quali_responsavel"></select-floating>
+                <form-floating :placeholder="'Data:'" :id="'quali_data'" :type="'date'" v-model="modalQualidadeBody.quali_data"></form-floating>
+                <select-floating :placeholder="'Status:'" :id="'quali_status'" :options="[{valor: 'OK', descri: 'OK'}, {valor: 'Nao OK', descri: 'Nao OK'}, {valor: 'N/A', descri: 'N/A'}]" v-model="modalQualidadeBody.quali_status"></select-floating>
+            </div>
+            <div class="row mt-2" v-if="!carregandoinfo">
+                <textarea-floating :placeholder="'Parecer da Qualidade:'" :id="'quali_parecer'" v-model="modalQualidadeBody.quali_parecer"></textarea-floating>
+            </div>
+        </template>
+        <template v-slot:buttons v-if="!carregandoinfo">
+            <button class="button-8" @click="closeModalQualidade">Fechar</button>
+            <button class="button-8" @click="enviarQualidade">Executar</button>
+        </template>
+    </modal>
     
     </template>
     
@@ -247,6 +263,7 @@
                 modalEdp: false,
                 modalPcp: false,
                 modalProducao: false,
+                modalQualidade: false,
                 modalNovoDocumento: false,
                 carregando: true,
                 documentos: [],
@@ -291,6 +308,12 @@
                     prod_data: '',
                     prod_status: ''
                 },
+                modalQualidadeBody: {
+                    quali_parecer: '',
+                    quali_responsavel: '',
+                    quali_data: '',
+                    quali_status: '',
+                },
             }
         },
         methods: {
@@ -331,14 +354,50 @@
                 this.modalEdp = false;
                 this.edp_responsaveis = [];
             },
-            async enviarPcp(){
+            async enviarEdp(){
                 try {
-                    this.closeModalPcp();
-                    await axios.post(`${import.meta.env.VITE_BACKEND_IP}/qualidade/documentos/editarPcp/${this.whereId}`, this.modalPcpBody, config);
+                    this.closeModalEdp();
+                    await axios.post(`${import.meta.env.VITE_BACKEND_IP}/qualidade/documentos/editarEdp/${this.whereId}`, this.modalEdpBody, config);
                     this.pageRefresh();
                 } catch (error) {
                     console.log(error)
-                    alert("Falha ao preenchar campos do PCP.");
+                    alert("Falha ao preenchar campos do EDP.");
+                    this.carregando = false;
+                }
+            },
+            async openModalQualidade(id){
+                try {
+                    this.whereId = id;
+                    this.carregandoinfo = true;
+                    this.modalQualidade = true;
+                    const config = {
+                        headers: {
+                        'Authorization': document.cookie,
+                        }
+                    }
+                    const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/qualidade/inspetores/${'Qualidade'}`, config);
+                    response.data.forEach(element => {
+                        this.qualidade_responsaveis.push({descri: element.name, valor: element.name})
+                    });
+                    this.carregandoinfo = false;
+                } catch (error) {
+                    console.log(error);
+                    alert("Erro ao abrir modal da Qualidade.")
+                    this.carregandoinfo = false;
+                }
+            },
+            async closeModalQualidade(){
+                this.modalQualidade = false;
+                this.qualidade_responsaveis = [];
+            },
+            async enviarQualidade(){
+                try {
+                    this.closeModalQualidade();
+                    await axios.post(`${import.meta.env.VITE_BACKEND_IP}/qualidade/documentos/editarQualidade/${this.whereId}`, this.modalQualidadeBody, config);
+                    this.pageRefresh();
+                } catch (error) {
+                    console.log(error)
+                    alert("Falha ao preenchar campos da Qualidade.");
                     this.carregando = false;
                 }
             },
@@ -396,6 +455,12 @@
                     Object.keys(this.modalEdpBody).forEach(function(key, index) {
                         self.modalEdpBody[key] = '';
                     });
+                    Object.keys(this.modalProducaoBody).forEach(function(key, index) {
+                        self.modalProducaoBody[key] = '';
+                    });
+                    Object.keys(this.modalQualidadeBody).forEach(function(key, index) {
+                        self.modalQualidadeBody[key] = '';
+                    });
                 } catch (error) {
                    console.log(error)
                    alert("Falha ao carregar página.");
@@ -423,6 +488,7 @@
             },
             async verDocumento(id){
                 try {
+                console.log(config)
                     this.carregandoinfo = true;
                     this.modalVerDocumento = true;
                     const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/qualidade/documentos/${id}`, config);

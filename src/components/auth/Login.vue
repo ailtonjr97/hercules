@@ -56,10 +56,18 @@ export default{
             try {
                 this.logador = true;
                 const response = await axios.post(`${import.meta.env.VITE_BACKEND_IP}/auth/login`, this.form);
-                document.cookie = `jwt=${response.data}`;
-                setTimeout(()=>{
-                  this.$router.push('/home')
-                }, 2000)
+                let logado = false
+                while(logado == false){
+                  if(response.status == 200){
+                    document.cookie = `jwt=${response.data}`;
+                    logado = true;
+                    setTimeout(()=>{
+                      window.location.replace(`${import.meta.env.VITE_FRONTEND_IP}/home`, this.form);
+                    }, 2000)
+                  }else{
+                    logado = false
+                  }
+                }
             } catch (error) {
               if(error.response.status == 404 || error.response.status == 401){
                 this.error = true;
