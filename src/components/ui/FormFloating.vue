@@ -14,7 +14,7 @@
             placeholder: {
                 type: String,
                 required: false,
-                default: 'Inserir Placeholder'
+                default: ''
             },
             id: {
                 type: String,

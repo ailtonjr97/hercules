@@ -1,27 +1,25 @@
 <template>
-<nav class="sidebar-navigation">
-	<ul style="padding-left: 0; min-height: 120%;">
-		<li @click="goHome">
-			<i class="fa-solid fa-home"></i>
-			<span class="tooltip">Home</span>
-		</li>
-		<li @click="goQualidade">
-			<i class="fa-solid fa-file-circle-check" style="margin-left: 10%;"></i>
-			<span class="tooltip">Qualidade</span>
-		</li>
-		<li @click="goUsuarios">
-			<i class="fa-solid fa-user"></i>
-			<span class="tooltip">Usuarios</span>
-		</li>
-		<li @click="logout">
-			<i class="fa-solid fa-arrow-right-from-bracket fa-rotate-180"></i>
-			<span class="tooltip">Sair</span>
-		</li>
-	</ul>
-</nav>
-<div id="mestra">
+	<nav class="sidebar-navigation">
+		<ul style="padding-left: 0; min-height: 120%;">
+			<li @click="goHome">
+				<i class="fa-solid fa-home"></i>
+				<span class="tooltip">Home</span>
+			</li>
+			<li @click="goQualidade">
+				<i class="fa-solid fa-file-circle-check" style="margin-left: 10%;"></i>
+				<span class="tooltip">Qualidade</span>
+			</li>
+			<li @click="goUsuarios">
+				<i class="fa-solid fa-user"></i>
+				<span class="tooltip">Usuarios</span>
+			</li>
+			<li @click="logout">
+				<i class="fa-solid fa-arrow-right-from-bracket fa-rotate-180"></i>
+				<span class="tooltip">Sair</span>
+			</li>
+		</ul>
+	</nav>
 	<slot name="content"></slot>
-</div>
 </template>
 
 <script>
@@ -50,9 +48,11 @@ export default{
 </script>
 
 <style>
+
  .sidebar-navigation {
+	height: 100%;
+	position: fixed;
 	 display: inline-block;
-	 min-height: 100vh;
 	 width: 50px;
 	 background-color: #00253d;
 	 float: left;
@@ -62,13 +62,13 @@ export default{
 	 color: white;
 }
  .sidebar-navigation ul li {
-	 padding: 16px 0;
+	 padding: 12px 0;
 	 cursor: pointer;
 	 transition: all ease-out 120ms;
 }
  .sidebar-navigation ul li i {
 	 display: block;
-	 font-size: 24px;
+	 font-size: 16px;
 	 transition: all ease 450ms;
 }
  .sidebar-navigation ul li .tooltip {

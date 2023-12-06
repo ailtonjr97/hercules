@@ -1,6 +1,6 @@
-<template >
+<template style="margin-left: 50px">
       <div v-if="carregando" id="loading"></div>
-      <div v-if="fullLoad">
+      <div v-if="fullLoad" style="overflow: hidden; padding: 0.3%;">
         <table-top :resultados="resultados">
             <template v-slot:tableButtons>
               <button class="button-8 mb-2" @click="openNewUserModal">Novo Usuário</button>

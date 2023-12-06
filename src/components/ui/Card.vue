@@ -1,5 +1,5 @@
 <template>
-    <article style="margin-left: 2%;">
+    <article>
         <router-link :to="address">
         <div class="article-wrapper">
             <figure>

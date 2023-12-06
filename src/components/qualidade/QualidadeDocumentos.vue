@@ -1,6 +1,6 @@
 <template>
     <div v-if="carregando" id="loading"></div>
-        <div v-if="fullLoad">
+        <div v-if="fullLoad" style="overflow: hidden; padding: 0.5%;">
         <table-top :resultados="resultados">
             <template v-slot:tableButtons>
                 <button class="button-8 mb-2" @click="abrirModalNovoDocumento">Novo Documento</button>
@@ -20,6 +20,7 @@
                 <th>Tipo</th>
                 <th>Data</th>
                 <th>Inspetor</th>
+                <th>Status</th>
                 <th>Ações</th>
                 </tr>
             </thead>
@@ -38,11 +39,21 @@
                     <p>{{ documento.inspetor }}</p>
                 </td>
                 <td>
+                    <p v-if="documento.edp_preenchido == 0">Aguardando EDP</p>
+                    <p v-if="documento.pcp_preenchido == 0 && documento.edp_preenchido == 1">Aguardando PCP</p>
+                    <p v-if="documento.pcp_preenchido == 1 && documento.producao_preenchido == 0">Aguardando Produção</p>
+                    <p v-if="documento.producao_preenchido == 1 && documento.qualidade_preenchido == 0">Aguardando Qualidade</p>
+                    <p v-if="documento.motivo_nc_preenchido == 0">Aguardando Motivo NC</p>
+                    <p v-if="documento.edp_preenchido == 1 && documento.pcp_preenchido == 1 && documento.producao_preenchido == 1 && documento.qualidade_preenchido == 1 && documento.motivo_nc_preenchido == 1">Pronto para arquivar</p>
+                </td>
+                <td>
                     <button class="button-8" @click="verDocumento(documento.id)">Visualizar</button>
                     <button class="button-8" @click="openModalEdp(documento.id)" v-if="documento.edp_preenchido == 0 && userSetor == 'Engenharia de Processos'">Preencher EDP</button>
                     <button class="button-8" @click="openModalPcp(documento.id)" v-if="documento.edp_preenchido == 1 && documento.pcp_preenchido == 0 && userSetor == 'PCP'">Preencher PCP</button>
                     <button class="button-8" @click="openModalProducao(documento.id)" v-if="documento.pcp_preenchido == 1 && documento.producao_preenchido == 0 && userSetor == 'Producao'">Preencher Produção</button>
                     <button class="button-8" @click="openModalQualidade(documento.id)" v-if="documento.producao_preenchido == 1 && documento.qualidade_preenchido == 0 && userSetor == 'Qualidade'">Preencher Qualidade</button>
+                    <button class="button-8" @click="openModalNc(documento.id)" v-if="documento.motivo_nc_preenchido == 0">Motivo NC</button>
+                    <button class="button-8" @click="inactivateDocument(documento.id)" v-if="documento.edp_preenchido == 1 && documento.pcp_preenchido == 1 && documento.producao_preenchido == 1 && documento.qualidade_preenchido == 1 && documento.motivo_nc_preenchido == 1">Arquivar</button>
                 </td>
                 </tr>
             </tbody>
@@ -138,9 +149,6 @@
                 <form-floating :placeholder="'Quantidade Metragem:'" :id="'quantidade_metragem'" :type="'text'" v-model="criar.quantidade_metragem" ></form-floating>
                 <form-floating :placeholder="'CPNC Número:'" :id="'cpnc_numero'" :type="'text'" v-model="criar.cpnc_numero" ></form-floating>
             </div>
-            <div class="row mt-2" v-if="!carregandoinfo">
-                <textarea-floating :placeholder="'Motivo da NC:'" :id="'motivo_nc'" v-model="criar.motivo_nc" ></textarea-floating>
-            </div>
         </template>
         <template v-slot:buttons v-if="!carregandoinfo">
             <button class="button-8" @click="closeModalNovoDocumento">Fechar</button>
@@ -155,6 +163,9 @@
                 <select-floating :placeholder="'Responsável:'" :id="'edp_responsavel'" :options="edp_responsaveis" v-model="modalEdpBody.edp_responsavel"></select-floating>
                 <form-floating :placeholder="'Data:'" :id="'edp_data'" :type="'date'" v-model="modalEdpBody.edp_data"></form-floating>
                 <form-floating :placeholder="'Tempo Previsto:'" :id="'tempo_previsto'" :type="'text'" v-model="modalEdpBody.tempo_previsto"></form-floating>
+            </div>
+            <div class="row mt-2" v-if="!carregandoinfo">
+                <anex-floating :id="'edp_anexo'" :type="'file'"></anex-floating>
             </div>
             <div class="row mt-2" v-if="!carregandoinfo">
                 <textarea-floating :placeholder="'Instrução de Reprocesso:'" :id="'instrucao_reprocesso'" v-model="modalEdpBody.instrucao_reprocesso"></textarea-floating>
@@ -224,6 +235,19 @@
             <button class="button-8" @click="enviarQualidade">Executar</button>
         </template>
     </modal>
+
+    <modal v-if="modalNc" :title="'Motivo NC:'">
+        <template v-slot:body>
+            <loading v-if="carregandoinfo"></loading>
+            <div class="row mt-2" v-if="!carregandoinfo">
+                <textarea-floating :placeholder="'Preencher motivo NC:'" :id="'motivo_nc'" v-model="modalNcBody.motivo_nc"></textarea-floating>
+            </div>
+        </template>
+        <template v-slot:buttons v-if="!carregandoinfo">
+            <button class="button-8" @click="closeModalNc">Fechar</button>
+            <button class="button-8" @click="enviarNc">Executar</button>
+        </template>
+    </modal>
     
     </template>
     
@@ -237,7 +261,8 @@
     import FormFloating from '../ui/FormFloating.vue';
     import SelectFloating from '../ui/SelectFloating.vue';
     import TextareaFloating from '../ui/TextareaFloating.vue';
-    import Topbar from '../navbar/Topbar.vue'
+    import Topbar from '../navbar/Topbar.vue';
+    import AnexFloating from '../ui/AnexFloating.vue';
     
     const config = {
         headers: {
@@ -254,7 +279,8 @@
             Loading,
             FormFloating,
             SelectFloating,
-            TextareaFloating
+            TextareaFloating,
+            AnexFloating
         },
         data(){
             return{
@@ -265,6 +291,7 @@
                 modalProducao: false,
                 modalQualidade: false,
                 modalNovoDocumento: false,
+                modalNc: false,
                 carregando: true,
                 documentos: [],
                 fullLoad: false,
@@ -285,13 +312,13 @@
                     lance: '',
                     quantidade_metragem: '',
                     cpnc_numero: '',
-                    motivo_nc: '',
                 },
                 modalEdpBody: {
                     tempo_previsto: '',
                     instrucao_reprocesso: '',
                     edp_responsavel: '',
-                    edp_data: ''
+                    edp_data: '',
+                    edp_anexo: ''
                 },
                 modalPcpBody: {
                     pcp_odf_retrabalho: '',
@@ -314,18 +341,19 @@
                     quali_data: '',
                     quali_status: '',
                 },
+                modalNcBody: {
+                    motivo_nc: '',
+                },
             }
         },
         methods: {
-            async enviarEdp(){
+            async inactivateDocument(id){
                 try {
-                    this.closeModalEdp();
-                    await axios.post(`${import.meta.env.VITE_BACKEND_IP}/qualidade/documentos/editarEdp/${this.whereId}`, this.modalEdpBody, config);
+                    await axios.get(`${import.meta.env.VITE_BACKEND_IP}/qualidade/documentos/inactivate/${id}`, config);
                     this.pageRefresh();
                 } catch (error) {
                     console.log(error)
-                    alert("Falha ao preenchar campos do EDP.");
-                    this.carregando = false;
+                    alert("Falha ao arquivar documento. Favor tentar mais tarde.")
                 }
             },
             async openModalEdp(id){
@@ -338,7 +366,6 @@
                         'Authorization': document.cookie,
                         }
                     }
-                    console.log(config)
                     const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/qualidade/inspetores/${'Engenharia de Processos'}`, config);
                     response.data.forEach(element => {
                         this.edp_responsaveis.push({descri: element.name, valor: element.name})
@@ -356,12 +383,40 @@
             },
             async enviarEdp(){
                 try {
+                    const config = {
+                        headers: {
+                        'Content-Type': 'multipart/form-data',
+                        'Authorization': document.cookie,
+                        }
+                    }
                     this.closeModalEdp();
                     await axios.post(`${import.meta.env.VITE_BACKEND_IP}/qualidade/documentos/editarEdp/${this.whereId}`, this.modalEdpBody, config);
                     this.pageRefresh();
                 } catch (error) {
                     console.log(error)
                     alert("Falha ao preenchar campos do EDP.");
+                    this.carregando = false;
+                }
+            },
+            async openModalNc(id){
+                try {
+                    this.whereId = id;
+                    this.modalNc = true;
+                } catch (error) {
+                    alert("Erro ao abrir modal da NC.")
+                    this.carregandoinfo = false;
+                }
+            },
+            async closeModalNc(){
+                this.modalNc = false;
+            },
+            async enviarNc(){
+                try {
+                    this.closeModalNc();
+                    await axios.post(`${import.meta.env.VITE_BACKEND_IP}/qualidade/documentos/editarNc/${this.whereId}`, this.modalNcBody, config);
+                    this.pageRefresh();
+                } catch (error) {
+                    alert("Falha ao preenchar campos da NC.");
                     this.carregando = false;
                 }
             },
@@ -411,6 +466,17 @@
                 });
                 this.carregandoinfo = false;
             },
+            async enviarPcp(){
+                try {
+                    this.closeModalPcp();
+                    await axios.post(`${import.meta.env.VITE_BACKEND_IP}/qualidade/documentos/editarPcp/${this.whereId}`, this.modalPcpBody, config);
+                    this.pageRefresh();
+                } catch (error) {
+                    console.log(error)
+                    alert("Falha ao preenchar campos do PCP.");
+                    this.carregando = false;
+                }
+            },
             async closeModalPcp(){
                 this.modalPcp = false;
                 this.pcp_responsaveis = [];
@@ -455,11 +521,17 @@
                     Object.keys(this.modalEdpBody).forEach(function(key, index) {
                         self.modalEdpBody[key] = '';
                     });
+                    Object.keys(this.modalPcpBody).forEach(function(key, index) {
+                        self.modalPcpBody[key] = '';
+                    });
                     Object.keys(this.modalProducaoBody).forEach(function(key, index) {
                         self.modalProducaoBody[key] = '';
                     });
                     Object.keys(this.modalQualidadeBody).forEach(function(key, index) {
                         self.modalQualidadeBody[key] = '';
+                    });
+                    Object.keys(this.modalNcBody).forEach(function(key, index) {
+                        self.modalNcBody[key] = '';
                     });
                 } catch (error) {
                    console.log(error)
@@ -488,7 +560,6 @@
             },
             async verDocumento(id){
                 try {
-                console.log(config)
                     this.carregandoinfo = true;
                     this.modalVerDocumento = true;
                     const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/qualidade/documentos/${id}`, config);

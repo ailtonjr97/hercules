@@ -54,29 +54,16 @@ export default{
         },
         async submit(){
             try {
-                this.logador = true;
                 const response = await axios.post(`${import.meta.env.VITE_BACKEND_IP}/auth/login`, this.form);
-                let logado = false
-                while(logado == false){
-                  if(response.status == 200){
-                    document.cookie = `jwt=${response.data}`;
-                    logado = true;
-                    setTimeout(()=>{
-                      window.location.replace(`${import.meta.env.VITE_FRONTEND_IP}/home`, this.form);
-                    }, 2000)
-                  }else{
-                    logado = false
-                  }
+                console.log(response)
+                if(response && response.status == 200){
+                  document.cookie = `jwt=${response.data}`
+                  window.location.href = `${import.meta.env.VITE_LOGIN_IP}/home`;
+                }else{
+                  throw new Error();
                 }
-            } catch (error) {
-              if(error.response.status == 404 || error.response.status == 401){
-                this.error = true;
-                this.logador = false;
-              }else if (error.response.status == 500){
-                alert("Erro na autenticação. Favor tentar novamente.")
-                location.reload();
-                console.log(error)
-              }
+                }catch (error) {
+                  this.error = true;
             }
         }
     },

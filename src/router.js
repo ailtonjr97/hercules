@@ -31,7 +31,7 @@ router.beforeEach(async function(to, from, next) {
   if(to.path == '/login'){
     next();
   }else{
-    if(document.cookie == 0){
+    if(document.cookie == 0 || document.cookie == 2){
       return next('/login')
     }else{
       function delete_cookie(name) {
