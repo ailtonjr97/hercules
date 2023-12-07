@@ -19,16 +19,8 @@
                 <li class="nav-item" style="width: 90px;">
                     <router-link to="/qualidade" class="nav-link">
                         <div class="item">
-                            <i class="fa-solid fa-house" style="margin-left: 40%;"></i>
+                            <i class="fa-solid fa-file-circle-check" style="margin-left: 50%;"></i>
                             <span class="caption">Qualidade</span>
-                        </div>
-                    </router-link>
-                </li>
-                <li class="nav-item" style="width: 110px;">
-                    <router-link to="/controladoria" class="nav-link">
-                        <div class="item">
-                            <i class="fa-solid fa-house" style="margin-left: 80%;"></i>
-                            <span class="caption">Controladoria</span>
                         </div>
                     </router-link>
                 </li>
@@ -80,6 +72,11 @@ export default{
                     }
                 }
             deleteAllCookies();
+            function delete_cookie(name) {
+                document.cookie = name +'=; Path=/qualidade; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+                document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+              }
+              delete_cookie('jwt')
             this.$router.push('/login')
         }
     },

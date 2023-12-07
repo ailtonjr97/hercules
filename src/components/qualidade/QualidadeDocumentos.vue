@@ -13,7 +13,7 @@
             <table-search :id="'procuraBtn2'" :num="2" :placeholder="'Data:'"></table-search>
             <table-search :id="'procuraBtn3'" :num="3" :placeholder="'Inspetor:'"></table-search>
         </div>
-        <div class="table-wrapper table-responsive table-striped">
+        <div class="table-wrapper table-responsive table-striped mb-5">
             <table class="fl-table" id="myTable">
             <thead>
                 <tr style="height: 25px">

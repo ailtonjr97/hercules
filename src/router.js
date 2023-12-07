@@ -35,26 +35,37 @@ router.beforeEach(async function(to, from, next) {
   if(to.path == '/login'){
     next();
   }else{
-      const token = document.cookie
-      let config = {
-          headers: {
-              'Authorization': token
-          }
-      }
-      function delete_cookie(name) {
-        document.cookie = name +'=; Path=/qualidade; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-      }
-      delete_cookie('jwt')
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/auth/verify-jwt`, config);
-      if(response.status == 200){
-        loggedIn = true;
+      if(document.cookie){
+        const token = document.cookie
+        let config = {
+            headers: {
+                'Authorization': token
+            }
+        }
+        function delete_cookie(name) {
+          document.cookie = name +'=; Path=/qualidade; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+        }
+        delete_cookie('jwt')
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/auth/verify-jwt`, config);
+        if(response.status == 200){
+          loggedIn = true;
+        }else{
+          loggedIn = false;
+        }
       }else{
-        loggedIn = false;
+        return next('/login')
       }
+
       if (!loggedIn) {
         return next('/login');
       } else if (loggedIn) {
         if(to.path == '/usuarios'){
+          const token = document.cookie
+          let config = {
+              headers: {
+                  'Authorization': token
+              }
+          }
           const decoded = jwtDecode(token);
           const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/users/${decoded.id}`, config)
           const isAdmin = response.data[0].admin
