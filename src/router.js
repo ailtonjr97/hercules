@@ -8,7 +8,9 @@ import Login from './components/auth/Login.vue';
 import UsuariosInativos from './components/usuarios/UsuariosInativos.vue';
 import Controladoria from './components/controladoria/Controladoria.vue';
 import Qualidade from './components/qualidade/Qualidade.vue';
-import QualidadeDocumentos from './components/qualidade/QualidadeDocumentos.vue'
+import QualidadeDocumentos from './components/qualidade/QualidadeDocumentos.vue';
+import AnexPage from './components/ui/AnexPage.vue';
+import DocumentosArquivados from './components/qualidade/DocumentosArquivados.vue';
 
 const router = createRouter({
     history: createWebHistory(),
@@ -20,7 +22,9 @@ const router = createRouter({
       { path: '/controladoria', component: Controladoria, meta: {carregando: true}},
       { path: '/qualidade', component: Qualidade, meta: {carregando: true}},
       { path: '/qualidade/documentos', component: QualidadeDocumentos, meta: {carregando: true}},
+      { path: '/qualidade/documentos/arquivados', component: DocumentosArquivados, meta: {carregando: true}},
       { path: '/usuarios/inativos', component: UsuariosInativos },
+      {path: '/arquivos', component: AnexPage},
       { path: '/:notFound(.*)', redirect: '/home' }
     ]
   });
@@ -31,36 +35,26 @@ router.beforeEach(async function(to, from, next) {
   if(to.path == '/login'){
     next();
   }else{
-    if(document.cookie == 0 || document.cookie == 2){
-      return next('/login')
-    }else{
-      function delete_cookie(name) {
-        document.cookie = name +'=; Path=/qualidade; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-      }
-      delete_cookie('jwt')
       const token = document.cookie
       let config = {
           headers: {
               'Authorization': token
           }
       }
+      function delete_cookie(name) {
+        document.cookie = name +'=; Path=/qualidade; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+      }
+      delete_cookie('jwt')
       const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/auth/verify-jwt`, config);
       if(response.status == 200){
         loggedIn = true;
       }else{
         loggedIn = false;
       }
-
       if (!loggedIn) {
         return next('/login');
       } else if (loggedIn) {
         if(to.path == '/usuarios'){
-          const token = document.cookie
-          let config = {
-              headers: {
-                  'Authorization': token
-              }
-          }
           const decoded = jwtDecode(token);
           const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/users/${decoded.id}`, config)
           const isAdmin = response.data[0].admin
@@ -74,7 +68,6 @@ router.beforeEach(async function(to, from, next) {
       } else{
         next()
       }
-    }
   }
 });
 

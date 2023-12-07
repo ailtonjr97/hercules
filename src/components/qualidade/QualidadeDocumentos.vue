@@ -4,6 +4,7 @@
         <table-top :resultados="resultados">
             <template v-slot:tableButtons>
                 <button class="button-8 mb-2" @click="abrirModalNovoDocumento">Novo Documento</button>
+                <router-link to="/qualidade/documentos/arquivados" class="button-8">Arquivados</router-link>
             </template>
         </table-top>
         <div class="row mb-2">
@@ -54,7 +55,7 @@
                     <button class="button-8" @click="openModalQualidade(documento.id)" v-if="documento.producao_preenchido == 1 && documento.qualidade_preenchido == 0 && userSetor == 'Qualidade'">Preencher Qualidade</button>
                     <button class="button-8" @click="openModalNc(documento.id)" v-if="documento.motivo_nc_preenchido == 0">Motivo NC</button>
                     <button class="button-8" @click="inactivateDocument(documento.id)" v-if="documento.edp_preenchido == 1 && documento.pcp_preenchido == 1 && documento.producao_preenchido == 1 && documento.qualidade_preenchido == 1 && documento.motivo_nc_preenchido == 1">Arquivar</button>
-                    <button class="button-8" @click="openAnexoModal(documento.id)">Anexos</button>
+                    <button class="button-8" v-if="documento.edp_anexo != ''" @click="openAnexoModal(documento.edp_anexo)">Anexos</button>
                 </td>
                 </tr>
             </tbody>
@@ -254,7 +255,7 @@
         <template v-slot:body>
             <loading v-if="carregandoinfo"></loading>
             <div class="row mt-2" v-if="!carregandoinfo">
-                <a :href="anexoEndereco"> {{ anexoEndereco }}</a>
+                <a target="__blank" :href="`${ip}/files/${anexoEndereco}`">{{ anexoEndereco }}</a>
             </div>
         </template>
         <template v-slot:buttons v-if="!carregandoinfo">
@@ -297,6 +298,7 @@
         },
         data(){
             return{
+                ip: import.meta.env.VITE_BACKEND_IP,
                 anexoEndereco: '',
                 anexosModal: false,
                 images: null,
@@ -362,18 +364,11 @@
             }
         },
         methods: {
-            async openAnexoModal(id){
+            async openAnexoModal(anexoNome){
                 try {
-                    this.whereId = id;
                     this.carregandoinfo = true;
                     this.anexosModal = true;
-                    const config = {
-                        headers: {
-                        'Authorization': document.cookie,
-                        }
-                    }
-                    const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/qualidade/documentos/${this.whereId}`, config);
-                    this.anexoEndereco = response.data[0].edp_anexo
+                    this.anexoEndereco = anexoNome
                     this.carregandoinfo = false;
                 } catch (error) {
                     console.log(error)
