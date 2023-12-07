@@ -1,7 +1,7 @@
 <template>
     <div class="row" style="max-width: 99%; padding: 1%;">
         <div class="col d-flex justify-content-start">
-            <card :address="'/qualidade/documentos'" :title="`API's`" :body="`Conjunto das API's do Protheus`" :src="'images/api.png'"></card>
+            <card :address="'/totvs/apis'" :title="`API's`" :body="`Conjunto das API's do Protheus`" :src="'images/api.png'"></card>
         </div>
     </div>
 </template>

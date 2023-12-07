@@ -12,6 +12,7 @@ import QualidadeDocumentos from './components/qualidade/QualidadeDocumentos.vue'
 import AnexPage from './components/ui/AnexPage.vue';
 import DocumentosArquivados from './components/qualidade/DocumentosArquivados.vue';
 import Totvs from './components/totvs/Totvs.vue'
+import TotvsApis from './components/totvs/TotvsApis.vue'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -26,6 +27,7 @@ const router = createRouter({
       { path: '/qualidade/documentos', component: QualidadeDocumentos, meta: {carregando: true}},
       { path: '/qualidade/documentos/arquivados', component: DocumentosArquivados, meta: {carregando: true}},
       { path: '/totvs', component: Totvs},
+      { path: '/totvs/apis', component: TotvsApis},
       {path: '/arquivos', component: AnexPage},
       { path: '/:notFound(.*)', redirect: '/home' }
     ]

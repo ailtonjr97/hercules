@@ -275,7 +275,6 @@
     import FormFloating from '../ui/FormFloating.vue';
     import SelectFloating from '../ui/SelectFloating.vue';
     import TextareaFloating from '../ui/TextareaFloating.vue';
-    import Topbar from '../navbar/Topbar.vue';
     import AnexFloating from '../ui/AnexFloating.vue';
     
     const config = {
@@ -286,7 +285,6 @@
     
     export default {
         components: {
-            Topbar,
             TableTop,
             TableSearch,
             Modal,

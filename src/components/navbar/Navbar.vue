@@ -19,7 +19,7 @@
                 <li :style="[isAdmin != 0 ? {'display': 'block'} : {'display': 'none'}]" class="nav-item bloqueados" style="margin-right: 35%; margin-left: 5%;">
                     <router-link to="/totvs" class="nav-link">
                         <div class="item">
-                            <img src="images/totvs-logo.png" alt="" style="width: 300%;">
+                            <img src="/images/totvs-logo.png" alt="" style="width: 300%;">
                         </div>
                     </router-link>
                 </li>
