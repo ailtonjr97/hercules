@@ -11,6 +11,7 @@ import Qualidade from './components/qualidade/Qualidade.vue';
 import QualidadeDocumentos from './components/qualidade/QualidadeDocumentos.vue';
 import AnexPage from './components/ui/AnexPage.vue';
 import DocumentosArquivados from './components/qualidade/DocumentosArquivados.vue';
+import Totvs from './components/totvs/Totvs.vue'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -19,11 +20,12 @@ const router = createRouter({
       { path: '/login', component: Login, meta: {hideNavbar: true, requiresAuth: false }},
       { path: '/home', component: Home},
       { path: '/usuarios', component: Usuarios},
+      { path: '/usuarios/inativos', component: UsuariosInativos },
       { path: '/controladoria', component: Controladoria, meta: {carregando: true}},
       { path: '/qualidade', component: Qualidade, meta: {carregando: true}},
       { path: '/qualidade/documentos', component: QualidadeDocumentos, meta: {carregando: true}},
       { path: '/qualidade/documentos/arquivados', component: DocumentosArquivados, meta: {carregando: true}},
-      { path: '/usuarios/inativos', component: UsuariosInativos },
+      { path: '/totvs', component: Totvs},
       {path: '/arquivos', component: AnexPage},
       { path: '/:notFound(.*)', redirect: '/home' }
     ]
@@ -59,7 +61,7 @@ router.beforeEach(async function(to, from, next) {
       if (!loggedIn) {
         return next('/login');
       } else if (loggedIn) {
-        if(to.path == '/usuarios'){
+        if(to.path == '/usuarios' || to.path == '/totvs'){
           const token = document.cookie
           let config = {
               headers: {

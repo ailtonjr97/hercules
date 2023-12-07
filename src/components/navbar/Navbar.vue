@@ -16,7 +16,14 @@
                         </div>
                     </router-link>
                 </li>
-                <li class="nav-item" style="width: 90px;">
+                <li :style="[isAdmin != 0 ? {'display': 'block'} : {'display': 'none'}]" class="nav-item bloqueados" style="margin-right: 35%; margin-left: 5%;">
+                    <router-link to="/totvs" class="nav-link">
+                        <div class="item">
+                            <img src="images/totvs-logo.png" alt="" style="width: 300%;">
+                        </div>
+                    </router-link>
+                </li>
+                <li class="nav-item" style="margin: 0 5% 0 0;">
                     <router-link to="/qualidade" class="nav-link">
                         <div class="item">
                             <i class="fa-solid fa-file-circle-check" style="margin-left: 50%;"></i>
@@ -44,6 +51,7 @@
         </div>
     </ul>
   </div>
+  <h6 style="width: 10%; color: #fff; text-align: center;">{{ name }}</h6>
 </nav>
 
 <slot name="content"></slot>
@@ -56,7 +64,8 @@ import { jwtDecode } from "jwt-decode";
 export default{
     data(){
         return{
-            isAdmin: 0
+            isAdmin: 0,
+            name: ''
         }
     },
     methods: {
@@ -91,7 +100,8 @@ export default{
         const decoded = jwtDecode(token);
 
         const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/users/${decoded.id}`, config)
-        this.isAdmin = response.data[0].admin        
+        this.isAdmin = response.data[0].admin
+        this.name = response.data[0].name
     }
 }
 </script>
@@ -119,8 +129,16 @@ div.item {
     height: 65px;
 }
 
-.navbar { background-color: #3a619b; }
-.navbar .navbar-nav .nav-link { color: #fff; }
-.navbar .navbar-nav .nav-link:hover { color: #fbc531; }
-.navbar .navbar-nav .active > .nav-link { color: #fbc531; }
+.navbar {
+    background-color: #3a619b;
+}
+.navbar .navbar-nav .nav-link {
+    color: #fff;
+}
+.navbar .navbar-nav .nav-link:hover {
+    color: #fbc531;
+}
+.navbar .navbar-nav .active > .nav-link {
+    color: #fbc531;
+    }
 </style>
