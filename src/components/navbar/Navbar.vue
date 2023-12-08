@@ -91,17 +91,16 @@ export default{
     },
     async created(){
         this.carregando = true;
-        const token = document.cookie.replace('jwt=', '')
+        const token = document.cookie.replace('jwt=', '');
         let config = {
             headers: {
                 'Authorization': token
             }
-        }
+        };
         const decoded = jwtDecode(token);
-
-        const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/users/${decoded.id}`, config)
-        this.isAdmin = response.data[0].admin
-        this.name = response.data[0].name
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/users/${decoded.id}`, config);
+        this.isAdmin = response.data[0].admin;
+        this.name = response.data[0].name;
     }
 }
 </script>

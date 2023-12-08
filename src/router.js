@@ -48,6 +48,7 @@ router.beforeEach(async function(to, from, next) {
         }
         function delete_cookie(name) {
           document.cookie = name +'=; Path=/qualidade; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+          document.cookie = name +'=; Path=/totvs; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
         }
         delete_cookie('jwt')
         const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/auth/verify-jwt`, config);

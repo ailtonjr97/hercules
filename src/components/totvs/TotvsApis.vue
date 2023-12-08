@@ -1,9 +1,11 @@
 <template>
+    <popup v-if="popup"></popup>
     <div v-if="carregando" id="loading"></div>
     <div style="overflow: hidden; padding: 0.5%;">
     <table-top :resultados="resultados">
         <template v-slot:tableButtons>
             <button class="button-8 mb-2" @click="modalApi = true">Nova API</button>
+            <button class="button-8 mb-2" @click="modalToken = true">Gerar Token de Acesso</button>
         </template>
     </table-top>
     <div class="row mb-2">
@@ -41,7 +43,7 @@
                 <button  class="button-8" @click="gerarRelatorio(api.caminho)">Executar</button>
             </td>
             <td v-if="api.metodo == 'POST'">
-                <button :id="`botao${api.id}`" class="button-8" @click="atualizarTabela(api.caminho, api.id)">Executar</button>
+                <button :id="`botao${api.id}`" class="button-8" @click="atualizarTabela(api.caminho, api.id)" :disabled="disableBtn">Executar</button>
                 <loading :id="`carregando${api.id}`" style="width: 30px; margin-left: 43%" class="esconder"></loading>
             </td>
             </tr>
@@ -69,11 +71,21 @@
 <template v-slot:close><button class="button-8" @click="modalRelatorio = false">Fechar</button></template>
 <template v-slot:body>
     <loading v-if="carregandoinfo"></loading>
-    <pre style="background-color: black; color: white; border-radius: 5px; overflow: visible;"> {{ JSON.stringify(dadosRelatorio, null, 2) }} </pre>
+    <pre v-if="!carregandoinfo" style="background-color: black; color: white; border-radius: 5px;"> {{ JSON.stringify(dadosRelatorio, null, 2) }} </pre>
 </template>
 <template v-slot:buttons>
       <button class="button-8" @click="modalRelatorio = false">Fechar</button>
 </template>
+</modal>
+
+<modal v-if="modalRelatorio" :title="'Token de acesso:'">
+    <template v-slot:body>
+    <loading v-if="carregandoinfo"></loading>
+    <pre v-if="!carregandoinfo" style="background-color: black; color: white; border-radius: 5px;"> {{ JSON.stringify(dadosRelatorio, null, 2) }} </pre>
+    </template>
+    <template v-slot:buttons>
+        <button class="button-8" @click="modalRelatorio = false">Fechar</button>
+    </template>
 </modal>
 
 </template>
@@ -94,9 +106,11 @@ import Loading from '../ui/Loading.vue';
 import FormFloating from '../ui/FormFloating.vue';
 import TextareaFloating from '../ui/TextareaFloating.vue';
 import SelectFloating from '../ui/SelectFloating.vue';
+import Popup from '../ui/Popup.vue';
 
 export default {
 components: {
+    Popup,
     TableTop,
     TableSearch,
     Modal,
@@ -107,6 +121,8 @@ components: {
 },
 data(){
     return{
+        popup: false,
+        disableBtn: false,
         carregandoinfoApi: false,
         carregandoinfo: false,
         modalRelatorio: false,
@@ -126,8 +142,25 @@ data(){
 },
 methods: {
     async atualizarTabela(caminho, id){
-        document.getElementById(`botao${id}`).style.display = 'none';
-        document.getElementById(`carregando${id}`).style.display = 'block';
+        try {
+            document.getElementById(`botao${id}`).style.display = 'none';
+            document.getElementById(`carregando${id}`).style.display = 'block';
+            this.disableBtn = true;
+            await axios.post(`${import.meta.env.VITE_BACKEND_IP}${caminho}`, {}, config);
+            document.getElementById(`botao${id}`).style.display = 'inline-block';
+            document.getElementById(`carregando${id}`).style.display = 'none';
+            this.popup = true;
+            setTimeout(()=>{
+                this.popup = false;
+            }, 2000);
+            this.disableBtn = false;
+        } catch (error) {
+            console.log(error);
+            alert("Erro ao executar atualização.");
+            document.getElementById(`botao${id}`).style.display = 'inline-block';
+            document.getElementById(`carregando${id}`).style.display = 'none';
+            this.disableBtn = true;
+        }
     },
     async gerarRelatorio(caminho){
         try {
