@@ -5,6 +5,7 @@
   <div class="modal-box">
     <div class="modal-header">
       <h3>{{ title }}</h3>
+      <slot name="close"></slot>
     </div>
     <div class="modal-body">
       <slot name="carregando">

@@ -20,6 +20,7 @@
             <th>Método</th>
             <th>Descrição</th>
             <th>Caminho</th>
+            <th>Ação</th>
             </tr>
         </thead>
         <tbody>
@@ -36,6 +37,13 @@
             <td>
                 <p>{{ api.caminho }}</p>
             </td>
+            <td v-if="api.metodo == 'GET'">
+                <button  class="button-8" @click="gerarRelatorio(api.caminho)">Executar</button>
+            </td>
+            <td v-if="api.metodo == 'POST'">
+                <button :id="`botao${api.id}`" class="button-8" @click="atualizarTabela(api.caminho, api.id)">Executar</button>
+                <loading :id="`carregando${api.id}`" style="width: 30px; margin-left: 43%" class="esconder"></loading>
+            </td>
             </tr>
         </tbody>
         </table>
@@ -43,7 +51,7 @@
 </div>
 
 
-<modal v-if="modalApi" :title="'Criar nova API Protheus'">
+<modal v-if="modalApi" :title="'Criar nova API Protheus.'">
 <template v-slot:body>
       <div class="row">
         <select-floating :placeholder="'Método:'" :id="'metodo'" :options="[{valor: 'GET', descri: 'GET'}, {valor: 'POST', descri: 'POST'}, {valor: 'PUT', descri: 'PUT'}, {valor: 'DELETE', descri: 'DELETE'}]" v-model="lista.metodo"></select-floating>
@@ -57,9 +65,26 @@
 </template>
 </modal>
 
+<modal v-if="modalRelatorio" :title="'Dados da consulta.'">
+<template v-slot:close><button class="button-8" @click="modalRelatorio = false">Fechar</button></template>
+<template v-slot:body>
+    <loading v-if="carregandoinfo"></loading>
+    <pre style="background-color: black; color: white; border-radius: 5px; overflow: visible;"> {{ JSON.stringify(dadosRelatorio, null, 2) }} </pre>
+</template>
+<template v-slot:buttons>
+      <button class="button-8" @click="modalRelatorio = false">Fechar</button>
+</template>
+</modal>
+
 </template>
 
 <script>
+const config = {
+    headers: {
+    'Authorization': document.cookie,
+    }
+}
+
 import axios from 'axios';
 
 import TableTop from '../ui/TableTop.vue';
@@ -82,11 +107,16 @@ components: {
 },
 data(){
     return{
+        carregandoinfoApi: false,
+        carregandoinfo: false,
+        modalRelatorio: false,
+        resultados: 0,
         carregando: true,
         apis: [],
         modalApi: false,
         carregandoinfo: false,
         visualizar: {},
+        dadosRelatorio: {},
         lista: {
             metodo: '',
             descricao: '',
@@ -95,17 +125,28 @@ data(){
     }
 },
 methods: {
+    async atualizarTabela(caminho, id){
+        document.getElementById(`botao${id}`).style.display = 'none';
+        document.getElementById(`carregando${id}`).style.display = 'block';
+    },
+    async gerarRelatorio(caminho){
+        try {
+            this.carregandoinfo = true;
+            this.modalRelatorio = true;
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}${caminho}`, config);
+            this.dadosRelatorio = response.data;
+            this.carregandoinfo = false;
+        } catch (error) {
+            console.log(error);
+            alert("Falha ao gerar relatório");
+        }
+    },
     async novaApi(){
         try {
             this.modalApi = false;
             this.carregando = true;
-            const config = {
-                headers: {
-                'Authorization': document.cookie,
-                }
-            }
-            await axios.post(`${import.meta.env.VITE_BACKEND_IP}/totvs/apis/lista`, this.lista, config);
-            const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/totvs/apis/lista`, config);
+            await axios.post(`${import.meta.env.VITE_BACKEND_IP}/totvs/api/lista`, this.lista, config);
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/totvs/api/lista`, config);
             this.apis = response.data;
             this.resultados = response.data.length;
             this.carregando = false
@@ -123,7 +164,7 @@ async created(){
             'Authorization': document.cookie,
             }
         }
-        const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/totvs/apis/lista`, config);
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/totvs/api/lista`, config);
         this.apis = response.data;
         this.resultados = response.data.length;
         this.carregando = false;
@@ -135,3 +176,9 @@ async created(){
 }
 }
 </script>
+
+<style>
+.esconder{
+    display: none;
+}
+</style>
