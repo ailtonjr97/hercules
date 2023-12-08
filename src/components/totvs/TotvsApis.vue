@@ -5,7 +5,7 @@
     <table-top :resultados="resultados">
         <template v-slot:tableButtons>
             <button class="button-8 mb-2" @click="modalApi = true">Nova API</button>
-            <button class="button-8 mb-2" @click="modalToken = true">Gerar Token de Acesso</button>
+            <button class="button-8 mb-2" @click="modalToken = true">Token de Acesso</button>
         </template>
     </table-top>
     <div class="row mb-2">
@@ -78,13 +78,13 @@
 </template>
 </modal>
 
-<modal v-if="modalRelatorio" :title="'Token de acesso:'">
+<modal v-if="modalToken" :title="'Token de acesso:'">
     <template v-slot:body>
     <loading v-if="carregandoinfo"></loading>
-    <pre v-if="!carregandoinfo" style="background-color: black; color: white; border-radius: 5px;"> {{ JSON.stringify(dadosRelatorio, null, 2) }} </pre>
+        <pre v-if="!carregandoinfo" style="background-color: black; color: white; border-radius: 5px;"> {{ token }} </pre>
     </template>
     <template v-slot:buttons>
-        <button class="button-8" @click="modalRelatorio = false">Fechar</button>
+        <button class="button-8" @click="modalToken = false">Fechar</button>
     </template>
 </modal>
 
@@ -121,11 +121,13 @@ components: {
 },
 data(){
     return{
+        token: '',
         popup: false,
         disableBtn: false,
         carregandoinfoApi: false,
         carregandoinfo: false,
         modalRelatorio: false,
+        modalToken: false,
         resultados: 0,
         carregando: true,
         apis: [],
@@ -159,7 +161,7 @@ methods: {
             alert("Erro ao executar atualização.");
             document.getElementById(`botao${id}`).style.display = 'inline-block';
             document.getElementById(`carregando${id}`).style.display = 'none';
-            this.disableBtn = true;
+            this.disableBtn = false;
         }
     },
     async gerarRelatorio(caminho){
@@ -200,6 +202,7 @@ async created(){
         const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/totvs/api/lista`, config);
         this.apis = response.data;
         this.resultados = response.data.length;
+        this.token = document.cookie.replace('jwt=', '');
         this.carregando = false;
     } catch (error) {
         console.log(error)

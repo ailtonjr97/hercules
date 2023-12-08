@@ -1,7 +1,7 @@
 <template>
   <div id="open-modal" class="modal-window">
     <div>
-        <i class="fa-solid fa-check"></i>
+        <i class="fa-solid fa-check" style="color: #fff;"></i>
     </div>
   </div>
 </template>
@@ -23,12 +23,12 @@
 	 pointer-events: auto;
 }
  .modal-window > div {
-	 width: 45px;
+	 width: 37px;
 	 position: absolute;
 	 top: 95%;
 	 left: 98%;
 	 transform: translate(-50%, -50%);
-	 padding: 1em;
+	 padding: 0.7em;
 	 background: rgb(37 157 26 );
 }
  .modal-window header {
