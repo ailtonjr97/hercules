@@ -31,6 +31,14 @@
                         </div>
                     </router-link>
                 </li>
+                <li class="nav-item" style="margin: 0 0 0 0;">
+                    <router-link to="/ti" class="nav-link">
+                        <div class="item">
+                            <i class="fa-solid fa-computer"></i>
+                            <span class="caption">TI</span>
+                        </div>
+                    </router-link>
+                </li>
                 <li :style="[isAdmin != 0 ? {'display': 'block'} : {'display': 'none'}]" class="nav-item pl-1 bloqueados">
                     <router-link to="/usuarios" class="nav-link">
                         <div class="item">

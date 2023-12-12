@@ -13,6 +13,8 @@ import AnexPage from './components/ui/AnexPage.vue';
 import DocumentosArquivados from './components/qualidade/DocumentosArquivados.vue';
 import Totvs from './components/totvs/Totvs.vue'
 import TotvsApis from './components/totvs/TotvsApis.vue'
+import Ti from './components/ti/Ti.vue'
+import ChamadosTi from './components/ti/Chamados.vue'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -26,6 +28,8 @@ const router = createRouter({
       { path: '/qualidade', component: Qualidade, meta: {carregando: true}},
       { path: '/qualidade/documentos', component: QualidadeDocumentos, meta: {carregando: true}},
       { path: '/qualidade/documentos/arquivados', component: DocumentosArquivados, meta: {carregando: true}},
+      { path: '/ti', component: Ti},
+      { path: '/ti/chamados', component: ChamadosTi},
       { path: '/totvs', component: Totvs},
       { path: '/totvs/apis', component: TotvsApis},
       {path: '/arquivos', component: AnexPage},
@@ -49,6 +53,7 @@ router.beforeEach(async function(to, from, next) {
         function delete_cookie(name) {
           document.cookie = name +'=; Path=/qualidade; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
           document.cookie = name +'=; Path=/totvs; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+          document.cookie = name +'=; Path=/ti; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
         }
         delete_cookie('jwt')
         const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/auth/verify-jwt`, config);
