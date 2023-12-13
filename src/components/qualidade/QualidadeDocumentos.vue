@@ -263,7 +263,7 @@
         </template>
     </modal>
     
-    </template>
+</template>
     
     <script>
     import axios from 'axios';
