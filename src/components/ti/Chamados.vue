@@ -45,8 +45,8 @@
                     <p>{{ chamado.operacoes}}</p>
                 </td>
                 <td style="white-space: normal; word-break: break-word">
-                    <p v-if="chamado.descricao.length <= 90">{{ chamado.descricao}}</p>
-                    <p v-else>{{ chamado.descricao.substring(0, 255)}}... <a @click="openModalDescricao(chamado.descricao)" style="color: #0d6efd; text-decoration: underline; cursor: pointer;">(ver mais)</a></p>
+                    <p v-if="chamado.descricao.length <= 180">{{ chamado.descricao}}</p>
+                    <p v-else>{{ chamado.descricao.substring(0, 180)}}... <a @click="openModalDescricao(chamado.descricao)" style="color: #0d6efd; text-decoration: underline; cursor: pointer;">(ver mais)</a></p>
                 </td>
                 <td>
                     <button class="button-8" @click="verChamado(chamado.id)"><i class="fa-solid fa-eye" style="font-size: 14px;"></i></button>
@@ -79,13 +79,26 @@
     <modal v-if="modalDescricao" :title="'Descrição completa:'">
         <template v-slot:body>
             <div class="row">
-                <textarea-floating :placeholder="'Descrição:'" :id="'descricao_completa'" v-model="modalDescricaoText" :rows="30"></textarea-floating>
+                <textarea-floating :placeholder="'Descrição:'" :id="'descricao_completa'" v-model="modalDescricaoText"></textarea-floating>
             </div>
         </template>
         <template v-slot:buttons v-if="!carregandoinfo">
             <button class="button-8" @click="modalDescricao = false">Fechar</button>
         </template>
     </modal>
+
+<modal v-if="modalEditarChamado" :title="'Editar chamado:'">
+    <template v-slot:body>
+        <div class="row">
+            <chosen-select-floating :descritivoEscolhido="requisitante.descritivoEscolhido" :valorEscolhido="requisitante.valorEscolhido" :options="requisitanteOptions" v-model="editar.usuario_id" :placeholder="'Requisitante:'" :id="'usuario_id'"></chosen-select-floating>
+            <chosen-select-floating :descritivoEscolhido="designado.descritivoEscolhido" :valorEscolhido="designado.valorEscolhido" :options="designadoOptions" v-model="editar.designado_id" :placeholder="'Designado:'" :id="'designado_id'"></chosen-select-floating>
+        </div>
+    </template>
+    <template v-slot:buttons v-if="!carregandoinfo">
+        <button class="button-8" @click="closeModalEditarChamado">Fechar</button>
+        <button class="button-8" @click="enviarChamado">Executar</button>
+    </template>
+</modal>
 </template>
     
 <script>
@@ -99,6 +112,7 @@ import FormFloating from '../ui/FormFloating.vue';
 import SelectFloating from '../ui/SelectFloating.vue';
 import TextareaFloating from '../ui/TextareaFloating.vue';
 import AnexFloating from '../ui/AnexFloating.vue';
+import ChosenSelectFloating from '../ui/ChosenSelectFloating.vue'
 
 const config = {
     headers: {
@@ -115,13 +129,15 @@ export default {
         FormFloating,
         SelectFloating,
         TextareaFloating,
-        AnexFloating
+        AnexFloating,
+        ChosenSelectFloating
     },
     data(){
         return{
+            department_id: null,
             modalDescricaoText: '',
             modalDescricao: false,
-            modarEditarChamado: false,
+            modalEditarChamado: false,
             modalVerChamado: false,
             contagem: null,
             atualizador: 0,
@@ -131,33 +147,81 @@ export default {
             fullLoad: false,
             carregandoinfo: false,
             visualizar: {},
+            requisitante: {valorEscolhido: null, descritivoEscolhido: ''},
+            designado: {valorEscolhido: null, descritivoEscolhido: ''},
+            requisitanteOptions: [],
+            designadoOptions: [],
+            editar: {
+                usuario_id: {},
+                designado_id: {}
+            }
+
         }
     },
     methods: {
+        async closeModalEditarChamado(){
+            this.modalEditarChamado = false;
+            this.designadoOptions = [],
+            this.requisitanteOptions = []
+        },
         async openModalDescricao(text){
             this.modalDescricao = true;
             this.modalDescricaoText = text;
         },
-        async editarChamado(){
+        async editarChamado(id){
             try {
+                this.whereId = id;
+                this.carregandoinfo = true;
+                this.modalEditarChamado = true;
+                const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/chamados/get_one/${id}`, config);
+
+                this.requisitante.valorEscolhido = response.data[0].requisitanteId
+                this.requisitante.descritivoEscolhido = response.data[0].requisitante
+
+                this.designado.valorEscolhido = response.data[0].designadoId
+                this.designado.descritivoEscolhido = response.data[0].designadoName
                 
+                this.editar.usuario_id = response.data[0].requisitanteId
+                this.editar.designado_id = response.data[0].designadoId
+
+                const requisitanteResponse = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/chamados/requisitante`, config);
+                requisitanteResponse.data.forEach(element => {
+                    this.requisitanteOptions.push({descri: element.name, valor: element.id})
+                });
+
+                const designadoResponse = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/chamados/designado/${this.department_id}`, config);
+                designadoResponse.data.forEach(element => {
+                    this.designadoOptions.push({descri: element.name, valor: element.id})
+                });
+
+                this.carregandoinfo = false;
             } catch (error) {
                 console.log(error);
                 alert("Falha ao abrir modal de edição de chamados.");
                 this.carregandoinfo = false;
             }
         },
+        async enviarChamado(){
+            try {
+                this.modalEditarChamado = false;
+                await axios.post(`${import.meta.env.VITE_BACKEND_IP}/chamados/update/${this.whereId}`, this.editar, config);
+                this.refresh();
+            } catch (error) {
+                console.log(error);
+                alert("Falha ao preenchar campos do chamado.");
+                this.carregando = false;
+            }
+        },
         async verChamado(id){
             try {
                     this.carregandoinfo = true;
                     this.modalVerChamado = true;
-                    const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/chamados/${id}`, config);
+                    const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/chamados/get_one/${id}`, config);
                     this.visualizar = response.data[0];
                     this.carregandoinfo = false;
-                    console.log(this.visualizar)
                 } catch (error) {
                     console.log(error)
-                    alert('Erro ao mostrar documentos. Favor tentar mais tarde.')
+                    alert('Erro ao mostrar chamado. Favor tentar mais tarde.')
                     this.carregandoinfo = false
             }
         },
@@ -166,7 +230,10 @@ export default {
                 this.carregando = true;
                 const loggedIn = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/auth/logado`, config);
                 const intranet_id = loggedIn.data[0].intranet_id
+                console.log(loggedIn)
                 const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/chamados/get_all/1/${intranet_id}`, config);
+                this.designadoOptions = [],
+                this.requisitanteOptions = []
                 this.chamados = response.data;
                 this.resultados = response.data.length;
                 this.fullLoad = true;
@@ -187,6 +254,7 @@ export default {
             }
             const loggedIn = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/auth/logado`, config);
             const intranet_id = loggedIn.data[0].intranet_id
+            this.department_id = loggedIn.data[0].intranet_department_id
             const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/chamados/get_all/1/${intranet_id}`, config);
             this.chamados = response.data;
             this.resultados = response.data.length;

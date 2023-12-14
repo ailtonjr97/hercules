@@ -1,7 +1,7 @@
 <template>
     <div class="col">
         <div class="form-floating">
-            <textarea class="form-control" :placeholder="placeholder" :id="id" @input="$emit('update:modelValue', $event.target.value)" :readonly="readonly">{{ modelValue }}</textarea>
+            <textarea :style="'height: 80px'" class="form-control" :placeholder="placeholder" :id="id" @input="$emit('update:modelValue', $event.target.value)" :readonly="readonly">{{ modelValue }}</textarea>
             <label :for="id">{{ placeholder }}</label>
         </div>
     </div>
