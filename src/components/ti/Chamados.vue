@@ -203,6 +203,7 @@ export default {
         },
         async enviarChamado(){
             try {
+                console.log(this.whereId)
                 this.modalEditarChamado = false;
                 await axios.post(`${import.meta.env.VITE_BACKEND_IP}/chamados/update/${this.whereId}`, this.editar, config);
                 this.refresh();
