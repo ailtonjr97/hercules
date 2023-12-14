@@ -89,7 +89,8 @@
 
 <modal v-if="modalEditarChamado" :title="'Editar chamado:'">
     <template v-slot:body>
-        <div class="row">
+        <loading v-if="carregandoinfo"></loading>
+        <div class="row" v-if="!carregandoinfo">
             <chosen-select-floating :descritivoEscolhido="requisitante.descritivoEscolhido" :valorEscolhido="requisitante.valorEscolhido" :options="requisitanteOptions" v-model="editar.usuario_id" :placeholder="'Requisitante:'" :id="'usuario_id'"></chosen-select-floating>
             <chosen-select-floating :descritivoEscolhido="designado.descritivoEscolhido" :valorEscolhido="designado.valorEscolhido" :options="designadoOptions" v-model="editar.designado_id" :placeholder="'Designado:'" :id="'designado_id'"></chosen-select-floating>
         </div>
@@ -203,7 +204,6 @@ export default {
         },
         async enviarChamado(){
             try {
-                console.log(this.whereId)
                 this.modalEditarChamado = false;
                 await axios.post(`${import.meta.env.VITE_BACKEND_IP}/chamados/update/${this.whereId}`, this.editar, config);
                 this.refresh();
