@@ -11,7 +11,7 @@
                     </template>
                 </table-top>
                 <div class="row">
-                    <div class="col-md-4 mb-5 d-flex justify-content-evenly" v-for="chamado in chamados" :key="chamado.id">
+                    <div class="col-md-4 mb-4 d-flex justify-content-evenly" v-for="chamado in chamados" :key="chamado.id">
                         <div class="card" style="width: 31rem; background-color: #dfdfdf;">
                             <div class="card-header">
                                 <div class="row">
@@ -31,7 +31,12 @@
                                 <p class="card-text">- {{ chamado.name }}</p>
                             </div>
                             <ul class="list-group list-group-flush">
-                                <button style="font-size: 14px; width: 10%; left: 85%;" class="button-8 mt-2 mb-2" @click="editarChamado(chamado.id)"><i class="fa-solid fa-pen-to-square"></i></button>
+                                <div class="row">
+                                    <div class="col d-flex justify-content-end">
+                                        <button style="font-size: 14px; width: 8%; text-align: center;" class="button-8 mt-2 mb-2" @click="verChamado(chamado.id)"><i class="fa-solid fa-eye"></i></button>
+                                        <button style="font-size: 14px; width: 8%; text-align: center;" class="button-8 mt-2 mb-2" @click="editarChamado(chamado.id)"><i class="fa-solid fa-pen-to-square"></i></button>
+                                    </div>
+                                </div>
                             </ul>
                         </div>
                     </div>
@@ -106,8 +111,16 @@
             <div class="row">
                 <form-floating :placeholder="'Setor:'" :id="'setor'" :type="'text'" v-model="visualizar.setor" ></form-floating>
                 <form-floating :placeholder="'Área:'" :id="'area'" :type="'text'" v-model="visualizar.area" ></form-floating>
-                <form-floating :placeholder="'Operações:'" :id="'operacoes'" :type="'text'" v-model="visualizar.operacoes" ></form-floating>
+                <form-floating :placeholder="'Tipo:'" :id="'operacoes'" :type="'text'" v-model="visualizar.operacoes" ></form-floating>
                 <form-floating :placeholder="'Status:'" :id="'status'" :type="'text'" v-model="visualizar.status" ></form-floating>
+                <form-floating :placeholder="'Data Previsão:'" :id="'data_agenda'" :type="'date'" v-model="visualizar.data_agenda" ></form-floating>
+                <form-floating :placeholder="'Hora Previsão:'" :id="'hora_agenda'" :type="'hour'" v-model="visualizar.hora_agenda" ></form-floating>
+            </div>
+            <div class="row mt-2">
+                <form-floating :placeholder="'Nível:'" :id="'nivel'" :type="'text'" v-model="visualizar.nivel" ></form-floating>
+                <form-floating :placeholder="'Impacto:'" :id="'impacto'" :type="'text'" v-model="visualizar.impacto" ></form-floating>
+                <form-floating :placeholder="'Designado:'" :id="'designado_id'" :type="'text'" v-model="visualizar.designadoName" ></form-floating>
+                <form-floating :placeholder="'Requisitante:'" :id="'usuario_id'" :type="'text'" v-model="visualizar.requisitante" ></form-floating>
                 <form-floating :placeholder="'Urgência:'" :id="'urgencias'" :type="'text'" v-model="visualizar.urgencias" ></form-floating>
             </div>
             </div>
@@ -132,6 +145,7 @@
     <template v-slot:body>
         <loading v-if="carregandoinfo"></loading>
         <div class="row" v-if="!carregandoinfo">
+            <chosen-select-floating :descritivoEscolhido="setor.descritivoEscolhido" :valorEscolhido="setor.valorEscolhido" :options="setorOptions" v-model="editar.chamado_setor_id" :placeholder="'Setor:'" :id="'chamado_setor_id'"></chosen-select-floating>
             <chosen-select-floating :descritivoEscolhido="requisitante.descritivoEscolhido" :valorEscolhido="requisitante.valorEscolhido" :options="requisitanteOptions" v-model="editar.usuario_id" :placeholder="'Requisitante:'" :id="'usuario_id'"></chosen-select-floating>
             <chosen-select-floating :descritivoEscolhido="designado.descritivoEscolhido" :valorEscolhido="designado.valorEscolhido" :options="designadoOptions" v-model="editar.designado_id" :placeholder="'Designado:'" :id="'designado_id'"></chosen-select-floating>
         </div>
@@ -193,11 +207,14 @@ export default {
             visualizar: {},
             requisitante: {valorEscolhido: null, descritivoEscolhido: ''},
             designado: {valorEscolhido: null, descritivoEscolhido: ''},
+            setor: {valorEscolhido: null, descritivoEscolhido: ''},
             requisitanteOptions: [],
             designadoOptions: [],
+            setorOptions: [],
             editar: {
                 usuario_id: {},
-                designado_id: {}
+                designado_id: {},
+                chamado_setor_id: {}
             }
 
         }
@@ -214,7 +231,8 @@ export default {
         async closeModalEditarChamado(){
             this.modalEditarChamado = false;
             this.designadoOptions = [],
-            this.requisitanteOptions = []
+            this.requisitanteOptions = [],
+            this.setorOptions = []
         },
         async openModalDescricao(text){
             this.modalDescricao = true;
@@ -227,6 +245,9 @@ export default {
                 this.modalEditarChamado = true;
                 const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/chamados/get_one/${id}`, config);
 
+                this.setor.valorEscolhido = response.data[0].setorId
+                this.setor.descritivoEscolhido = response.data[0].setor
+
                 this.requisitante.valorEscolhido = response.data[0].requisitanteId
                 this.requisitante.descritivoEscolhido = response.data[0].requisitante
 
@@ -235,6 +256,12 @@ export default {
                 
                 this.editar.usuario_id = response.data[0].requisitanteId
                 this.editar.designado_id = response.data[0].designadoId
+                this.editar.chamado_setor_id = response.data[0].setorId
+
+                const setorResponse = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/chamados/setores`, config);
+                setorResponse.data.forEach(element => {
+                    this.setorOptions.push({descri: element.descricao, valor: element.id})
+                });
 
                 const requisitanteResponse = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/chamados/requisitante`, config);
                 requisitanteResponse.data.forEach(element => {
@@ -269,6 +296,7 @@ export default {
                     this.carregandoinfo = true;
                     this.modalVerChamado = true;
                     const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/chamados/get_one/${id}`, config);
+                    console.log(response.data[0])
                     this.visualizar = response.data[0];
                     this.carregandoinfo = false;
                 } catch (error) {
@@ -282,7 +310,6 @@ export default {
                 this.carregando = true;
                 const loggedIn = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/auth/logado`, config);
                 const intranet_id = loggedIn.data[0].intranet_id
-                console.log(loggedIn)
                 const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/chamados/get_all/1/${intranet_id}`, config);
                 this.designadoOptions = [],
                 this.requisitanteOptions = []
@@ -307,7 +334,8 @@ export default {
             const loggedIn = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/auth/logado`, config);
             const intranet_id = loggedIn.data[0].intranet_id
             this.department_id = loggedIn.data[0].intranet_department_id
-            const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/chamados/get_all/1/${intranet_id}`, config);
+            const setor_chamado = loggedIn.data[0].intranet_setor_chamado
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/chamados/get_all/${setor_chamado}/${intranet_id}`, config);
             this.chamados = response.data;
             this.resultados = response.data.length;
             this.fullLoad = true;
