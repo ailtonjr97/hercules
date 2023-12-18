@@ -114,7 +114,7 @@
                 <form-floating :placeholder="'Tipo:'" :id="'operacoes'" :type="'text'" v-model="visualizar.operacoes" ></form-floating>
                 <form-floating :placeholder="'Status:'" :id="'status'" :type="'text'" v-model="visualizar.status" ></form-floating>
                 <form-floating :placeholder="'Data Previsão:'" :id="'data_agenda'" :type="'date'" v-model="visualizar.data_agenda" ></form-floating>
-                <form-floating :placeholder="'Hora Previsão:'" :id="'hora_agenda'" :type="'hour'" v-model="visualizar.hora_agenda" ></form-floating>
+                <form-floating :placeholder="'Hora Previsão:'" :id="'hora_agenda'" :type="'time'" v-model="visualizar.hora_agenda" ></form-floating>
             </div>
             <div class="row mt-2">
                 <form-floating :placeholder="'Nível:'" :id="'nivel'" :type="'text'" v-model="visualizar.nivel" ></form-floating>
@@ -146,12 +146,21 @@
         <loading v-if="carregandoinfo"></loading>
         <div class="row" v-if="!carregandoinfo">
             <chosen-select-floating :descritivoEscolhido="setor.descritivoEscolhido" :valorEscolhido="setor.valorEscolhido" :options="setorOptions" v-model="editar.chamado_setor_id" :placeholder="'Setor:'" :id="'chamado_setor_id'"></chosen-select-floating>
+            <chosen-select-floating :descritivoEscolhido="area.descritivoEscolhido" :valorEscolhido="area.valorEscolhido" :options="areaOptions" v-model="editar.area_id" :placeholder="'Área:'" :id="'area_id'"></chosen-select-floating>
+            <chosen-select-floating :descritivoEscolhido="tipo.descritivoEscolhido" :valorEscolhido="tipo.valorEscolhido" :options="tipoOptions" v-model="editar.operacao_id" :placeholder="'Tipo:'" :id="'operacao_id'"></chosen-select-floating>
+            <form-floating :placeholder="'Data Previsão:'" :id="'data_agenda'" :type="'date'" v-model="editar.data_agenda" ></form-floating>
+            <form-floating :placeholder="'Hora Previsão:'" :id="'hora_agenda'" :type="'time'" v-model="editar.hora_agenda" ></form-floating>
+        </div>
+        <div class="row mt-2" v-if="!carregandoinfo">
+            <select-floating :placeholder="'Nível:'" :id="'nivel'" :options="[{valor: 1, descri: 1}, {valor: 2, descri: 2}, {valor: 3, descri: 3}]" v-model="editar.nivel"></select-floating>
+            <select-floating :placeholder="'Impacto:'" :id="'impacto'" :options="[{valor: 'Alto', descri: 'Alto'}, {valor: 'Baixo', descri: 'Baixo'}]" v-model="editar.impacto"></select-floating>
             <chosen-select-floating :descritivoEscolhido="requisitante.descritivoEscolhido" :valorEscolhido="requisitante.valorEscolhido" :options="requisitanteOptions" v-model="editar.usuario_id" :placeholder="'Requisitante:'" :id="'usuario_id'"></chosen-select-floating>
             <chosen-select-floating :descritivoEscolhido="designado.descritivoEscolhido" :valorEscolhido="designado.valorEscolhido" :options="designadoOptions" v-model="editar.designado_id" :placeholder="'Designado:'" :id="'designado_id'"></chosen-select-floating>
+            <chosen-select-floating :descritivoEscolhido="urgencia.descritivoEscolhido" :valorEscolhido="urgencia.valorEscolhido" :options="urgenciaOptions" v-model="editar.urgencia_id" :placeholder="'Urgência:'" :id="'urgencia_id'"></chosen-select-floating>
         </div>
     </template>
     <template v-slot:buttons v-if="!carregandoinfo">
-        <button class="button-8" @click="closeModalEditarChamado">Fechar</button>
+        <button class="button-8" @click="closeModalEditarChamado">Fechar</button> 
         <button class="button-8" @click="enviarChamado">Executar</button>
     </template>
 </modal>
@@ -190,6 +199,7 @@ export default {
     },
     data(){
         return{
+            setorChamado: null,
             modoTabela: false,
             modoCard: true,
             department_id: null,
@@ -208,13 +218,26 @@ export default {
             requisitante: {valorEscolhido: null, descritivoEscolhido: ''},
             designado: {valorEscolhido: null, descritivoEscolhido: ''},
             setor: {valorEscolhido: null, descritivoEscolhido: ''},
+            area: {valorEscolhido: null, descritivoEscolhido: ''},
+            tipo: {valorEscolhido: null, descritivoEscolhido: ''},
+            urgencia: {valorEscolhido: null, descritivoEscolhido: ''},
             requisitanteOptions: [],
             designadoOptions: [],
             setorOptions: [],
+            areaOptions: [],
+            tipoOptions: [],
+            urgenciaOptions: [],
             editar: {
                 usuario_id: {},
                 designado_id: {},
-                chamado_setor_id: {}
+                chamado_setor_id: {},
+                area_id: {},
+                operacao_id: {},
+                data_agenda: {},
+                hora_agenda: {},
+                nivel: {},
+                impacto: {},
+                urgencia_id: {}
             }
 
         }
@@ -230,9 +253,12 @@ export default {
         },
         async closeModalEditarChamado(){
             this.modalEditarChamado = false;
-            this.designadoOptions = [],
-            this.requisitanteOptions = [],
-            this.setorOptions = []
+            this.designadoOptions = [];
+            this.requisitanteOptions = [];
+            this.setorOptions = [];
+            this.areaOptions = [];
+            this.tipoOptions = [];
+            this.urgenciaOptions = [];
         },
         async openModalDescricao(text){
             this.modalDescricao = true;
@@ -245,32 +271,63 @@ export default {
                 this.modalEditarChamado = true;
                 const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/chamados/get_one/${id}`, config);
 
-                this.setor.valorEscolhido = response.data[0].setorId
-                this.setor.descritivoEscolhido = response.data[0].setor
+                this.setor.valorEscolhido = response.data[0].setorId;
+                this.setor.descritivoEscolhido = response.data[0].setor;
 
-                this.requisitante.valorEscolhido = response.data[0].requisitanteId
-                this.requisitante.descritivoEscolhido = response.data[0].requisitante
+                this.area.valorEscolhido = response.data[0].areaId;
+                this.area.descritivoEscolhido = response.data[0].area;
 
-                this.designado.valorEscolhido = response.data[0].designadoId
-                this.designado.descritivoEscolhido = response.data[0].designadoName
+                this.tipo.valorEscolhido = response.data[0].tipoId;
+                this.tipo.descritivoEscolhido = response.data[0].operacoes;
+
+                this.requisitante.valorEscolhido = response.data[0].requisitanteId;
+                this.requisitante.descritivoEscolhido = response.data[0].requisitante;
+
+                this.designado.valorEscolhido = response.data[0].designadoId;
+                this.designado.descritivoEscolhido = response.data[0].designadoName;
+
+                this.urgencia.valorEscolhido = response.data[0].urgenciaId;
+                this.urgencia.descritivoEscolhido = response.data[0].urgencias;
                 
-                this.editar.usuario_id = response.data[0].requisitanteId
-                this.editar.designado_id = response.data[0].designadoId
-                this.editar.chamado_setor_id = response.data[0].setorId
+                this.editar.usuario_id = response.data[0].requisitanteId;
+                this.editar.designado_id = response.data[0].designadoId;
+                this.editar.chamado_setor_id = response.data[0].setorId;
+                this.editar.area_id = response.data[0].areaId;
+                this.editar.operacao_id = response.data[0].tipoId;
+                this.editar.data_agenda = response.data[0].data_agenda;
+                this.editar.hora_agenda = response.data[0].hora_agenda;
+                this.editar.nivel = response.data[0].nivel;
+                this.editar.impacto = response.data[0].impacto;
+                this.editar.urgencia_id = response.data[0].urgenciaId;
 
                 const setorResponse = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/chamados/setores`, config);
                 setorResponse.data.forEach(element => {
-                    this.setorOptions.push({descri: element.descricao, valor: element.id})
+                    this.setorOptions.push({descri: element.descricao, valor: element.id});
+                });
+
+                const areaResponse = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/chamados/areas/${this.setorChamado}`, config);
+                areaResponse.data.forEach(element => {
+                    this.areaOptions.push({descri: element.descricao, valor: element.id});
+                });
+
+                const tipoResponse = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/chamados/tipos/${response.data[0].areaId}`, config);
+                tipoResponse.data.forEach(element => {
+                    this.tipoOptions.push({descri: element.descricao, valor: element.id});
                 });
 
                 const requisitanteResponse = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/chamados/requisitante`, config);
                 requisitanteResponse.data.forEach(element => {
-                    this.requisitanteOptions.push({descri: element.name, valor: element.id})
+                    this.requisitanteOptions.push({descri: element.name, valor: element.id});
                 });
 
                 const designadoResponse = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/chamados/designado/${this.department_id}`, config);
                 designadoResponse.data.forEach(element => {
-                    this.designadoOptions.push({descri: element.name, valor: element.id})
+                    this.designadoOptions.push({descri: element.name, valor: element.id});
+                });
+
+                const urgenciaResponse = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/chamados/urgencias`, config);
+                urgenciaResponse.data.forEach(element => {
+                    this.urgenciaOptions.push({descri: element.descricao, valor: element.id});
                 });
 
                 this.carregandoinfo = false;
@@ -296,7 +353,6 @@ export default {
                     this.carregandoinfo = true;
                     this.modalVerChamado = true;
                     const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/chamados/get_one/${id}`, config);
-                    console.log(response.data[0])
                     this.visualizar = response.data[0];
                     this.carregandoinfo = false;
                 } catch (error) {
@@ -311,8 +367,12 @@ export default {
                 const loggedIn = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/auth/logado`, config);
                 const intranet_id = loggedIn.data[0].intranet_id
                 const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/chamados/get_all/1/${intranet_id}`, config);
-                this.designadoOptions = [],
-                this.requisitanteOptions = []
+                this.designadoOptions = [];
+                this.requisitanteOptions = [];
+                this.setorOptions = [];
+                this.areaOptions = [];
+                this.tipoOptions = [];
+                this.urgenciaOptions = [];
                 this.chamados = response.data;
                 this.resultados = response.data.length;
                 this.fullLoad = true;
@@ -333,8 +393,9 @@ export default {
             }
             const loggedIn = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/auth/logado`, config);
             const intranet_id = loggedIn.data[0].intranet_id
-            this.department_id = loggedIn.data[0].intranet_department_id
             const setor_chamado = loggedIn.data[0].intranet_setor_chamado
+            this.department_id = loggedIn.data[0].intranet_department_id
+            this.setorChamado = loggedIn.data[0].intranet_setor_chamado
             const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/chamados/get_all/${setor_chamado}/${intranet_id}`, config);
             this.chamados = response.data;
             this.resultados = response.data.length;

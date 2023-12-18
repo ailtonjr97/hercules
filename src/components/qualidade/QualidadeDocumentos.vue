@@ -91,7 +91,7 @@
                 <form-floating :placeholder="'Tempo Previsto:'" :id="'tempo_previsto'" :type="'text'" v-model="visualizar.tempo_previsto" ></form-floating>
             </div>
             <div class="row mt-2" v-if="!carregandoinfo">
-                <textarea-floating :placeholder="'Motivo da NC:'" :id="'instrucao_reprocesso'" v-model="visualizar.instrucao_reprocesso" ></textarea-floating>
+                <textarea-floating :placeholder="'Instrução de reprocesso:'" :id="'instrucao_reprocesso'" v-model="visualizar.instrucao_reprocesso" ></textarea-floating>
                 <hr class="mt-2">
             </div>
             <div class="row">
@@ -101,7 +101,7 @@
                 <form-floating :placeholder="'ODF Retrabalho:'" :id="'pcp_odf_retrabalho'" :type="'text'" v-model="visualizar.pcp_odf_retrabalho" ></form-floating>
             </div>
             <div class="row mt-2" v-if="!carregandoinfo">
-                <textarea-floating :placeholder="'Motivo da NC:'" :id="'instrucao_reprocesso'" v-model="visualizar.instrucao_reprocesso" ></textarea-floating>
+                <textarea-floating :placeholder="'Observações do PCP:'" :id="'instrucao_reprocesso'" v-model="visualizar.pcp_obs" ></textarea-floating>
                 <hr class="mt-2">
             </div>
             <div class="row">

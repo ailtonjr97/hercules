@@ -2,7 +2,7 @@
     <div class="col">
         <div class="form-floating">
         <select class="form-select" :id="id" :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" >
-            <option selected :value="valorEscolhido">{{ descritivoEscolhido }}</option>
+<!--             <option selected :value="valorEscolhido">{{ descritivoEscolhido }}</option> -->
             <option v-for="option in options" :value="option.valor">{{ option.descri }}</option>
         </select>
         <label :for="id">{{ placeholder }}</label>
