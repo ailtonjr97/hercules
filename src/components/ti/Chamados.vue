@@ -366,6 +366,7 @@ export default {
                 this.carregando = true;
                 const loggedIn = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/auth/logado`, config);
                 const intranet_id = loggedIn.data[0].intranet_id
+                const setor_chamado = loggedIn.data[0].intranet_setor_chamado
                 const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/chamados/get_all/${setor_chamado}/${intranet_id}`, config);
                 this.designadoOptions = [];
                 this.requisitanteOptions = [];
