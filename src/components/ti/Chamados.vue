@@ -96,6 +96,7 @@
                         <td>
                             <button class="button-8" @click="verChamado(chamado.id)"><i class="fa-solid fa-eye" style="font-size: 14px;"></i></button>
                             <button class="button-8" @click="editarChamado(chamado.id)"><i class="fa-solid fa-pen-to-square" style="font-size: 14px;"></i></button>
+                            <button class="button-8" @click="fecharChamado(chamado.id)"><i class="fa-solid fa-pen-to-square" style="font-size: 14px;"></i></button>
                         </td>
                         </tr>
                     </tbody>
@@ -157,6 +158,9 @@
             <chosen-select-floating :descritivoEscolhido="requisitante.descritivoEscolhido" :valorEscolhido="requisitante.valorEscolhido" :options="requisitanteOptions" v-model="editar.usuario_id" :placeholder="'Requisitante:'" :id="'usuario_id'"></chosen-select-floating>
             <chosen-select-floating :descritivoEscolhido="designado.descritivoEscolhido" :valorEscolhido="designado.valorEscolhido" :options="designadoOptions" v-model="editar.designado_id" :placeholder="'Designado:'" :id="'designado_id'"></chosen-select-floating>
             <chosen-select-floating :descritivoEscolhido="urgencia.descritivoEscolhido" :valorEscolhido="urgencia.valorEscolhido" :options="urgenciaOptions" v-model="editar.urgencia_id" :placeholder="'Urgência:'" :id="'urgencia_id'"></chosen-select-floating>
+        </div>
+        <div class="row mt-2" v-if="!carregandoinfo">
+            <textarea-floating :placeholder="'Resposta do chamado:'" :id="'definicao'" v-model="editar.definicao" ></textarea-floating>
         </div>
     </template>
     <template v-slot:buttons v-if="!carregandoinfo">
@@ -237,7 +241,8 @@ export default {
                 hora_agenda: {},
                 nivel: {},
                 impacto: {},
-                urgencia_id: {}
+                urgencia_id: {},
+                definicao: ''
             }
 
         }
@@ -259,6 +264,7 @@ export default {
             this.areaOptions = [];
             this.tipoOptions = [];
             this.urgenciaOptions = [];
+            this.editar.definicao = '';
         },
         async openModalDescricao(text){
             this.modalDescricao = true;
@@ -346,6 +352,7 @@ export default {
                 console.log(error);
                 alert("Falha ao preenchar campos do chamado.");
                 this.carregando = false;
+                this.refresh();
             }
         },
         async verChamado(id){
@@ -378,6 +385,7 @@ export default {
                 this.resultados = response.data.length;
                 this.fullLoad = true;
                 this.carregando = false;
+                this.editar.definicao = '';
         } catch (error) {
             console.log(error)
             alert("Erro ao carregar página. Favor tentar mais tarde.");
