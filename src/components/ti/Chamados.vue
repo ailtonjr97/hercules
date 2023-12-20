@@ -416,8 +416,5 @@ export default {
             this.carregando = false;
         }
     },
-    beforeUnmount(){
-        clearInterval(this.atualizador)
-    }
 }
 </script>

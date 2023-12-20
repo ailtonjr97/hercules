@@ -11,10 +11,11 @@ import Qualidade from './components/qualidade/Qualidade.vue';
 import QualidadeDocumentos from './components/qualidade/QualidadeDocumentos.vue';
 import AnexPage from './components/ui/AnexPage.vue';
 import DocumentosArquivados from './components/qualidade/DocumentosArquivados.vue';
-import Totvs from './components/totvs/Totvs.vue'
-import TotvsApis from './components/totvs/TotvsApis.vue'
-import Ti from './components/ti/Ti.vue'
-import ChamadosTi from './components/ti/Chamados.vue'
+import Totvs from './components/totvs/Totvs.vue';
+import TotvsApis from './components/totvs/TotvsApis.vue';
+import Ti from './components/ti/Ti.vue';
+import ChamadosTi from './components/ti/Chamados.vue';
+import Rh from './components/rh/Rh.vue';
 
 const router = createRouter({
     history: createWebHistory(),
@@ -28,6 +29,7 @@ const router = createRouter({
       { path: '/qualidade', component: Qualidade, meta: {carregando: true}},
       { path: '/qualidade/documentos', component: QualidadeDocumentos, meta: {carregando: true}},
       { path: '/qualidade/documentos/arquivados', component: DocumentosArquivados, meta: {carregando: true}},
+      { path: '/rh', component: Rh},
       { path: '/ti', component: Ti},
       { path: '/ti/chamados', component: ChamadosTi},
       { path: '/totvs', component: Totvs},

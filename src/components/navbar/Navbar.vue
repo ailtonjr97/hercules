@@ -23,7 +23,7 @@
                         </div>
                     </router-link>
                 </li>
-                <li class="nav-item" style="margin: 0 5% 0 0;">
+                <li class="nav-item" style="margin: 0 5% 0 0; width: 50px;">
                     <router-link to="/qualidade" class="nav-link">
                         <div class="item">
                             <i class="fa-solid fa-file-circle-check" style="margin-left: 50%;"></i>
@@ -31,7 +31,15 @@
                         </div>
                     </router-link>
                 </li>
-                <li class="nav-item" style="margin: 0 0 0 0;">
+                <li class="nav-item" style="margin: 0 0 0 0; width: 50px;">
+                    <router-link to="/rh" class="nav-link">
+                        <div class="item">
+                            <i class="fa-solid fa-users"></i>
+                            <span class="caption">RH</span>
+                        </div>
+                    </router-link>
+                </li>
+                <li class="nav-item" style="margin: 0 0 0 0; width: 60px;">
                     <router-link to="/ti" class="nav-link">
                         <div class="item">
                             <i class="fa-solid fa-computer"></i>
