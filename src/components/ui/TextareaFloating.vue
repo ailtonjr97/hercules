@@ -1,7 +1,7 @@
 <template>
     <div class="col">
         <div class="form-floating">
-            <textarea :style="'height: 80px'" class="form-control" :placeholder="placeholder" :id="id" @input="$emit('update:modelValue', $event.target.value)" :readonly="readonly">{{ modelValue }}</textarea>
+            <textarea :style="`height: ${altura}px`" class="form-control" :placeholder="placeholder" :id="id" @input="$emit('update:modelValue', $event.target.value)" :readonly="readonly">{{ modelValue }}</textarea>
             <label :for="id">{{ placeholder }}</label>
         </div>
     </div>
@@ -10,6 +10,11 @@
 <script>
     export default{
         props: {
+            altura: {
+                type: String,
+                default: '80',
+                required: false
+            },
             id: {
                 type: String,
                 required: true,

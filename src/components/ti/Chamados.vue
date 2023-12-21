@@ -33,8 +33,9 @@
                             <ul class="list-group list-group-flush">
                                 <div class="row">
                                     <div class="col d-flex justify-content-end">
-                                        <button style="font-size: 14px; width: 8%; text-align: center;" class="button-8 mt-2 mb-2" @click="verChamado(chamado.id)"><i class="fa-solid fa-eye"></i></button>
-                                        <button style="font-size: 14px; width: 8%; text-align: center;" class="button-8 mt-2 mb-2" @click="editarChamado(chamado.id)"><i class="fa-solid fa-pen-to-square"></i></button>
+                                        <button style="font-size: 14px; width: 12%; text-align: center;" class="button-8 mt-2 mb-2" @click="chatChamado(chamado.id)"><i class="fa-solid fa-comments"></i></button>
+                                        <button style="font-size: 14px; width: 12%; text-align: center;" class="button-8 mt-2 mb-2" @click="verChamado(chamado.id)"><i class="fa-solid fa-eye"></i></button>
+                                        <button style="font-size: 14px; width: 12%; text-align: center;" class="button-8 mt-2 mb-2" @click="editarChamado(chamado.id)"><i class="fa-solid fa-pen-to-square"></i></button>
                                     </div>
                                 </div>
                             </ul>
@@ -96,7 +97,6 @@
                         <td>
                             <button class="button-8" @click="verChamado(chamado.id)"><i class="fa-solid fa-eye" style="font-size: 14px;"></i></button>
                             <button class="button-8" @click="editarChamado(chamado.id)"><i class="fa-solid fa-pen-to-square" style="font-size: 14px;"></i></button>
-                            <button class="button-8" @click="fecharChamado(chamado.id)"><i class="fa-solid fa-pen-to-square" style="font-size: 14px;"></i></button>
                         </td>
                         </tr>
                     </tbody>
@@ -105,42 +105,53 @@
             </div>
     </div>
 
-    <modal v-if="modalVerChamado" :title="'Dados do chamado:'">
-        <template v-slot:body>
-            <loading v-if="carregandoinfo"></loading>
-            <div v-if="!carregandoinfo">
-            <div class="row">
-                <form-floating :placeholder="'Setor:'" :id="'setor'" :type="'text'" v-model="visualizar.setor" ></form-floating>
-                <form-floating :placeholder="'Área:'" :id="'area'" :type="'text'" v-model="visualizar.area" ></form-floating>
-                <form-floating :placeholder="'Tipo:'" :id="'operacoes'" :type="'text'" v-model="visualizar.operacoes" ></form-floating>
-                <form-floating :placeholder="'Status:'" :id="'status'" :type="'text'" v-model="visualizar.status" ></form-floating>
-                <form-floating :placeholder="'Data Previsão:'" :id="'data_agenda'" :type="'date'" v-model="visualizar.data_agenda" ></form-floating>
-                <form-floating :placeholder="'Hora Previsão:'" :id="'hora_agenda'" :type="'time'" v-model="visualizar.hora_agenda" ></form-floating>
-            </div>
-            <div class="row mt-2">
-                <form-floating :placeholder="'Nível:'" :id="'nivel'" :type="'text'" v-model="visualizar.nivel" ></form-floating>
-                <form-floating :placeholder="'Impacto:'" :id="'impacto'" :type="'text'" v-model="visualizar.impacto" ></form-floating>
-                <form-floating :placeholder="'Designado:'" :id="'designado_id'" :type="'text'" v-model="visualizar.designadoName" ></form-floating>
-                <form-floating :placeholder="'Requisitante:'" :id="'usuario_id'" :type="'text'" v-model="visualizar.requisitante" ></form-floating>
-                <form-floating :placeholder="'Urgência:'" :id="'urgencias'" :type="'text'" v-model="visualizar.urgencias" ></form-floating>
-            </div>
-            </div>
-        </template>
-        <template v-slot:buttons v-if="!carregandoinfo">
-            <button class="button-8" @click="modalVerChamado = false">Fechar</button>
-        </template>
-    </modal>
+<modal v-if="modalVerChamado" :title="'Dados do chamado:'">
+    <template v-slot:body>
+        <loading v-if="carregandoinfo"></loading>
+        <div v-if="!carregandoinfo">
+        <div class="row">
+            <form-floating :placeholder="'Setor:'" :id="'setor'" :type="'text'" v-model="visualizar.setor" ></form-floating>
+            <form-floating :placeholder="'Área:'" :id="'area'" :type="'text'" v-model="visualizar.area" ></form-floating>
+            <form-floating :placeholder="'Tipo:'" :id="'operacoes'" :type="'text'" v-model="visualizar.operacoes" ></form-floating>
+            <form-floating :placeholder="'Status:'" :id="'status'" :type="'text'" v-model="visualizar.status" ></form-floating>
+            <form-floating :placeholder="'Data Previsão:'" :id="'data_agenda'" :type="'date'" v-model="visualizar.data_agenda" ></form-floating>
+            <form-floating :placeholder="'Hora Previsão:'" :id="'hora_agenda'" :type="'time'" v-model="visualizar.hora_agenda" ></form-floating>
+        </div>
+        <div class="row mt-2">
+            <form-floating :placeholder="'Nível:'" :id="'nivel'" :type="'text'" v-model="visualizar.nivel" ></form-floating>
+            <form-floating :placeholder="'Impacto:'" :id="'impacto'" :type="'text'" v-model="visualizar.impacto" ></form-floating>
+            <form-floating :placeholder="'Designado:'" :id="'designado_id'" :type="'text'" v-model="visualizar.designadoName" ></form-floating>
+            <form-floating :placeholder="'Requisitante:'" :id="'usuario_id'" :type="'text'" v-model="visualizar.requisitante" ></form-floating>
+            <form-floating :placeholder="'Urgência:'" :id="'urgencias'" :type="'text'" v-model="visualizar.urgencias" ></form-floating>
+        </div>
+        </div>
+    </template>
+    <template v-slot:buttons v-if="!carregandoinfo">
+        <button class="button-8" @click="modalVerChamado = false">Fechar</button>
+    </template>
+</modal>
 
-    <modal v-if="modalDescricao" :title="'Descrição completa:'">
-        <template v-slot:body>
-            <div class="row">
-                <textarea-floating :placeholder="'Descrição:'" :id="'descricao_completa'" v-model="modalDescricaoText"></textarea-floating>
-            </div>
-        </template>
-        <template v-slot:buttons v-if="!carregandoinfo">
-            <button class="button-8" @click="modalDescricao = false">Fechar</button>
-        </template>
-    </modal>
+<modal v-if="modalDescricao" :title="'Descrição completa:'">
+    <template v-slot:body>
+        <div class="row">
+            <textarea-floating :placeholder="'Descrição:'" :id="'descricao_completa'" v-model="modalDescricaoText" :altura="'250'"></textarea-floating>
+        </div>
+    </template>
+    <template v-slot:buttons v-if="!carregandoinfo">
+        <button class="button-8" @click="modalDescricao = false">Fechar</button>
+    </template>
+</modal>
+
+<modal v-if="mostraChatChamado" :title="'Chat do chamado:'">
+    <template v-slot:body>
+        <loading v-if="carregandoinfo"></loading>
+        <balao-right v-for="chat in chats.filter(teste => teste.usuario_id == id_intranet)" :key="chat.id" :mensagem="chat.descricao" style="margin-left: 50%;"></balao-right>
+        <balao v-for="chat in chats.filter(teste => teste.usuario_id != id_intranet)" :key="chat.id" :mensagem="chat.descricao"></balao>
+    </template>
+    <template v-slot:buttons v-if="!carregandoinfo">
+        <button class="button-8" @click="mostraChatChamado = false">Fechar</button>
+    </template>
+</modal>
 
 <modal v-if="modalEditarChamado" :title="'Editar chamado:'">
     <template v-slot:body>
@@ -173,6 +184,8 @@
 <script>
 import axios from 'axios';
 
+import Balao from '../ui/Balao.vue'
+import BalaoRight from '../ui/BalaoRight.vue'
 import TableTop from '../ui/TableTop.vue';
 import TableSearch from '../ui/TableSearch.vue';
 import Modal from '../ui/Modal.vue';
@@ -191,6 +204,8 @@ const config = {
 
 export default {
     components: {
+        BalaoRight,
+        Balao,
         TableTop,
         TableSearch,
         Modal,
@@ -203,6 +218,8 @@ export default {
     },
     data(){
         return{
+            id_intranet: null,
+            mostraChatChamado: false,
             setorChamado: null,
             modoTabela: false,
             modoCard: true,
@@ -216,6 +233,7 @@ export default {
             whereId: null,
             carregando: true,
             chamados: [],
+            chats: [],
             fullLoad: false,
             carregandoinfo: false,
             visualizar: {},
@@ -248,6 +266,13 @@ export default {
         }
     },
     methods: {
+        async chatChamado(id){
+            this.carregandoinfo = true;
+            this.mostraChatChamado = true;
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/chamados/chat/${id}`, config);
+            this.chats = response.data;
+            this.carregandoinfo = false;
+        },
         async mudarModoCard(){
             this.modoCard = true;
             this.modoTabela = false;
@@ -402,6 +427,7 @@ export default {
             }
             const loggedIn = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/auth/logado`, config);
             const intranet_id = loggedIn.data[0].intranet_id
+            this.id_intranet = loggedIn.data[0].intranet_id
             const setor_chamado = loggedIn.data[0].intranet_setor_chamado
             this.department_id = loggedIn.data[0].intranet_department_id
             this.setorChamado = loggedIn.data[0].intranet_setor_chamado
