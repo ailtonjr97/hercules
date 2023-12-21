@@ -33,7 +33,7 @@
                             <ul class="list-group list-group-flush">
                                 <div class="row">
                                     <div class="col d-flex justify-content-end">
-                                        <button style="font-size: 14px; width: 12%; text-align: center;" class="button-8 mt-2 mb-2" @click="chatChamado(chamado.id)"><i class="fa-solid fa-comments"></i></button>
+                                        <button style="font-size: 14px; width: 12%; text-align: center;" class="button-8 mt-2 mb-2" @click="chatChamado(chamado.id)"><i class="fa-solid fa-comments"><span v-if="chamado.contagem != 0" style="margin-left: 20%;">{{chamado.contagem}}</span></i></button>
                                         <button style="font-size: 14px; width: 12%; text-align: center;" class="button-8 mt-2 mb-2" @click="verChamado(chamado.id)"><i class="fa-solid fa-eye"></i></button>
                                         <button style="font-size: 14px; width: 12%; text-align: center;" class="button-8 mt-2 mb-2" @click="editarChamado(chamado.id)"><i class="fa-solid fa-pen-to-square"></i></button>
                                     </div>
@@ -145,8 +145,8 @@
 <modal v-if="mostraChatChamado" :title="'Chat do chamado:'">
     <template v-slot:body>
         <loading v-if="carregandoinfo"></loading>
-        <balao-right v-for="chat in chats.filter(teste => teste.usuario_id == id_intranet)" :key="chat.id" :mensagem="chat.descricao" style="margin-left: 50%;"></balao-right>
-        <balao v-for="chat in chats.filter(teste => teste.usuario_id != id_intranet)" :key="chat.id" :mensagem="chat.descricao" :usuario="chat.userDestino"></balao>
+        <balao-right v-for="chat in chats.filter(x => x.usuario_id == id_intranet)" :key="chat.id" :mensagem="chat.descricao" style="margin-left: 50%;"></balao-right>
+        <balao v-for="chat in chats.filter(x => x.usuario_id != id_intranet)" :key="chat.id" :mensagem="chat.descricao" :usuario="chat.userDestino"></balao>
     </template>
     <template v-slot:buttons v-if="!carregandoinfo">
         <button class="button-8" @click="mostraChatChamado = false">Fechar</button>
