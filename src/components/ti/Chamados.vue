@@ -432,6 +432,9 @@ export default {
             this.department_id = loggedIn.data[0].intranet_department_id
             this.setorChamado = loggedIn.data[0].intranet_setor_chamado
             const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/chamados/get_all/${setor_chamado}/${intranet_id}`, config);
+            response.data.forEach(element => {
+                console.log(element.contagem)
+            });
             this.chamados = response.data;
             this.resultados = response.data.length;
             this.fullLoad = true;
