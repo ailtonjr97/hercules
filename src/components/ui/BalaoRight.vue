@@ -1,7 +1,7 @@
 <template>
     <div id="cbwrap">
         <div class="speech right">
-            {{ mensagem }}
+          {{ mensagem }}
         </div>
     </div>
 </template>
@@ -22,12 +22,12 @@
 /* (A) SPEECH BOX */
 .speech {
   /* (A1) FONT & COLORS */
-  font-size: 1.2em;
+  font-size: 1em;
   color: #fff;
-  background: #a53d38;
+  background: rgb(58, 97, 155);
 
   /* (A2) DIMENSIONS */
-  padding: 20px;
+  padding: 10px;
   border-radius: 10px;
   max-width: 600px;
 }
@@ -52,8 +52,9 @@
   border-left: 0;
 }
 .speech.right::after {
-  border-left-color: #a53d38;
+  border-left-color: rgb(58, 97, 155);
   border-right: 0;
+  margin-right: 0.5%;
 }
 
 /* (D) POSITION THE CALLOUT */

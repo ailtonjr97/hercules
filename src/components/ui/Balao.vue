@@ -1,6 +1,8 @@
 <template>
     <div id="cbwrap">
         <div class="speech left">
+          <em style="font-size: 14px;">{{ usuario }}:</em>
+          <br>
             {{ mensagem }}
         </div>
     </div>
@@ -13,6 +15,11 @@
                 type: String,
                 default: 'Inserir chat chamado',
                 required: true
+            },
+            usuario: {
+                type: String,
+                default: 'Inserir usuario chamado',
+                required: true
             }
         }
     }
@@ -22,12 +29,12 @@
 /* (A) SPEECH BOX */
 .speech {
   /* (A1) FONT & COLORS */
-  font-size: 1.2em;
+  font-size: 1em;
   color: #fff;
-  background: #a53d38;
+  background: rgb(58, 97, 155);
 
   /* (A2) DIMENSIONS */
-  padding: 20px;
+  padding: 10px;
   border-radius: 10px;
   max-width: 600px;
 }
@@ -48,8 +55,9 @@
   border-bottom: 0;
 }
 .speech.left::after {
-  border-right-color: #a53d38;
+  border-right-color: rgb(58, 97, 155);
   border-left: 0;
+  margin-left: 0.5%;
 }
 .speech.right::after {
   border-left-color: #a53d38;

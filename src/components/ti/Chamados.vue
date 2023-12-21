@@ -146,7 +146,7 @@
     <template v-slot:body>
         <loading v-if="carregandoinfo"></loading>
         <balao-right v-for="chat in chats.filter(teste => teste.usuario_id == id_intranet)" :key="chat.id" :mensagem="chat.descricao" style="margin-left: 50%;"></balao-right>
-        <balao v-for="chat in chats.filter(teste => teste.usuario_id != id_intranet)" :key="chat.id" :mensagem="chat.descricao"></balao>
+        <balao v-for="chat in chats.filter(teste => teste.usuario_id != id_intranet)" :key="chat.id" :mensagem="chat.descricao" :usuario="chat.userDestino"></balao>
     </template>
     <template v-slot:buttons v-if="!carregandoinfo">
         <button class="button-8" @click="mostraChatChamado = false">Fechar</button>
