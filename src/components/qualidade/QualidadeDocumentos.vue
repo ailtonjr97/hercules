@@ -167,10 +167,10 @@
                 <form-floating :placeholder="'Tempo Previsto:'" :id="'tempo_previsto'" :type="'text'" v-model="modalEdpBody.tempo_previsto"></form-floating>
             </div>
             <div class="row mt-2" v-if="!carregandoinfo">
-                <input type="file" @change="uploadFile" ref="file">
+                <textarea-floating :placeholder="'Instrução de Reprocesso:'" :id="'instrucao_reprocesso'" v-model="modalEdpBody.instrucao_reprocesso"></textarea-floating>
             </div>
             <div class="row mt-2" v-if="!carregandoinfo">
-                <textarea-floating :placeholder="'Instrução de Reprocesso:'" :id="'instrucao_reprocesso'" v-model="modalEdpBody.instrucao_reprocesso"></textarea-floating>
+                <input type="file" @change="uploadFile" ref="file" multiple>
             </div>
         </template>
         <template v-slot:buttons v-if="!carregandoinfo">
@@ -189,6 +189,9 @@
             </div>
             <div class="row mt-2" v-if="!carregandoinfo">
                 <textarea-floating :placeholder="'Observações PCP:'" :id="'pcp_obs'" v-model="modalPcpBody.pcp_obs"></textarea-floating>
+            </div>
+            <div class="row mt-2" v-if="!carregandoinfo">
+                <input type="file" @change="uploadFile" ref="file" multiple>
             </div>
         </template>
         <template v-slot:buttons v-if="!carregandoinfo">
@@ -296,10 +299,9 @@
         },
         data(){
             return{
+                images: [],
                 ip: import.meta.env.VITE_BACKEND_IP,
-                anexoEndereco: '',
                 anexosModal: false,
-                images: null,
                 userSetor: null,
                 whereId: null,
                 modalEdp: false,
@@ -319,6 +321,7 @@
                 pcp_responsaveis: [],
                 producao_responsaveis: [],
                 qualidade_responsaveis: [],
+                anexos: [],
                 criar: {
                     data: '',
                     inspetor: '',
@@ -362,6 +365,18 @@
             }
         },
         methods: {
+            async uploadFile() {
+                this.images = this.$refs.file.files
+            },
+            async submitFile() {
+                for(let i = 0; i < this.images.length; i++){
+                    const formData = new FormData();
+                    formData.append('file', this.images[i]);
+                    const headers = { 'Content-Type': 'multipart/form-data', 'Authorization': document.cookie };
+                    await axios.post(`${import.meta.env.VITE_BACKEND_IP}/qualidade/documentos/anexos/${this.whereId}`, formData, { headers });
+                }
+                for (var member in this.images) delete this.images[member];
+            },
             async openAnexoModal(anexoNome){
                 try {
                     this.carregandoinfo = true;
@@ -410,15 +425,6 @@
                 this.modalEdp = false;
                 this.edp_responsaveis = [];
             },
-            async uploadFile() {
-                this.Images = this.$refs.file.files[0];
-            },
-            async submitFile() {
-                const formData = new FormData();
-                formData.append('edp_anexo', this.Images);
-                const headers = { 'Content-Type': 'multipart/form-data', 'Authorization': document.cookie };
-                await axios.post(`${import.meta.env.VITE_BACKEND_IP}/qualidade/documentos/editarEdpAnexo/${this.whereId}`, formData, { headers });
-            },
             async enviarEdp(){
                 try {
                     const config = {
@@ -427,7 +433,6 @@
                         }
                     }
                     this.closeModalEdp();
-                    console.log(this.modalEdpBody)
                     await axios.post(`${import.meta.env.VITE_BACKEND_IP}/qualidade/documentos/editarEdp/${this.whereId}`, this.modalEdpBody, config);
                     this.submitFile();
                     this.pageRefresh();

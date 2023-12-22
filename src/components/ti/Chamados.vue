@@ -28,14 +28,14 @@
                             <div class="card-body">
                                 <h6 v-if="chamado.descricao.length <= 255">{{ chamado.descricao}}</h6>
                                 <h6 v-else>{{ chamado.descricao.substring(0, 255)}}... <a @click="openModalDescricao(chamado.descricao)" style="color: #0d6efd; text-decoration: underline; cursor: pointer;">(ver mais)</a></h6>
-                                <p class="card-text">- {{ chamado.name }}</p>
+                                <p class="card-text">- {{ chamado.name }} ({{ chamado.descri_filial }})</p>
                             </div>
                             <ul class="list-group list-group-flush">
                                 <div class="row">
                                     <div class="col d-flex justify-content-end">
-                                        <button style="font-size: 14px; width: 12%; text-align: center;" class="button-8 mt-2 mb-2" @click="chatChamado(chamado.id)"><i class="fa-solid fa-comments"><span v-if="chamado.contagem != 0" style="margin-left: 20%;">{{chamado.contagem}}</span></i></button>
-                                        <button style="font-size: 14px; width: 12%; text-align: center;" class="button-8 mt-2 mb-2" @click="verChamado(chamado.id)"><i class="fa-solid fa-eye"></i></button>
-                                        <button style="font-size: 14px; width: 12%; text-align: center;" class="button-8 mt-2 mb-2" @click="editarChamado(chamado.id)"><i class="fa-solid fa-pen-to-square"></i></button>
+                                        <button style="font-size: 14px; text-align: center;" class="button-8 mt-2 mb-2" @click="chatChamado(chamado.id)"><i class="fa-solid fa-comments"><span v-if="chamado.contagem != 0" style="margin-left: 20%;">{{chamado.contagem}}</span></i></button>
+                                        <button style="font-size: 14px; text-align: center;" class="button-8 mt-2 mb-2" @click="verChamado(chamado.id)"><i class="fa-solid fa-eye"></i></button>
+                                        <button style="font-size: 14px; text-align: center;" class="button-8 mt-2 mb-2" @click="editarChamado(chamado.id)"><i class="fa-solid fa-pen-to-square"></i></button>
                                     </div>
                                 </div>
                             </ul>
@@ -95,6 +95,7 @@
                             <p v-else>{{ chamado.descricao.substring(0, 180)}}... <a @click="openModalDescricao(chamado.descricao)" style="color: #0d6efd; text-decoration: underline; cursor: pointer;">(ver mais)</a></p>
                         </td>
                         <td>
+                            <button style="font-size: 14px; width: 40%; text-align: center;" class="button-8 mt-2 mb-2" @click="chatChamado(chamado.id)"><i class="fa-solid fa-comments"><span v-if="chamado.contagem != 0" style="margin-left: 20%;">{{chamado.contagem}}</span></i></button>
                             <button class="button-8" @click="verChamado(chamado.id)"><i class="fa-solid fa-eye" style="font-size: 14px;"></i></button>
                             <button class="button-8" @click="editarChamado(chamado.id)"><i class="fa-solid fa-pen-to-square" style="font-size: 14px;"></i></button>
                         </td>
@@ -116,6 +117,7 @@
             <form-floating :placeholder="'Status:'" :id="'status'" :type="'text'" v-model="visualizar.status" ></form-floating>
             <form-floating :placeholder="'Data Previsão:'" :id="'data_agenda'" :type="'date'" v-model="visualizar.data_agenda" ></form-floating>
             <form-floating :placeholder="'Hora Previsão:'" :id="'hora_agenda'" :type="'time'" v-model="visualizar.hora_agenda" ></form-floating>
+            <form-floating :placeholder="'Rustdesk:'" :id="'anydesk'" :type="'text'" v-model="visualizar.anydesk" ></form-floating>
         </div>
         <div class="row mt-2">
             <form-floating :placeholder="'Nível:'" :id="'nivel'" :type="'text'" v-model="visualizar.nivel" ></form-floating>
@@ -386,6 +388,7 @@ export default {
                     this.modalVerChamado = true;
                     const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/chamados/get_one/${id}`, config);
                     this.visualizar = response.data[0];
+                    console.log(this.visualizar)
                     this.carregandoinfo = false;
                 } catch (error) {
                     console.log(error)

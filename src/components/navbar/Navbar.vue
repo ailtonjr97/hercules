@@ -67,6 +67,7 @@
         </div>
     </ul>
   </div>
+  <p class="mt-2" @click="dolar" style="width: 7%; color: #fff; text-align: center;">$ {{parseFloat(cotacao).toFixed(2)}}</p>
   <h6 style="width: 10%; color: #fff; text-align: center;">{{ name }}</h6>
 </nav>
 
@@ -81,10 +82,15 @@ export default{
     data(){
         return{
             isAdmin: 0,
-            name: ''
+            name: '',
+            cotacao: ''
         }
     },
     methods: {
+        async dolar(){
+            const dolar = await axios.get('http://economia.awesomeapi.com.br/json/last/USD-BRL');
+            this.cotacao = dolar.data.USDBRL.ask;
+        },
         async logout(){
             function deleteAllCookies() {
                     const cookies = document.cookie.split(";");
@@ -117,6 +123,8 @@ export default{
         const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/users/${decoded.id}`, config);
         this.isAdmin = response.data[0].admin;
         this.name = response.data[0].name;
+        const dolar = await axios.get('http://economia.awesomeapi.com.br/json/last/USD-BRL');
+        this.cotacao = dolar.data.USDBRL.ask;
     }
 }
 </script>
