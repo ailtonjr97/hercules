@@ -151,6 +151,9 @@
                 <form-floating :placeholder="'Quantidade Metragem:'" :id="'quantidade_metragem'" :type="'text'" v-model="criar.quantidade_metragem" ></form-floating>
                 <form-floating :placeholder="'CPNC Número:'" :id="'cpnc_numero'" :type="'text'" v-model="criar.cpnc_numero" ></form-floating>
             </div>
+            <div class="row mt-2" v-if="!carregandoinfo">
+                <input type="file" @change="uploadFile" ref="file" multiple>
+            </div>
         </template>
         <template v-slot:buttons v-if="!carregandoinfo">
             <button class="button-8" @click="closeModalNovoDocumento">Fechar</button>
@@ -375,7 +378,14 @@
                     const headers = { 'Content-Type': 'multipart/form-data', 'Authorization': document.cookie };
                     await axios.post(`${import.meta.env.VITE_BACKEND_IP}/qualidade/documentos/anexos/${this.whereId}`, formData, { headers });
                 }
-                for (var member in this.images) delete this.images[member];
+            },
+            async submitFileCriar(id) {
+                for(let i = 0; i < this.images.length; i++){
+                    const formData = new FormData();
+                    formData.append('file', this.images[i]);
+                    const headers = { 'Content-Type': 'multipart/form-data', 'Authorization': document.cookie };
+                    await axios.post(`${import.meta.env.VITE_BACKEND_IP}/qualidade/documentos/anexos/${id}`, formData, { headers });
+                }
             },
             async openAnexoModal(anexoNome){
                 try {
@@ -594,8 +604,16 @@
                 try {
                     this.carregando = true;
                     this.closeModalNovoDocumento();
-                    await axios.post(`${import.meta.env.VITE_BACKEND_IP}/qualidade/documentos/create`, this.criar, config);
-                    this.pageRefresh();
+                    const response = await axios.post(`${import.meta.env.VITE_BACKEND_IP}/qualidade/documentos/create`, this.criar, config);
+                    if(response.status == 200){
+                        const id = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/qualidade/documentos/ultimo-documento`, config);
+                        this.submitFileCriar(id.data[0].id);
+                        this.pageRefresh();
+                    }else{
+                        console.log(error)
+                        alert('Erro ao criar documento. Favor tentar mais tarde.')
+                        this.carregando = false;
+                    }
                 } catch (error) {
                     console.log(error)
                     alert('Erro ao criar documento. Favor tentar mais tarde.')
