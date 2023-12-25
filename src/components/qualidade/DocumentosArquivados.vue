@@ -39,6 +39,7 @@
                 </td>
                 <td>
                     <button class="button-8" @click="verDocumento(documento.id)">Visualizar</button>
+                    <button class="button-8" v-if="documento.anexo != 0" @click="openAnexoModal(documento.id)">Anexos</button>
                 </td>
                 </tr>
             </tbody>
@@ -119,6 +120,20 @@
           <button class="button-8" @click="closeVerDocumento()">Fechar</button>
     </template>
   </modal>
+
+  <modal v-if="anexosModal" :title="'Anexos:'">
+        <template v-slot:body>
+            <loading v-if="carregandoinfo"></loading>
+            <div class="row mt-2" v-if="!carregandoinfo">
+                <div v-for="anexo in listaArquivos" :key="anexo.id" class="col">
+                    <a target="__blank" :href="`${ip}/files/${anexo.filename}`">{{ anexo.original_name }}</a>
+                </div>
+            </div>
+        </template>
+        <template v-slot:buttons v-if="!carregandoinfo">
+            <button class="button-8" @click="closeAnexoModal">Fechar</button>
+        </template>
+    </modal>
 </template>
 
 <script>
@@ -152,6 +167,9 @@ export default {
     },
     data(){
         return{
+            ip: import.meta.env.VITE_BACKEND_IP,
+            listaArquivos: [],
+            anexosModal: false,
             modalNc: false,
             carregando: true,
             documentos: [],
@@ -177,6 +195,22 @@ export default {
                 alert('Erro ao mostrar documentos. Favor tentar mais tarde.')
                 this.carregandoinfo = false
             }
+        },
+        async openAnexoModal(id){
+                try {
+                    this.carregandoinfo = true;
+                    this.anexosModal = true;
+                    const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/qualidade/documentos/anexos-lista/${id}`, config);
+                    this.listaArquivos = response.data
+                    this.carregandoinfo = false;
+                } catch (error) {
+                    console.log(error)
+                    alert("Falha ao abrir anexos. Favor tentar mais tarde.")
+                }
+        },
+        async closeAnexoModal(){
+            this.anexosModal = false;
+            this.images = []
         },
     },
     async created(){

@@ -63,7 +63,7 @@ export default{
                 const response = await axios.post(`${import.meta.env.VITE_BACKEND_IP}/auth/login`, this.form);
                 console.log(response)
                 if(response && response.status == 200){
-                  document.cookie = `jwt=${response.data}`
+                  document.cookie = `jwt=${response.data};path=/`
                   window.location.href = `${import.meta.env.VITE_LOGIN_IP}/home`;
                 }else{
                   this.logador = false;

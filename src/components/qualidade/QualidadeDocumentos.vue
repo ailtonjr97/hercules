@@ -5,6 +5,7 @@
             <template v-slot:tableButtons>
                 <button class="button-8 mb-2" @click="abrirModalNovoDocumento">Novo Documento</button>
                 <router-link to="/qualidade/documentos/arquivados" class="button-8">Arquivados</router-link>
+                <button class="button-8 mb-2" @click="pageRefresh">Atualizar</button>
             </template>
         </table-top>
         <div class="row mb-2">
@@ -55,7 +56,7 @@
                     <button class="button-8" @click="openModalQualidade(documento.id)" v-if="documento.producao_preenchido == 1 && documento.qualidade_preenchido == 0 && userSetor == 'Qualidade'">Preencher Qualidade</button>
                     <button class="button-8" @click="openModalNc(documento.id)" v-if="documento.motivo_nc_preenchido == 0">Motivo NC</button>
                     <button class="button-8" @click="inactivateDocument(documento.id)" v-if="documento.edp_preenchido == 1 && documento.pcp_preenchido == 1 && documento.producao_preenchido == 1 && documento.qualidade_preenchido == 1 && documento.motivo_nc_preenchido == 1">Arquivar</button>
-                    <button class="button-8" v-if="documento.edp_anexo != ''" @click="openAnexoModal(documento.edp_anexo)">Anexos</button>
+                    <button class="button-8" v-if="documento.anexo != 0" @click="openAnexoModal(documento.id)">Anexos</button>
                 </td>
                 </tr>
             </tbody>
@@ -219,6 +220,9 @@
             <div class="row mt-2" v-if="!carregandoinfo">
                 <textarea-floating :placeholder="'Observações da Produção:'" :id="'pcp_obs'" v-model="modalProducaoBody.prod_obs"></textarea-floating>
             </div>
+            <div class="row mt-2" v-if="!carregandoinfo">
+                <input type="file" @change="uploadFile" ref="file" multiple>
+            </div>
         </template>
         <template v-slot:buttons v-if="!carregandoinfo">
             <button class="button-8" @click="closeModalProducao">Fechar</button>
@@ -237,6 +241,9 @@
             <div class="row mt-2" v-if="!carregandoinfo">
                 <textarea-floating :placeholder="'Parecer da Qualidade:'" :id="'quali_parecer'" v-model="modalQualidadeBody.quali_parecer"></textarea-floating>
             </div>
+            <div class="row mt-2" v-if="!carregandoinfo">
+                <input type="file" @change="uploadFile" ref="file" multiple>
+            </div>
         </template>
         <template v-slot:buttons v-if="!carregandoinfo">
             <button class="button-8" @click="closeModalQualidade">Fechar</button>
@@ -250,6 +257,9 @@
             <div class="row mt-2" v-if="!carregandoinfo">
                 <textarea-floating :placeholder="'Preencher motivo NC:'" :id="'motivo_nc'" v-model="modalNcBody.motivo_nc"></textarea-floating>
             </div>
+            <div class="row mt-2" v-if="!carregandoinfo">
+                <input type="file" @change="uploadFile" ref="file" multiple>
+            </div>
         </template>
         <template v-slot:buttons v-if="!carregandoinfo">
             <button class="button-8" @click="closeModalNc">Fechar</button>
@@ -261,7 +271,9 @@
         <template v-slot:body>
             <loading v-if="carregandoinfo"></loading>
             <div class="row mt-2" v-if="!carregandoinfo">
-                <a target="__blank" :href="`${ip}/files/${anexoEndereco}`">{{ anexoEndereco }}</a>
+                <div v-for="anexo in listaArquivos" :key="anexo.id" class="col">
+                    <a target="__blank" :href="`${ip}/files/${anexo.filename}`">{{ anexo.original_name }}</a>
+                </div>
             </div>
         </template>
         <template v-slot:buttons v-if="!carregandoinfo">
@@ -302,6 +314,7 @@
         },
         data(){
             return{
+                listaArquivos: [],
                 images: [],
                 ip: import.meta.env.VITE_BACKEND_IP,
                 anexosModal: false,
@@ -378,20 +391,27 @@
                     const headers = { 'Content-Type': 'multipart/form-data', 'Authorization': document.cookie };
                     await axios.post(`${import.meta.env.VITE_BACKEND_IP}/qualidade/documentos/anexos/${this.whereId}`, formData, { headers });
                 }
+                this.pageRefresh();
             },
             async submitFileCriar(id) {
-                for(let i = 0; i < this.images.length; i++){
-                    const formData = new FormData();
-                    formData.append('file', this.images[i]);
-                    const headers = { 'Content-Type': 'multipart/form-data', 'Authorization': document.cookie };
-                    await axios.post(`${import.meta.env.VITE_BACKEND_IP}/qualidade/documentos/anexos/${id}`, formData, { headers });
+                try {
+                    for(let i = 0; i < this.images.length; i++){
+                        const formData = new FormData();
+                        formData.append('file', this.images[i]);
+                        const headers = { 'Content-Type': 'multipart/form-data', 'Authorization': document.cookie };
+                        await axios.post(`${import.meta.env.VITE_BACKEND_IP}/qualidade/documentos/anexos/${id}`, formData, { headers });
+                    }
+                    this.pageRefresh();
+                } catch (error) {
+                    console.log(error)
                 }
             },
-            async openAnexoModal(anexoNome){
+            async openAnexoModal(id){
                 try {
                     this.carregandoinfo = true;
                     this.anexosModal = true;
-                    this.anexoEndereco = anexoNome
+                    const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/qualidade/documentos/anexos-lista/${id}`, config);
+                    this.listaArquivos = response.data
                     this.carregandoinfo = false;
                 } catch (error) {
                     console.log(error)
@@ -400,6 +420,7 @@
             },
             async closeAnexoModal(){
                 this.anexosModal = false;
+                this.images = []
             },
             async inactivateDocument(id){
                 try {
@@ -445,7 +466,6 @@
                     this.closeModalEdp();
                     await axios.post(`${import.meta.env.VITE_BACKEND_IP}/qualidade/documentos/editarEdp/${this.whereId}`, this.modalEdpBody, config);
                     this.submitFile();
-                    this.pageRefresh();
                 } catch (error) {
                     console.log(error)
                     alert("Falha ao preenchar campos do EDP.");
@@ -468,7 +488,7 @@
                 try {
                     this.closeModalNc();
                     await axios.post(`${import.meta.env.VITE_BACKEND_IP}/qualidade/documentos/editarNc/${this.whereId}`, this.modalNcBody, config);
-                    this.pageRefresh();
+                    this.submitFile();
                 } catch (error) {
                     alert("Falha ao preenchar campos da NC.");
                     this.carregando = false;
@@ -503,7 +523,7 @@
                 try {
                     this.closeModalQualidade();
                     await axios.post(`${import.meta.env.VITE_BACKEND_IP}/qualidade/documentos/editarQualidade/${this.whereId}`, this.modalQualidadeBody, config);
-                    this.pageRefresh();
+                    this.submitFile();
                 } catch (error) {
                     console.log(error)
                     alert("Falha ao preenchar campos da Qualidade.");
@@ -524,7 +544,7 @@
                 try {
                     this.closeModalPcp();
                     await axios.post(`${import.meta.env.VITE_BACKEND_IP}/qualidade/documentos/editarPcp/${this.whereId}`, this.modalPcpBody, config);
-                    this.pageRefresh();
+                    this.submitFile();
                 } catch (error) {
                     console.log(error)
                     alert("Falha ao preenchar campos do PCP.");
@@ -539,7 +559,7 @@
                 try {
                     this.closeModalProducao();
                     await axios.post(`${import.meta.env.VITE_BACKEND_IP}/qualidade/documentos/editarProducao/${this.whereId}`, this.modalProducaoBody, config);
-                    this.pageRefresh();
+                    this.submitFile();
                 } catch (error) {
                     console.log(error)
                     alert("Falha ao preenchar campos da Produção.");
@@ -587,6 +607,7 @@
                     Object.keys(this.modalNcBody).forEach(function(key, index) {
                         self.modalNcBody[key] = '';
                     });
+                    this.images = []
                 } catch (error) {
                    console.log(error)
                    alert("Falha ao carregar página.");
@@ -608,7 +629,6 @@
                     if(response.status == 200){
                         const id = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/qualidade/documentos/ultimo-documento`, config);
                         this.submitFileCriar(id.data[0].id);
-                        this.pageRefresh();
                     }else{
                         console.log(error)
                         alert('Erro ao criar documento. Favor tentar mais tarde.')
