@@ -57,11 +57,9 @@ export default{
               this.logador = true;
               function delete_cookie(name) {
                 document.cookie = name +'=; Path=/qualidade; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-                document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
               }
               delete_cookie('jwt')
                 const response = await axios.post(`${import.meta.env.VITE_BACKEND_IP}/auth/login`, this.form);
-                console.log(response)
                 if(response && response.status == 200){
                   document.cookie = `jwt=${response.data};path=/`
                   window.location.href = `${import.meta.env.VITE_LOGIN_IP}/home`;
@@ -70,6 +68,7 @@ export default{
                   throw new Error();
                 }
                 }catch (error) {
+                  console.log(error)
                   this.logador = false;
                   this.error = true;
             }
