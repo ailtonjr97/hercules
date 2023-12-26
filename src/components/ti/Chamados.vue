@@ -29,6 +29,8 @@
                                 <h6 v-if="chamado.descricao.length <= 255">{{ chamado.descricao}}</h6>
                                 <h6 v-else>{{ chamado.descricao.substring(0, 255)}}... <a @click="openModalDescricao(chamado.descricao)" style="color: #0d6efd; text-decoration: underline; cursor: pointer;">(ver mais)</a></h6>
                                 <p class="card-text">- {{ chamado.name }} ({{ chamado.descri_filial }})</p>
+                                <button style="font-size: 14px; text-align: center;" class="button-8 mt-2 mb-2">{{ chamado.area }}</button>
+                                <button style="font-size: 14px; text-align: center;" class="button-8 mt-2 mb-2">{{ chamado.operacoes }}</button>
                             </div>
                             <ul class="list-group list-group-flush">
                                 <div class="row">

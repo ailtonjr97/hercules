@@ -16,6 +16,7 @@ import TotvsApis from './components/totvs/TotvsApis.vue';
 import Ti from './components/ti/Ti.vue';
 import ChamadosTi from './components/ti/Chamados.vue';
 import Rh from './components/rh/Rh.vue';
+import RhDocumentos from './components/rh/Documentos.vue';
 
 const router = createRouter({
     history: createWebHistory(),
@@ -30,6 +31,7 @@ const router = createRouter({
       { path: '/qualidade/documentos', component: QualidadeDocumentos, meta: {carregando: true}},
       { path: '/qualidade/documentos/arquivados', component: DocumentosArquivados, meta: {carregando: true}},
       { path: '/rh', component: Rh},
+      { path: '/rh/documentos', component: RhDocumentos},
       { path: '/ti', component: Ti},
       { path: '/ti/chamados', component: ChamadosTi},
       { path: '/totvs', component: Totvs},
