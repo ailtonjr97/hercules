@@ -64,6 +64,7 @@ export default{
                   document.cookie = `jwt=${response.data};path=/`
                   window.location.href = `${import.meta.env.VITE_LOGIN_IP}/home`;
                 }else{
+                  console.log(error)
                   this.logador = false;
                   throw new Error();
                 }
