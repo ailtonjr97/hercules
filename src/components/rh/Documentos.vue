@@ -106,7 +106,7 @@
         <loading v-if="carregandoinfo"></loading>
         <div class="row mt-2" v-if="!carregandoinfo">
             <div class="table-wrapper table-responsive table-striped mb-5">
-            <table class="fl-table" id="myTable">
+            <table class="fl-table mb-3" id="myTable">
             <thead>
                 <tr style="height: 25px">
                 <th>ID</th>
@@ -287,12 +287,15 @@ export default {
             }
         },
         async submitFile() {
+            this.novoDocumento = false;
             for(let i = 0; i < this.selectedFiles.length; i++){
                 const formData = new FormData();
                 formData.append('file', this.selectedFiles[i]);
                 const headers = { 'Content-Type': 'multipart/form-data', 'Authorization': document.cookie };
                 await axios.post(`${import.meta.env.VITE_BACKEND_IP}/rh/documentos/anexos/${this.whereId}`, formData, { headers });
             }
+            this.images = [];
+            this.selectedFiles = [];
             this.pageRefresh();
         },
         async showPopup(){
@@ -349,6 +352,7 @@ export default {
         },
         async fecharNovoDocumento(){
             this.images = [];
+            this.selectedFiles = [];
             this.novoDocumento = false;
             this.selectedFiles = [];
         },

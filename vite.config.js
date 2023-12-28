@@ -8,7 +8,7 @@ dotenv.config()
 export default defineConfig({
   plugins: [vue()],
   server: {
-    host: process.env.SERVERIP,
-    port: 8080
+    host: true,
+    port: 80
   }
 })
