@@ -390,7 +390,6 @@ export default {
                     this.modalVerChamado = true;
                     const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/chamados/get_one/${id}`, config);
                     this.visualizar = response.data[0];
-                    console.log(this.visualizar)
                     this.carregandoinfo = false;
                 } catch (error) {
                     console.log(error)

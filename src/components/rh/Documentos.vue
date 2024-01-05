@@ -32,6 +32,7 @@
                 <td>
                     <button class="button-8 mb-2" @click="abrirNovoDocumento(documento.id)"><i style="font-size: 14px;" class="fa-solid fa-file-circle-plus"></i></button>
                     <button class="button-8" @click="openAnexoModal(documento.id)"><i style="font-size: 14px;" class="fa-solid fa-folder-open"></i></button>
+                    <button class="button-8" @click="openEditarModal(documento.id)"><i style="font-size: 14px;" class="fa-solid fa-eye"></i></button>
                 </td>
                 </tr>
             </tbody>
@@ -43,8 +44,8 @@
     <template v-slot:body>
         <loading v-if="carregandoinfo"></loading>
         <div class="row" v-if="!carregandoinfo">
-            <select-floating :placeholder="'Natureza:'" :id="'natureza'" :options="[{valor: 'fisica', descri: 'Pessoa Física'}, {valor: 'juridica', descri: 'Pessoa Jurídica'}, {valor: 'outros', descri: 'Outros'}]" v-model="criar.natureza"></select-floating>
-            <select-floating :placeholder="'Regime:'" :id="'regime'" :options="[{valor: 'clt', descri: 'CLT'}, {valor: 'estagio', descri: 'Estágio'}, {valor: 'terceiro', descri: 'Terceiro'}, {valor: 'fornecedor', descri: 'Fornecedor'}, {valor: 'transportadora', descri: 'Transportadora'}, {valor: 'outros', descri: 'Outros'}]" v-model="criar.regime"></select-floating>
+            <select-floating :placeholder="'Natureza:'" :id="'natureza'" :options="[{valor: 'Pessoa Física', descri: 'Pessoa Física'}, {valor: 'Pessoa Jurídica', descri: 'Pessoa Jurídica'}, {valor: 'Outros', descri: 'Outros'}]" v-model="criar.natureza"></select-floating>
+            <select-floating :placeholder="'Regime:'" :id="'regime'" :options="[{valor: 'CLT', descri: 'CLT'}, {valor: 'Estágio', descri: 'Estágio'}, {valor: 'Terceiro', descri: 'Terceiro'}, {valor: 'Fornecedor', descri: 'Fornecedor'}, {valor: 'Transportadora', descri: 'Transportadora'}, {valor: 'Outros', descri: 'Outros'}]" v-model="criar.regime"></select-floating>
             <form-floating :placeholder="'Nome:'" :id="'nome'" :type="'text'" v-model="criar.nome"></form-floating>
         </div>
         <div class="row mt-2" v-if="!carregandoinfo">
@@ -131,72 +132,51 @@
         <button class="button-8" @click="closeAnexoModal">Fechar</button>
     </template>
 </modal>
+
+<modal v-if="visualizarModal" :title="'Visualizar informações:'">
+    <template v-slot:body>
+        <loading v-if="carregandoinfo"></loading>
+        <div class="row mt-2" v-if="!carregandoinfo">
+            <form-floating :placeholder="'Natureza:'" :id="'natureza'" :type="'text'" v-model="listaVisualizar.natureza" ></form-floating>
+            <form-floating :placeholder="'Regime:'" :id="'regime'" :type="'text'" v-model="listaVisualizar.regime" ></form-floating>
+            <form-floating :placeholder="'Nome:'" :id="'nome'" :type="'text'" v-model="listaVisualizar.nome" ></form-floating>
+        </div>
+        <div class="row mt-2" v-if="!carregandoinfo">
+            <form-floating :placeholder="'Endereço:'" :id="'endereco'" :type="'text'" v-model="listaVisualizar.endereco" ></form-floating>
+            <form-floating :placeholder="'Número:'" :id="'endereco_numero'" :type="'number'" v-model="listaVisualizar.endereco_numero" ></form-floating>
+            <form-floating :placeholder="'Bairro:'" :id="'bairro'" :type="'text'" v-model="listaVisualizar.bairro" ></form-floating>
+            <form-floating :placeholder="'Cidade:'" :id="'cidade'" :type="'text'" v-model="listaVisualizar.cidade" ></form-floating>
+            <form-floating :placeholder="'País:'" :id="'pais'" :type="'text'" v-model="listaVisualizar.pais" ></form-floating>
+        </div>
+    </template>
+    <template v-slot:buttons v-if="!carregandoinfo">
+        <button class="button-8" @click="closeVisualizarModal">Fechar</button>
+    </template>
+</modal>
+
+<modal v-if="editarModal" :title="'Editar informações:'">
+    <template v-slot:body>
+        <loading v-if="carregandoinfo"></loading>
+        <div class="row mt-2" v-if="!carregandoinfo">
+            <chosen-select-floating :descritivoEscolhido="natureza.descritivoEscolhido" :valorEscolhido="natureza.valorEscolhido" :options="[{valor: 'Pessoa Física', descri: 'Pessoa Física'}, {valor: 'Pessoa Jurídica', descri: 'Pessoa Jurídica'}, {valor: 'Outros', descri: 'Outros'}]" v-model="editar.natureza" :placeholder="'Natureza:'" :id="'natureza'"></chosen-select-floating>
+            <chosen-select-floating :descritivoEscolhido="regime.descritivoEscolhido" :valorEscolhido="regime.valorEscolhido" :options="[{valor: 'CLT', descri: 'CLT'}, {valor: 'Estágio', descri: 'Estágio'}, {valor: 'Terceiro', descri: 'Terceiro'}, {valor: 'Fornecedor', descri: 'Fornecedor'}, {valor: 'Transportadora', descri: 'Transportadora'}, {valor: 'Outros', descri: 'Outros'}]" v-model="editar.regime" :placeholder="'Regime:'" :id="'regime'"></chosen-select-floating>
+            <form-floating :placeholder="'Nome:'" :id="'nome'" :type="'text'" v-model="editar.nome"></form-floating>
+        </div>
+        <div class="row mt-2" v-if="!carregandoinfo">
+            <form-floating :placeholder="'Endereço:'" :id="'endereco'" :type="'text'" v-model="editar.endereco"></form-floating>
+            <form-floating :placeholder="'Número:'" :id="'endereco_numero'" :type="'text'" v-model="editar.endereco_numero"></form-floating>
+            <form-floating :placeholder="'Bairro:'" :id="'bairro'" :type="'text'" v-model="editar.bairro"></form-floating>
+            <form-floating :placeholder="'Cidade:'" :id="'cidade'" :type="'text'" v-model="editar.cidade"></form-floating>
+        </div>
+    </template>
+    <template v-slot:buttons v-if="!carregandoinfo">
+        <button class="button-8" @click="closeEditarModal">Fechar</button>
+        <button class="button-8" @click="enviarEditar">Editar</button>
+    </template>
+</modal>
     
 </template>
 
-<style scoped>
-.drop-container {
-  position: relative;
-  display: flex;
-  gap: 10px;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 200px;
-  padding: 20px;
-  border-radius: 10px;
-  border: 2px dashed #555;
-  color: #444;
-  cursor: pointer;
-  transition: background .2s ease-in-out, border .2s ease-in-out;
-}
-
-.drop-container:hover,
-.drop-container.drag-active {
-  background: #eee;
-  border-color: #111;
-}
-
-.drop-container:hover .drop-title,
-.drop-container.drag-active .drop-title {
-  color: #222;
-}
-
-.drop-title {
-  color: #444;
-  font-size: 20px;
-  font-weight: bold;
-  text-align: center;
-  transition: color .2s ease-in-out;
-}
-
-input[type=file] {
-  width: 350px;
-  max-width: 100%;
-  color: #000000;
-  padding: 5px;
-  background: #fff;
-  border-radius: 10px;
-  border: 1px solid #555;
-}
-
-input[type=file]::file-selector-button {
-  margin-top: 6%;
-  margin-left: 40%;
-  border: none;
-  background: #396ddd;
-  padding: 10px 20px;
-  border-radius: 10px;
-  color: #fff;
-  cursor: pointer;
-  transition: background .2s ease-in-out;
-}
-
-input[type=file]::file-selector-button:hover {
-  background: #0d45a5;
-}
-</style>
-    
 <script>
 import axios from 'axios';
 
@@ -209,7 +189,7 @@ import SelectFloating from '../ui/SelectFloating.vue';
 import TextareaFloating from '../ui/TextareaFloating.vue';
 import AnexFloating from '../ui/AnexFloating.vue';
 import Popup from '../ui/Popup.vue';
-import AnexBox from '../ui/AnexBox.vue'
+import ChosenSelectFloating from '../ui/ChosenSelectFloating.vue'
 
 const config = {
     headers: {
@@ -228,10 +208,17 @@ export default {
         SelectFloating,
         TextareaFloating,
         AnexFloating,
-        AnexBox
+        ChosenSelectFloating
     },
     data(){
         return{
+            natureza: {valorEscolhido: '', descritivoEscolhido: ''},
+            naturezaOptions: [],
+            regime: {valorEscolhido: '', descritivoEscolhido: ''},
+            regimeOptions: [],
+            editarModal: false,
+            listaVisualizar: {},
+            visualizarModal: false,
             ip: import.meta.env.VITE_BACKEND_IP,
             anexosModal: false,
             whereId: null,
@@ -255,9 +242,77 @@ export default {
                 cidade: '',
                 pais: ''
             },
+            editar: {
+                natureza: {},
+                regime: {},
+                nome: '',
+                endereco: '',
+                endereco_numero: '',
+                bairro: '',
+                cidade: ''
+            }
         }
     },
     methods: {
+        async openEditarModal(id){
+            try {
+                this.whereId = id;
+                this.editarModal = true;
+                this.carregandoinfo = true;
+                const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/rh/documentos/entidade/${id}`, config);
+
+                this.natureza.valorEscolhido = response.data[0].natureza;
+                this.natureza.descritivoEscolhido = response.data[0].natureza;
+                this.regime.valorEscolhido = response.data[0].regime;
+                this.regime.descritivoEscolhido = response.data[0].regime;
+
+                this.editar.natureza = response.data[0].natureza;
+                this.editar.regime = response.data[0].regime;
+                this.editar.nome = response.data[0].nome;
+                this.editar.endereco = response.data[0].endereco;
+                this.editar.endereco_numero = response.data[0].endereco_numero;
+                this.editar.bairro = response.data[0].bairro;
+                this.editar.cidade = response.data[0].cidade;
+                
+                this.carregandoinfo = false;
+            } catch (error) {
+                alert("Erro ao carregar modal. Favor tentar mais tarde.")
+            }
+        },
+        async enviarEditar(){
+            try {
+                this.closeEditarModal()
+                await axios.post(`${import.meta.env.VITE_BACKEND_IP}/rh/documentos/editar-entidade/${this.whereId}`, this.editar, config);
+                this.pageRefresh();
+            } catch (error) {
+                console.log(error);
+                alert("Falha ao preencher campos da entidade.");
+                this.carregando = false;
+                this.refresh();
+            }
+        },
+        async closeEditarModal(){
+            this.editarModal = false;
+        },
+        async openVisualizarModal(id){
+            try {
+                this.visualizarModal = true;
+                this.carregandoinfo = true;
+                const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/rh/documentos/entidade/${id}`, config);
+                this.listaVisualizar = response.data[0];
+                this.carregandoinfo = false;
+            } catch (error) {
+                alert("Erro ao abrir modal.");
+            }
+        },
+        async closeVisualizarModal(){
+            try {
+                this.visualizarModal = false;
+                this.listaVisualizar = [];
+            } catch (error) {
+                alert("Erro ao fechar modal.")
+            }
+        },
         async closeAnexoModal(){
             this.anexosModal = false;
             this.images = [];
@@ -379,3 +434,66 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+.drop-container {
+  position: relative;
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  padding: 20px;
+  border-radius: 10px;
+  border: 2px dashed #555;
+  color: #444;
+  cursor: pointer;
+  transition: background .2s ease-in-out, border .2s ease-in-out;
+}
+
+.drop-container:hover,
+.drop-container.drag-active {
+  background: #eee;
+  border-color: #111;
+}
+
+.drop-container:hover .drop-title,
+.drop-container.drag-active .drop-title {
+  color: #222;
+}
+
+.drop-title {
+  color: #444;
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  transition: color .2s ease-in-out;
+}
+
+input[type=file] {
+  width: 350px;
+  max-width: 100%;
+  color: #000000;
+  padding: 5px;
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #555;
+}
+
+input[type=file]::file-selector-button {
+  margin-top: 6%;
+  margin-left: 40%;
+  border: none;
+  background: #396ddd;
+  padding: 10px 20px;
+  border-radius: 10px;
+  color: #fff;
+  cursor: pointer;
+  transition: background .2s ease-in-out;
+}
+
+input[type=file]::file-selector-button:hover {
+  background: #0d45a5;
+}
+</style>
