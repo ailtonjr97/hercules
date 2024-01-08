@@ -6,13 +6,15 @@
             <template v-slot:tableButtons>
                 <button class="button-8 mb-2" @click="abrirNovaEntidade">Nova Entidade</button>
                 <button class="button-8 mb-2" @click="pageRefresh">Atualizar</button>
+                <button class="button-8 mb-2" @click="showInactives" v-if="!inactive">Inativos</button>
+                <button class="button-8 mb-2" @click="showActives" v-if="inactive">Ativos</button>
             </template>
         </table-top>
         <div class="row mb-2">
             <table-search :id="'procuraBtn0'" :num="0" :placeholder="'ID:'"></table-search>
             <table-search :id="'procuraBtn1'" :num="1" :placeholder="'Nome:'"></table-search>
         </div>
-        <div class="table-wrapper table-responsive table-striped mb-5">
+        <div class="table-wrapper table-responsive table-striped mb-5" v-if="!inactive">
             <table class="fl-table" id="myTable">
             <thead>
                 <tr style="height: 25px">
@@ -33,6 +35,31 @@
                     <button class="button-8 mb-2" @click="abrirNovoDocumento(documento.id)"><i style="font-size: 14px;" class="fa-solid fa-file-circle-plus"></i></button>
                     <button class="button-8" @click="openAnexoModal(documento.id)"><i style="font-size: 14px;" class="fa-solid fa-folder-open"></i></button>
                     <button class="button-8" @click="openEditarModal(documento.id)"><i style="font-size: 14px;" class="fa-solid fa-eye"></i></button>
+                    <button class="button-8" @click="openInativarModal(documento.id)"><i style="font-size: 14px;" class="fa-solid fa-ban"></i></button>
+                </td>
+                </tr>
+            </tbody>
+            </table>
+        </div>
+        <div class="table-wrapper table-responsive table-striped mb-5" v-if="inactive">
+            <table class="fl-table" id="myTable">
+            <thead>
+                <tr style="height: 25px">
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="inactive in inactives" :key="inactive.id">
+                <td>
+                    <p>{{ inactive.id }}</p>
+                </td>
+                <td>
+                    <p>{{ inactive.nome }}</p>
+                </td>
+                <td>
+                    <button class="button-8 mb-2" @click="reactivateUser(inactive.id)"><i style="font-size: 14px;" class="fa-solid fa-check"></i></button>
                 </td>
                 </tr>
             </tbody>
@@ -154,7 +181,7 @@
     </template>
 </modal>
 
-<modal v-if="editarModal" :title="'Editar informações:'">
+<modal v-if="editarModal" :title="'Informações da entidade:'">
     <template v-slot:body>
         <loading v-if="carregandoinfo"></loading>
         <div class="row mt-2" v-if="!carregandoinfo">
@@ -167,11 +194,23 @@
             <form-floating :placeholder="'Número:'" :id="'endereco_numero'" :type="'text'" v-model="editar.endereco_numero"></form-floating>
             <form-floating :placeholder="'Bairro:'" :id="'bairro'" :type="'text'" v-model="editar.bairro"></form-floating>
             <form-floating :placeholder="'Cidade:'" :id="'cidade'" :type="'text'" v-model="editar.cidade"></form-floating>
+            <chosen-select-floating :descritivoEscolhido="pais.descritivoEscolhido" :valorEscolhido="pais.valorEscolhido" :options="paises" v-model="editar.pais" :placeholder="'País:'" :id="'pais'"></chosen-select-floating>
         </div>
     </template>
     <template v-slot:buttons v-if="!carregandoinfo">
         <button class="button-8" @click="closeEditarModal">Fechar</button>
         <button class="button-8" @click="enviarEditar">Editar</button>
+    </template>
+</modal>
+
+<modal v-if="inativarModal" :title="'Inativar entidade:'">
+    <template v-slot:body>
+        <loading v-if="carregandoinfo"></loading>
+        <h1>{{ entidadeParaInativar }}</h1>
+    </template>
+    <template v-slot:buttons v-if="!carregandoinfo">
+        <button class="button-8" @click="fecharInativarModal">Não</button>
+        <button class="button-8" @click="enviarInativar">Sim</button>
     </template>
 </modal>
     
@@ -212,10 +251,15 @@ export default {
     },
     data(){
         return{
+            inactive: false,
+            inactives: [],
+            entidadeParaInativar: '',
+            inativarModal: false,
             natureza: {valorEscolhido: '', descritivoEscolhido: ''},
             naturezaOptions: [],
             regime: {valorEscolhido: '', descritivoEscolhido: ''},
             regimeOptions: [],
+            pais: {valorEscolhido: '', descritivoEscolhido: ''},
             editarModal: false,
             listaVisualizar: {},
             visualizarModal: false,
@@ -249,11 +293,78 @@ export default {
                 endereco: '',
                 endereco_numero: '',
                 bairro: '',
-                cidade: ''
+                cidade: '',
+                pais: {}
             }
         }
     },
     methods: {
+        async reactivateUser(id){
+            try {
+                await axios.get(`${import.meta.env.VITE_BACKEND_IP}/rh/documentos/ativar-entidade/${id}`, config);
+                this.pageRefresh();
+                this.inactive = false;
+            } catch (error) {
+                alert("Erro ao reativar usuário.")
+            }
+        },
+        async showActives(){
+            try {
+                this.carregando = true;
+                const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/rh/documentos/get_all`, config);
+                this.documentos = response.data;
+                this.resultados = response.data.length;
+                this.inactives = [];
+                this.inactive = false;
+                this.carregando = false;
+            } catch (error) {
+              alert("Erro ao mostrar lista de usuários ativos.")  
+            }
+        },
+        async showInactives(){
+            try {
+                this.carregando = true;
+                const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/rh/documentos/inactive`, config);
+                this.inactives = response.data;
+                this.inactive = true;
+                this.carregando = false;  
+            } catch (error) {
+              alert("Erro ao mostrar lista de usuários inativos.")  
+            }
+        },
+        async openInativarModal(id){
+            try {
+                this.carregandoinfo = true;
+                this.inativarModal = true;
+                const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/rh/documentos/entidade/${id}`, config);
+                this.whereId = id;
+                this.entidadeParaInativar = response.data[0].nome;
+                this.carregandoinfo = false;
+            } catch (error) {
+                this.inativarModal = false;
+                alert("Erro ao tentar abrir modal")
+            }
+        },
+        async enviarInativar(){
+            try {
+                this.carregando = true;
+                this.inativarModal = false;
+                await axios.get(`${import.meta.env.VITE_BACKEND_IP}/rh/documentos/inativar-entidade/${this.whereId}`, config);
+                this.pageRefresh();
+                this.entidadeParaInativar = '';
+            } catch (error) {
+                this.inativarModal = false;
+                alert("Erro ao tentar inativar usuário.") 
+            }
+        },
+        async fecharInativarModal(){
+            try {
+                this.entidadeParaInativar = '';
+                this.inativarModal = false;
+            } catch (error) {
+                alert("Erro ao fechar modal.") 
+            }
+        },
         async openEditarModal(id){
             try {
                 this.whereId = id;
@@ -265,6 +376,8 @@ export default {
                 this.natureza.descritivoEscolhido = response.data[0].natureza;
                 this.regime.valorEscolhido = response.data[0].regime;
                 this.regime.descritivoEscolhido = response.data[0].regime;
+                this.pais.valorEscolhido = response.data[0].pais;
+                this.pais.descritivoEscolhido = response.data[0].pais;
 
                 this.editar.natureza = response.data[0].natureza;
                 this.editar.regime = response.data[0].regime;
@@ -273,6 +386,12 @@ export default {
                 this.editar.endereco_numero = response.data[0].endereco_numero;
                 this.editar.bairro = response.data[0].bairro;
                 this.editar.cidade = response.data[0].cidade;
+                this.editar.pais = response.data[0].pais;
+
+                const responsePaises = await axios.get('https://servicodados.ibge.gov.br/api/v1/paises/{paises}');
+                responsePaises.data.forEach(element => {
+                    this.paises.push({descri: element.nome.abreviado, valor: element.nome.abreviado})
+                });
                 
                 this.carregandoinfo = false;
             } catch (error) {
@@ -373,6 +492,7 @@ export default {
                 this.selectedFiles = [];
                 this.showPopup();
                 this.novoDocumento = false;
+                this.carregando = false;
             } catch (error) {
                 console.log(error)
                 alert("Falha ao carregar página.");
