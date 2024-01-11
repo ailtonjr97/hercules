@@ -52,7 +52,7 @@
                     <button class="button-8" @click="verDocumento(documento.id)">Visualizar</button>
                     <button class="button-8" @click="openModalEdp(documento.id)" v-if="documento.edp_preenchido == 0 && userSetor == 'Engenharia de Processos'">Preencher EDP</button>
                     <button class="button-8" @click="openModalPcp(documento.id)" v-if="documento.edp_preenchido == 1 && documento.pcp_preenchido == 0 && userSetor == 'PCP'">Preencher PCP</button>
-                    <button class="button-8" @click="openModalProducao(documento.id)" v-if="documento.pcp_preenchido == 1 && documento.producao_preenchido == 0 && userSetor == 'Producao'">Preencher Produção</button>
+                    <button class="button-8" @click="openModalProducao(documento.id)" v-if="documento.pcp_preenchido == 1 && documento.producao_preenchido == 0 && (userSetor == 'Producao' || userSetor == 'Produção')">Preencher Produção</button>
                     <button class="button-8" @click="openModalQualidade(documento.id)" v-if="documento.producao_preenchido == 1 && documento.qualidade_preenchido == 0 && userSetor == 'Qualidade'">Preencher Qualidade</button>
                     <button class="button-8" @click="openModalNc(documento.id)" v-if="documento.motivo_nc_preenchido == 0">Motivo NC</button>
                     <button class="button-8" @click="inactivateDocument(documento.id)" v-if="documento.edp_preenchido == 1 && documento.pcp_preenchido == 1 && documento.producao_preenchido == 1 && documento.qualidade_preenchido == 1 && documento.motivo_nc_preenchido == 1">Arquivar</button>

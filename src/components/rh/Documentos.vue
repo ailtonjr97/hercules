@@ -82,6 +82,9 @@
             <form-floating :placeholder="'Cidade:'" :id="'cidade'" :type="'text'" v-model="criar.cidade"></form-floating>
             <select-floating :placeholder="'País:'" :id="'pais'" :options="paises" v-model="criar.pais"></select-floating>
         </div>
+        <div class="row mt-2" v-if="!carregandoinfo">
+            <form-floating :placeholder="'E-mail:'" :id="'email'" :type="'email'" v-model="criar.email"></form-floating>
+        </div>
     </template>
     <template v-slot:buttons v-if="!carregandoinfo">
         <button class="button-8" @click="fecharNovaEntidade">Fechar</button>
@@ -105,18 +108,18 @@
                                 <embed class="preview" :src="imagem.source" style="width: 100%; height: 600px;">
                             </div>
                             <div class="col-lg-4">
-                                <form-floating :placeholder="'Nome:'" :id="'nome'" :type="'text'" v-model="criar.nome"></form-floating>
-                                <form-floating class="mt-2" :placeholder="'Nome:'" :id="'nome'" :type="'text'" v-model="criar.nome"></form-floating>
+                                <form-floating :placeholder="'Título:'" :id="'titulo'" :type="'text'" v-model="anexoInfoTitulo[idx]"></form-floating>
+                                <textarea-floating :altura="'200'" class="mt-2" :placeholder="'Descritivo:'" :id="'descri'" v-model="anexoInfoDescritivo[idx]" ></textarea-floating>
                             </div>
                         </div>
                     </div>
                 </div>
-                <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-bs-slide="prev">
-                    <img src="/images/setaEsq.png" alt="" style="width: 25%;">
+                <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-bs-slide="prev" style="left: 1%; width: 5%; height: 20%; top: 50%;">
+                    <img src="/images/setaEsq.png" alt="" style="width: 100%;">
                     <span class="sr-only">Previous</span>
                 </a>
-                <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-bs-slide="next">
-                    <img src="/images/setaEsq.png" alt="" style="width: 25%; transform: rotate(180deg);">
+                <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-bs-slide="next" style="left: 95%; width: 5%; height: 20%; top: 50%;">
+                    <img src="/images/setaEsq.png" alt="" style="width: 100%; transform: rotate(180deg); color: white;">
                     <span class="sr-only">Next</span>
                 </a>
             </div>
@@ -139,6 +142,8 @@
                 <tr style="height: 25px">
                 <th>ID</th>
                 <th>Nome</th>
+                <th>Título</th>
+                <th>Descritivo</th>
                 </tr>
             </thead>
             <tbody>
@@ -148,6 +153,12 @@
                 </td>
                 <td>
                     <a target="__blank" :href="`${ip}/files/${anexo.filename}`">{{ anexo.original_name }}</a>
+                </td>
+                <td>
+                    <p>{{ anexo.rh_docs_titulo }}</p>
+                </td>
+                <td>
+                    <p>{{ anexo.rh_docs_descritivo }}</p>
                 </td>
                 </tr>
             </tbody>
@@ -284,8 +295,11 @@ export default {
                 endereco_numero: '',
                 bairro: '',
                 cidade: '',
-                pais: ''
+                pais: '',
+                email: ''
             },
+            anexoInfoTitulo:[],
+            anexoInfoDescritivo:[],
             editar: {
                 natureza: {},
                 regime: {},
@@ -454,23 +468,36 @@ export default {
             this.selectedFiles = [];
         },
         async uploadFile(e) {
-            let vm = this;
             this.selectedFiles = e.target.files;
             for (let i = 0; i < this.selectedFiles.length; i++) {
                 this.images.push({"source": URL.createObjectURL(this.selectedFiles[i])});
             }
         },
         async submitFile() {
-            this.novoDocumento = false;
-            for(let i = 0; i < this.selectedFiles.length; i++){
-                const formData = new FormData();
-                formData.append('file', this.selectedFiles[i]);
-                const headers = { 'Content-Type': 'multipart/form-data', 'Authorization': document.cookie };
-                await axios.post(`${import.meta.env.VITE_BACKEND_IP}/rh/documentos/anexos/${this.whereId}`, formData, { headers });
+            try {
+                this.novoDocumento = false;
+                this.carregando = true;
+                for(let i = 0; i < this.selectedFiles.length; i++){
+                    const formData = new FormData();
+                    formData.append('file', this.selectedFiles[i]);
+                    formData.append('titulo', this.anexoInfoTitulo[i]);
+                    formData.append('descritivo', this.anexoInfoDescritivo[i]);
+                    const headers = { 'Content-Type': 'multipart/form-data', 'Authorization': document.cookie };
+                    await axios.post(`${import.meta.env.VITE_BACKEND_IP}/rh/documentos/anexos/${this.whereId}`, formData, { headers });
+                };
+                for(let i = 0; i < this.selectedFiles.length; i++){
+                    this.anexoInfoTitulo[i] = '';
+                    this.anexoInfoDescritivo[i] = '';
+                };
+                this.images = [];
+                this.selectedFiles = [];
+                this.pageRefresh();
+            } catch (error) {
+                alert("Erro ao subir arquivos")
+                this.images = [];
+                this.selectedFiles = [];
+                this.pageRefresh();
             }
-            this.images = [];
-            this.selectedFiles = [];
-            this.pageRefresh();
         },
         async showPopup(){
             this.popup = true;
