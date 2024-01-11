@@ -35,6 +35,7 @@
                     <button class="button-8 mb-2" @click="abrirNovoDocumento(documento.id)"><i style="font-size: 14px;" class="fa-solid fa-file-circle-plus"></i></button>
                     <button class="button-8" @click="openAnexoModal(documento.id)"><i style="font-size: 14px;" class="fa-solid fa-folder-open"></i></button>
                     <button class="button-8" @click="openEditarModal(documento.id)"><i style="font-size: 14px;" class="fa-solid fa-eye"></i></button>
+                    <button class="button-8" @click="openEmailModal(documento.id)"><i style="font-size: 14px;" class="fa-solid fa-envelope"></i></button>
                     <button class="button-8" @click="openInativarModal(documento.id)"><i style="font-size: 14px;" class="fa-solid fa-ban"></i></button>
                 </td>
                 </tr>
@@ -207,6 +208,9 @@
             <form-floating :placeholder="'Cidade:'" :id="'cidade'" :type="'text'" v-model="editar.cidade"></form-floating>
             <chosen-select-floating :descritivoEscolhido="pais.descritivoEscolhido" :valorEscolhido="pais.valorEscolhido" :options="paises" v-model="editar.pais" :placeholder="'País:'" :id="'pais'"></chosen-select-floating>
         </div>
+        <div class="row mt-2" v-if="!carregandoinfo">
+            <form-floating :placeholder="'E-mail:'" :id="'email'" :type="'text'" v-model="editar.email"></form-floating>
+        </div>
     </template>
     <template v-slot:buttons v-if="!carregandoinfo">
         <button class="button-8" @click="closeEditarModal">Fechar</button>
@@ -222,6 +226,19 @@
     <template v-slot:buttons v-if="!carregandoinfo">
         <button class="button-8" @click="fecharInativarModal">Não</button>
         <button class="button-8" @click="enviarInativar">Sim</button>
+    </template>
+</modal>
+
+<modal v-if="emailModal" :title="'Requisição de documento por email:'">
+    <template v-slot:body>
+        <loading v-if="carregandoinfo"></loading>
+        <div class="row mt-2" v-if="!carregandoinfo">
+            <chosen-select-floating :options="[{valor: 'RG', descri: 'RG'}, {valor: 'CPF', descri: 'CPF'}, {valor: 'CNH', descri: 'CNH'}]" :placeholder="'Documento:'" :id="'emailSolicit'" v-model="emailSolicit"></chosen-select-floating>
+        </div>
+    </template>
+    <template v-slot:buttons v-if="!carregandoinfo">
+        <button class="button-8" @click="fecharEmailModal">Fechar</button>
+        <button class="button-8" @click="enviarEmail">Enviar</button>
     </template>
 </modal>
     
@@ -262,6 +279,8 @@ export default {
     },
     data(){
         return{
+            emailSolicit: '',
+            emailModal: false,
             inactive: false,
             inactives: [],
             entidadeParaInativar: '',
@@ -308,11 +327,53 @@ export default {
                 endereco_numero: '',
                 bairro: '',
                 cidade: '',
-                pais: {}
+                pais: {},
+                email: ''
             }
         }
     },
     methods: {
+        async fecharEmailModal(){
+            try {
+                this.emailSolicit = '';
+                this.emailModal = false
+            } catch (error) {
+                alert("Erro ao fechar modal.");
+            }
+        },
+        async enviarEmail(){
+            try {
+                this.emailModal = false;
+                this.carregando = true;
+                console.log(this.emailSolicit == '')
+                if(!this.emailSolicit == ''){
+                    const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/rh/documentos/entidade/${this.whereId}`, config);
+                    await axios.get(`${import.meta.env.VITE_BACKEND_IP}/rh/documentos/email/${response.data[0].email}/${this.emailSolicit}`, config);
+                    this.pageRefresh();
+                }else{
+                    alert("Favor escolher um documento");
+                    this.carregando = false;
+                    this.emailModal = true;
+                }
+            } catch (error) {
+                console.log(error);
+                alert("Erro ao enviar e-mail ou campo e-mail do usuário vazio. Favor tentar mais tarde.");
+                this.emailModal = false;
+                this.emailSolicit = '';
+                this.carregando = false;
+            }
+        },
+        async openEmailModal(id){
+            try {
+                this.carregandoinfo = true;
+                this.emailModal = true
+                this.whereId = id
+                this.carregandoinfo = false;
+            } catch (error) {
+                this.emailModal = false;
+                alert("Erro ao abrir modal de e-mail. Favor tentar mais tarde.");
+            }
+        },
         async reactivateUser(id){
             try {
                 await axios.get(`${import.meta.env.VITE_BACKEND_IP}/rh/documentos/ativar-entidade/${id}`, config);
@@ -401,6 +462,7 @@ export default {
                 this.editar.bairro = response.data[0].bairro;
                 this.editar.cidade = response.data[0].cidade;
                 this.editar.pais = response.data[0].pais;
+                this.editar.email = response.data[0].email;
 
                 const responsePaises = await axios.get('https://servicodados.ibge.gov.br/api/v1/paises/{paises}');
                 responsePaises.data.forEach(element => {
