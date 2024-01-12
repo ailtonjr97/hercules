@@ -17,6 +17,8 @@ import Ti from './components/ti/Ti.vue';
 import ChamadosTi from './components/ti/Chamados.vue';
 import Rh from './components/rh/Rh.vue';
 import RhDocumentos from './components/rh/Documentos.vue';
+import KorpLanding from './components/korp/KorpLanding.vue';
+import KorpProdutos from './components/korp/KorpProdutos.vue';
 
 const router = createRouter({
     history: createWebHistory(),
@@ -37,6 +39,8 @@ const router = createRouter({
       { path: '/totvs', component: Totvs},
       { path: '/totvs/apis', component: TotvsApis},
       {path: '/arquivos', component: AnexPage},
+      {path: '/korp', component: KorpLanding},
+      {path: '/korp/produtos', component: KorpProdutos},
       { path: '/:notFound(.*)', redirect: '/home' }
     ]
   });
@@ -54,13 +58,6 @@ router.beforeEach(async function(to, from, next) {
                 'Authorization': token
             }
         }
-        function delete_cookie(name) {
-          document.cookie = name +'=; Path=/qualidade; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-          document.cookie = name +'=; Path=/totvs; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-          document.cookie = name +'=; Path=/ti; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-          document.cookie = name +'=; Path=/undefined; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-        }
-        delete_cookie('jwt')
         const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/auth/verify-jwt`, config);
         if(response.status == 200){
           loggedIn = true;
