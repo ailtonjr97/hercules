@@ -29,7 +29,7 @@
             <p>{{ produto.DESCRI }}</p>
         </td>
         <td>
-            <button class="button-8" @click="openEditarModal(documento.id)"><i style="font-size: 14px;" class="fa-solid fa-eye"></i></button>
+            <button class="button-8"><i style="font-size: 14px;" class="fa-solid fa-eye"></i></button>
         </td>
         </tr>
     </tbody>
@@ -74,7 +74,6 @@ export default{
     methods: {
         async pesquisaProduto(codigo, results){
             try {
-                console.log(codigo, results)
                 this.carregando = true;
                 const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/korp/produtos/pesquisa?codigo=${codigo}&resultados=${results}`, config);
                 this.produtos = response.data;
