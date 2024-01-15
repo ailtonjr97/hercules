@@ -4,7 +4,7 @@
 <div v-if="fullLoad" style="overflow: hidden; padding: 0.5%;">
 <table-top :resultados="resultados">
     <template v-slot:tableButtons>
-        <button class="button-8 mb-2">Atualizar</button>
+        <button class="button-8 mb-2" @click="refresh">Atualizar</button>
     </template>
 </table-top>
 <div class="row mb-2">
@@ -21,7 +21,7 @@
         </tr>
     </thead>
     <tbody>
-        <tr v-for="produto in produtos" :key="produto.ID">
+        <tr v-for="produto in produtos" :key="produto.CODIGO">
         <td>
             <p>{{ produto.CODIGO }}</p>
         </td>
@@ -29,7 +29,7 @@
             <p>{{ produto.DESCRI }}</p>
         </td>
         <td>
-            <button class="button-8"><i style="font-size: 14px;" class="fa-solid fa-eye"></i></button>
+            <router-link :to="`/korp/produto/${produto.CODIGO}`"><button class="button-8"><i style="font-size: 14px;" class="fa-solid fa-eye"></i></button></router-link>
         </td>
         </tr>
     </tbody>
@@ -72,6 +72,14 @@ export default{
         }
     },
     methods: {
+        async refresh(){
+            this.carregando = true;
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/korp/produtos/get_all`, config);
+            this.produtos = response.data;
+            this.resultados = response.data.length;
+            this.fullLoad = true;
+            this.carregando = false;
+        },
         async pesquisaProduto(codigo, results){
             try {
                 this.carregando = true;

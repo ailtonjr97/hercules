@@ -19,6 +19,7 @@ import Rh from './components/rh/Rh.vue';
 import RhDocumentos from './components/rh/Documentos.vue';
 import KorpLanding from './components/korp/KorpLanding.vue';
 import KorpProdutos from './components/korp/KorpProdutos.vue';
+import KorpProduto from './components/korp/KorpProduto.vue';
 
 const router = createRouter({
     history: createWebHistory(),
@@ -41,6 +42,7 @@ const router = createRouter({
       {path: '/arquivos', component: AnexPage},
       {path: '/korp', component: KorpLanding},
       {path: '/korp/produtos', component: KorpProdutos},
+      {path: '/korp/produto/:id', component: KorpProduto},
       { path: '/:notFound(.*)', redirect: '/home' }
     ]
   });
