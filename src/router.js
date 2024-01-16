@@ -20,6 +20,8 @@ import RhDocumentos from './components/rh/Documentos.vue';
 import KorpLanding from './components/korp/KorpLanding.vue';
 import KorpProdutos from './components/korp/KorpProdutos.vue';
 import KorpProduto from './components/korp/KorpProduto.vue';
+import KorpPedsComp from './components/korp/KorpPedsComp.vue';
+import KorpPedComp from './components/korp/KorpPedComp.vue';
 
 const router = createRouter({
     history: createWebHistory(),
@@ -43,6 +45,8 @@ const router = createRouter({
       {path: '/korp', component: KorpLanding},
       {path: '/korp/produtos', component: KorpProdutos},
       {path: '/korp/produto/:id', component: KorpProduto},
+      {path: '/korp/pedidos-de-compra', component: KorpPedsComp},
+      {path: '/korp/pedido-de-compra/:id', component: KorpPedComp},
       { path: '/:notFound(.*)', redirect: '/home' }
     ]
   });

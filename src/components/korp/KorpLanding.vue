@@ -17,10 +17,21 @@
                     <p>Produtos</p>
                 </td>
                 <td>
-                    <p>Acesso a todos os produtos do Korp.</p>
+                    <p>Acesso a todos os produtos.</p>
                 </td>
                 <td>
                     <router-link class="button-8 mb-2" to="/korp/produtos">Acessar</router-link>
+                </td>
+                </tr>
+                <tr>
+                <td>
+                    <p>Pedidos de Compra</p>
+                </td>
+                <td>
+                    <p>Acesso a todos os pedidos de compra.</p>
+                </td>
+                <td>
+                    <router-link class="button-8 mb-2" to="/korp/pedidos-de-compra">Acessar</router-link>
                 </td>
                 </tr>
             </tbody>

@@ -15,6 +15,7 @@
               <button type="submit" class="btn btn-color px-5 mb-2 w-100">Login</button>
               <div id="loading" v-if="logador" style="margin-bottom: 50%;"></div>
             </div>
+            <h5 style="text-align: center;" class="mt-2">Favor pedir acesso por Spark.</h5>
           </span>
         </div>
       </form>
