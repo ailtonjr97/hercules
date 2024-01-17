@@ -23,9 +23,9 @@
             </tr>
         </thead>
         <tbody>
-            <tr v-for="dado in dados" :key="dado.NDOC">
+            <tr v-for="dado in dados" :key="dado.NUMERO_PEDIDO">
             <td>
-                <p>{{ dado.NDOC }}</p>
+                <p>{{ dado.NUMERO_PEDIDO }}</p>
             </td>
             <td>
                 <p>{{ dado.RASSOC }}</p>
@@ -34,7 +34,7 @@
                 <p>{{ dado.REQUISITANTE }}</p>
             </td>
             <td>
-                <router-link :to="`/korp/pedido-de-compra/${dado.NDOC}`"><button class="button-8"><i style="font-size: 14px;" class="fa-solid fa-eye"></i></button></router-link>
+                <router-link :to="`/korp/pedido-de-compra/${dado.NUMERO_PEDIDO}`"><button class="button-8"><i style="font-size: 14px;" class="fa-solid fa-eye"></i></button></router-link>
             </td>
             </tr>
         </tbody>
