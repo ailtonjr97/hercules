@@ -67,7 +67,7 @@
         </div>
     </ul>
   </div>
-  <h6 style="width: 10%; color: #fff; text-align: center;">{{ name }}</h6>
+  <h6 style="width: 20%; color: #fff; text-align: center;">{{ name }}</h6>
 </nav>
 
 <slot name="content"></slot>
