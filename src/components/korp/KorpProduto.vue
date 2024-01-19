@@ -1,9 +1,29 @@
 <template>
 <popup v-if="popup"></popup>
 <div v-if="carregando" id="loading"></div>
-<div class="row mb-4" style="width: 99.5%; margin-left: 0.3%;">
-    <div v-for="(campo, coluna) in campos" class="col-md-3 mt-2">
-        <form-floating :placeholder="`${coluna}:`" :id="'codigo'" v-model="campos[coluna]" :type="'text'" readonly></form-floating>
+<div class="row mb-2 mt-2" style="width: 99.5%; margin-left: 0.3%;">
+    <div class="col-sm-2">
+        <form-floating :placeholder="'Código:'" :id="'CODIGO'" v-model="campos.CODIGO" :type="'text'" readonly></form-floating>
+    </div>
+    <div class="col-lg-9">
+        <form-floating :placeholder="'Descritivo:'" :id="'DESCRI'" v-model="campos.DESCRI" :type="'text'" readonly></form-floating>
+    </div>
+    <div class="col-sm-1">
+        <form-floating :placeholder="'Status:'" :id="'STATUS'" v-model="campos.STATUS" :type="'text'" readonly></form-floating>
+    </div>
+</div>
+<div class="row mb-2" style="width: 99.5%; margin-left: 0.3%;">
+    <div class="col-md-4 mt-2">
+        <form-floating :placeholder="'Complemento:'" :id="'COMPLEMENTO_DESCRI'" v-model="campos.COMPLEMENTO_DESCRI" :type="'text'" readonly></form-floating>
+    </div>
+    <div class="col-sm-2 mt-2">
+        <form-floating :placeholder="'Unidade de medida:'" :id="'UNIDADE'" v-model="campos.UNIDADE" :type="'text'" readonly></form-floating>
+    </div>
+    <div class="col-sm-2 mt-2">
+        <form-floating :placeholder="'Data cadastro:'" :id="'DATA'" v-model="dataConvertida[0]" :type="'date'" readonly></form-floating>
+    </div>
+    <div class="col-sm-2 mt-2">
+        <form-floating :placeholder="'Localiza:'" :id="'LOCALIZA'" v-model="campos.LOCALIZA" :type="'text'" readonly></form-floating>
     </div>
 </div>
 </template>
@@ -30,6 +50,7 @@ export default{
     },
     data(){
         return{
+            dataConvertida: '',
             popup: false,
             campos: '',
             carregando: true,
@@ -47,6 +68,7 @@ export default{
                 const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/korp/produto/${this.$route.params.id}`, config);
                 let camposResponse = response.data[0];
                 this.campos = Object.fromEntries(Object.entries(camposResponse).filter(([_, v]) => v != null));
+                this.dataConvertida = this.campos.DATA.split('T');
                 this.carregando = false;
             } catch (error) {
                 console.log(error);

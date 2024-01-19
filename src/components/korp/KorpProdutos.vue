@@ -8,8 +8,9 @@
     </template>
 </table-top>
 <div class="row mb-2">
-    <form-floating :placeholder="'Código:'" :id="'codigo'" :type="'text'" v-model="codigo" v-on:keyup.enter="pesquisaProduto(codigo, results)"></form-floating>
-    <form-floating :placeholder="'Resultados:'" :id="'resultado'" :type="'number'" v-model="results" v-on:keyup.enter="pesquisaProduto(codigo, results)"></form-floating>
+    <form-floating :placeholder="'Código:'" :id="'codigo'" :type="'text'" v-model="codigo" v-on:keyup.enter="pesquisaProduto(codigo, results, nome)"></form-floating>
+    <form-floating :placeholder="'Nome:'" :id="'nome'" :type="'text'" v-model="nome" v-on:keyup.enter="pesquisaProduto(codigo, results, nome)"></form-floating>
+    <form-floating :placeholder="'Resultados:'" :id="'resultado'" :type="'number'" v-model="results" v-on:keyup.enter="pesquisaProduto(codigo, results, nome)"></form-floating>
 </div>
 <div class="table-wrapper table-responsive table-striped mb-5">
     <table class="fl-table" id="myTable">
@@ -60,6 +61,7 @@ export default{
     },
     data(){
         return{
+            nome: '',
             results: 1000,
             resultados: null,
             codigo: '',
@@ -83,7 +85,7 @@ export default{
         async pesquisaProduto(codigo, results){
             try {
                 this.carregando = true;
-                const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/korp/produtos/pesquisa?codigo=${codigo}&resultados=${results}`, config);
+                const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/korp/produtos/pesquisa?codigo=${codigo}&resultados=${results}&nome=${this.nome}`, config);
                 this.produtos = response.data;
                 this.resultados = response.data.length;
                 this.carregando = false;
