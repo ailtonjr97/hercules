@@ -31,7 +31,7 @@
                         </div>
                     </router-link>
                 </li>
-                <li class="nav-item" style="margin: 0 0 0 0; width: 50px;">
+                <li :style="[isAdmin != 0 ? {'display': 'block'} : {'display': 'none'}]" class="nav-item" style="margin: 0 0 0 0; width: 50px;">
                     <router-link to="/rh" class="nav-link">
                         <div class="item">
                             <i class="fa-solid fa-users"></i>
@@ -39,7 +39,7 @@
                         </div>
                     </router-link>
                 </li>
-                <li class="nav-item" style="margin: 0 0 0 0; width: 60px;">
+                <li :style="[isAdmin != 0 ? {'display': 'block'} : {'display': 'none'}]" class="nav-item" style="margin: 0 0 0 0; width: 60px;">
                     <router-link to="/ti" class="nav-link">
                         <div class="item">
                             <i class="fa-solid fa-computer"></i>
