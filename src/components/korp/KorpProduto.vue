@@ -26,6 +26,20 @@
         <form-floating :placeholder="'Localiza:'" :id="'LOCALIZA'" v-model="campos.LOCALIZA" :type="'text'" readonly></form-floating>
     </div>
 </div>
+<div class="row mb-2 mt-3" style="width: 99.5%; margin-left: 0.3%;">
+    <div class="col-md-4">
+        <button class="button-8" @click="refresh">Gerais</button>
+    </div>
+</div>
+<div class="row" style="width: 99.5%; margin-left: 0.3%;">
+    <div class="col-sm-2 mt-2">
+        <form-floating :placeholder="'Peso líquido:'" :id="'peso'" v-model="campos.PESO" :type="'text'" readonly></form-floating>
+    </div>
+    <div class="col-sm-2 mt-2">
+        <form-floating :placeholder="'Categoria:'" :id="'categoria'" v-model="campos.CATEGORIA" :type="'text'" readonly></form-floating>
+        <p>Teste</p>
+    </div>
+</div>
 </template>
 
 <script>
