@@ -5,6 +5,7 @@
 <table-top :resultados="resultados">
     <template v-slot:tableButtons>
         <button class="button-8 mb-2" @click="refresh">Atualizar</button>
+        <button class="button-8 mb-2" @click="exportarModal = true">Exportar</button>
     </template>
 </table-top>
 <div class="row mb-2">
@@ -37,6 +38,20 @@
     </table>
 </div>
 </div>
+<modal v-if="exportarModal" :title="'Exportar para:'">
+    <template v-slot:body>
+        <div class="row">
+            <div class="col">
+                <a href=""></a>
+                <img src="/images/excel.png" alt="" style="width: 10%; cursor: pointer;" @click="exportarExcel">
+                <img src="/images/pdf.png" alt="" style="width: 10%; cursor: pointer; margin-left: 2%;" @click="exportarPdf">
+            </div>
+        </div>
+    </template>
+    <template v-slot:buttons v-if="!carregandoinfo">
+        <button class="button-8" @click="exportarModal = false">Fechar</button> 
+    </template>
+</modal>
 </template>
 
 <script>
@@ -45,6 +60,7 @@ import Popup from '../ui/Popup.vue';
 import TableTop from '../ui/TableTop.vue';
 import TableSearch from '../ui/TableSearch.vue';
 import FormFloating from '../ui/FormFloating.vue';
+import Modal from '../ui/Modal.vue';
 
 const config = {
     headers: {
@@ -57,10 +73,12 @@ export default{
         FormFloating,
         TableSearch,
         TableTop,
-        Popup
+        Popup,
+        Modal
     },
     data(){
         return{
+            exportarModal: false,
             nome: '',
             results: 1000,
             resultados: null,
@@ -74,6 +92,72 @@ export default{
         }
     },
     methods: {
+        async exportarExcel(){
+            try {
+                this.carregando = true;
+                axios({
+                    url: `${import.meta.env.VITE_BACKEND_IP}/korp/produtos/excel?codigo=${this.codigo}&resultados=${this.results}&nome=${this.nome}`,
+                    method: 'GET',
+                    responseType: 'blob', // important
+                    headers: {
+                        'Authorization': document.cookie,
+                    }
+                }).then((response) => {
+                    // create file link in browser's memory
+                    const href = URL.createObjectURL(response.data);
+
+                    // create "a" HTML element with href to file & click
+                    const link = document.createElement('a');
+                    link.href = href;
+                    link.setAttribute('download', 'arquivo.xlsx');
+                    document.body.appendChild(link);
+                    link.click();
+
+                    // clean up "a" element & remove ObjectURL
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(href);
+                });
+                this.exportarModal = false;
+                this.carregando = false;
+            } catch (error) {
+                console.log(error);
+                alert("Falha ao baixar arquivo. Tentar novamente mais tarde.");
+                this.carregando = false;
+            }
+        },
+        async exportarPdf(){
+            try {
+                this.carregando = true;
+                axios({
+                    url: `${import.meta.env.VITE_BACKEND_IP}/korp/produtos/pdf?codigo=${this.codigo}&resultados=${this.results}&nome=${this.nome}`,
+                    method: 'GET',
+                    responseType: 'blob', // important
+                    headers: {
+                        'Authorization': document.cookie,
+                    }
+                }).then((response) => {
+                    // create file link in browser's memory
+                    const href = URL.createObjectURL(response.data);
+
+                    // create "a" HTML element with href to file & click
+                    const link = document.createElement('a');
+                    link.href = href;
+                    link.setAttribute('download', 'arquivo.pdf');
+                    document.body.appendChild(link);
+                    link.click();
+
+                    // clean up "a" element & remove ObjectURL
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(href);
+                });
+                this.exportarModal = false;
+                this.carregando = false;
+            } catch (error) {
+                console.log(error);
+                alert("Falha ao baixar arquivo. Tentar novamente mais tarde.");
+                this.carregando = false;
+            }
+        },
         async refresh(){
             this.carregando = true;
             const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/korp/produtos/get_all`, config);
