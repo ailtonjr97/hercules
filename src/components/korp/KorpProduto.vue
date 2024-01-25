@@ -32,12 +32,15 @@
     </div>
 </div>
 <div class="row" style="width: 99.5%; margin-left: 0.3%;">
-    <div class="col-sm-2 mt-2">
+    <div class="col mt-2">
         <form-floating :placeholder="'Peso líquido:'" :id="'peso'" v-model="campos.PESO" :type="'text'" readonly></form-floating>
     </div>
-    <div class="col-sm-2 mt-2">
+    <div class="col mt-2">
         <form-floating :placeholder="'Categoria:'" :id="'categoria'" v-model="campos.CATEGORIA" :type="'text'" readonly></form-floating>
-        <p>Teste</p>
+        <p>{{ categoria.DESC_CAT }}</p>
+    </div>
+    <div class="col mt-2">
+        <form-floating :placeholder="'Conta Gerencial:'" :id="'conta_gerencial'" :type="'text'" readonly></form-floating>
     </div>
 </div>
 </template>
@@ -64,6 +67,7 @@ export default{
     },
     data(){
         return{
+            categoria: '',
             dataConvertida: '',
             popup: false,
             campos: '',
@@ -80,7 +84,9 @@ export default{
                     }
                 }
                 const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/korp/produto/${this.$route.params.id}`, config);
-                let camposResponse = response.data[0];
+                const camposResponse = response.data[0];
+                const categoria = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/korp/produto/categoria/${camposResponse.CATEGORIA}`, config);
+                this.categoria = categoria.data[0];
                 this.campos = Object.fromEntries(Object.entries(camposResponse).filter(([_, v]) => v != null));
                 this.dataConvertida = this.campos.DATA.split('T');
                 this.carregando = false;
