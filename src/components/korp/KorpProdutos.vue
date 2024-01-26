@@ -116,9 +116,10 @@ export default{
                     // clean up "a" element & remove ObjectURL
                     document.body.removeChild(link);
                     URL.revokeObjectURL(href);
+
+                    this.carregando = false;
                 });
                 this.exportarModal = false;
-                this.carregando = false;
             } catch (error) {
                 console.log(error);
                 alert("Falha ao baixar arquivo. Tentar novamente mais tarde.");
@@ -149,9 +150,10 @@ export default{
                     // clean up "a" element & remove ObjectURL
                     document.body.removeChild(link);
                     URL.revokeObjectURL(href);
+
+                    this.carregando = false;
                 });
                 this.exportarModal = false;
-                this.carregando = false;
             } catch (error) {
                 console.log(error);
                 alert("Falha ao baixar arquivo. Tentar novamente mais tarde.");

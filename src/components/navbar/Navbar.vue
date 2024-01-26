@@ -16,7 +16,14 @@
                         </div>
                     </router-link>
                 </li>
-                <li class="nav-item" style="margin-right: 5%; margin-left: 5%;">
+                <li class="nav-item" style="margin-left: 5%;">
+                    <router-link to="/totvs" class="nav-link">
+                        <div class="item">
+                            <img src="/images/totvs_icon.png" alt="" style="width: 90%; border-radius: 5px;">
+                        </div>
+                    </router-link>
+                </li>
+                <li class="nav-item" style="margin-left: 1%;">
                     <router-link to="/korp" class="nav-link">
                         <div class="item">
                             <img src="/images/korp.png" alt="" style="width: 90%; border-radius: 5px;">
