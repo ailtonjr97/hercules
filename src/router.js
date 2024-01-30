@@ -22,6 +22,8 @@ import KorpProdutos from './components/korp/KorpProdutos.vue';
 import KorpProduto from './components/korp/KorpProduto.vue';
 import KorpPedsComp from './components/korp/KorpPedsComp.vue';
 import KorpPedComp from './components/korp/KorpPedComp.vue';
+import EngenhariaLanding from './components/engenharia/EngenhariaLanding.vue';
+import EngenhariaMoldes from './components/engenharia/EngenhariaMoldes.vue';
 
 const router = createRouter({
     history: createWebHistory(),
@@ -37,8 +39,7 @@ const router = createRouter({
       { path: '/qualidade/documentos/arquivados', component: DocumentosArquivados, meta: {carregando: true}},
       { path: '/rh', component: Rh},
       { path: '/rh/documentos', component: RhDocumentos},
-      { path: '/ti', component: Ti},
-      { path: '/ti/chamados', component: ChamadosTi},
+      { path: '/chamados', component: ChamadosTi},
       { path: '/totvs', component: Totvs},
       { path: '/totvs/apis', component: TotvsApis},
       {path: '/arquivos', component: AnexPage},
@@ -47,6 +48,8 @@ const router = createRouter({
       {path: '/korp/produto/:id', component: KorpProduto},
       {path: '/korp/pedidos-de-compra', component: KorpPedsComp},
       {path: '/korp/pedido-de-compra/:id', component: KorpPedComp},
+      {path: '/engenharia', component: EngenhariaLanding},
+      {path: '/engenharia/moldes', component: EngenhariaMoldes},
       { path: '/:notFound(.*)', redirect: '/home' }
     ]
   });

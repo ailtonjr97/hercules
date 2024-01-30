@@ -28,7 +28,7 @@
             modelValue: {
                 type: String,
                 required: true,
-                default: 'Inserir texto padrão.'
+                default: ''
             },
             readonly: {
                 type: Boolean,

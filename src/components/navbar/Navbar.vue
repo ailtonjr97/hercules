@@ -30,7 +30,7 @@
                         </div>
                     </router-link>
                 </li>
-                <li class="nav-item" style="margin: 0 5% 0 0; width: 50px;">
+                <li class="nav-item" style="margin: 0 5% 0 0; width: 40px;">
                     <router-link to="/qualidade" class="nav-link">
                         <div class="item">
                             <i class="fa-solid fa-file-circle-check" style="margin-left: 50%;"></i>
@@ -38,7 +38,7 @@
                         </div>
                     </router-link>
                 </li>
-                <li :style="[isAdmin != 0 ? {'display': 'block'} : {'display': 'none'}]" class="nav-item" style="margin: 0 0 0 0; width: 50px;">
+                <li class="nav-item" style="margin: 0 0 0 0; width: 50px;">
                     <router-link to="/rh" class="nav-link">
                         <div class="item">
                             <i class="fa-solid fa-users"></i>
@@ -46,11 +46,19 @@
                         </div>
                     </router-link>
                 </li>
-                <li :style="[isAdmin != 0 ? {'display': 'block'} : {'display': 'none'}]" class="nav-item" style="margin: 0 0 0 0; width: 60px;">
-                    <router-link to="/ti" class="nav-link">
+                <li class="nav-item" style="margin: 0 0 0 0; width: 120px;">
+                    <router-link to="/engenharia" class="nav-link">
                         <div class="item">
-                            <i class="fa-solid fa-computer"></i>
-                            <span class="caption">TI</span>
+                            <i class="fa-solid fa-gears" style="margin-left: 50%;"></i>
+                            <span class="caption">Engenharia</span>
+                        </div>
+                    </router-link>
+                </li>
+                <li class="nav-item" style="margin: 0 0 0 0; width: 110px;">
+                    <router-link to="/chamados" class="nav-link">
+                        <div class="item">
+                            <i class="fa-solid fa-table-cells" style="margin-left: 50%;"></i>
+                            <span class="caption">Chamados</span>
                         </div>
                     </router-link>
                 </li>

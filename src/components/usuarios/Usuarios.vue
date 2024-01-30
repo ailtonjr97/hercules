@@ -34,13 +34,26 @@
                 <td style="padding-bottom: 15px;">
                   <button class="button-8" @click="infoEditarModal(usuario.id)">Editar</button>
                   <button class="button-8" @click="inactivate(usuario.id)">Inativar</button>
-                  <button class="button-8" @click="passwordReset(usuario.id)">Resetar Senha</button>
+                  <button class="button-8" @click="editPassword(usuario.id)">Mudar Senha</button>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
+
+<modal v-if="editPasswordModal" :title="'Editar senha:'">
+  <template v-slot:body>
+    <loading v-if="carregandoinfoUsuario"></loading>
+    <div class="row" v-if="!carregandoinfoUsuario">
+      <form-floating :placeholder="'Digite a nova senha:'" :id="'password'" :type="'text'" v-model="password"></form-floating>
+    </div>
+  </template>
+  <template v-slot:buttons v-if="!carregandoinfoUsuario">
+        <button class="button-8" @click="editPasswordModal = false">Fechar</button>
+        <button type="button" class="button-8" @click="editPasswordPost(idSubmitUser)">Executar</button>
+  </template>
+</modal>
 
 <modal v-if="editUserModal" :title="'Editar usuário'">
   <template v-slot:body>
@@ -49,10 +62,13 @@
       <form-floating :placeholder="'Nome:'" :id="'user-name'" :type="'text'" v-model="editar.name"></form-floating>
       <form-floating :placeholder="'Email:'" :id="'user-email'" :type="'email'" v-model="editar.email"></form-floating>
       <select-floating :placeholder="'É admin?'" :id="'user-admin'" :options="optionsAdmin" v-model="editar.admin"></select-floating>
-    </div>
-    <div class="row mt-2" v-if="!carregandoinfoUsuario">
       <select-floating :placeholder="'É DPO?'" :id="'user-dpo'" :options="optionsAdmin" v-model="editar.dpo"></select-floating>
       <select-floating :placeholder="'Setor'" :id="'user-setor'" :options="optionsSetores" v-model="editar.setor"></select-floating>
+    </div>
+    <div class="row mt-2" v-if="!carregandoinfoUsuario">
+      <form-floating :placeholder="'ID do Intranet:'" :id="'intranet_id'" :type="'number'" v-model="editar.intranet_id"></form-floating>
+      <form-floating :placeholder="'Department ID:'" :id="'intranet_department_id'" :type="'number'" v-model="editar.intranet_department_id"></form-floating>
+      <form-floating :placeholder="'ID Setor Chamado:'" :id="'intranet_setor_chamado'" :type="'number'" v-model="editar.intranet_setor_chamado"></form-floating>
     </div>
   </template>
   <template v-slot:buttons v-if="!carregandoinfoUsuario">
@@ -109,6 +125,9 @@ let config = {
   },
   data(){
     return{
+      whereId: null,
+      password: '',
+      editPasswordModal: false,
       editUserModal: false,
       newUserModal: false,
       fullLoad: false,
@@ -130,7 +149,10 @@ let config = {
         email: '',
         admin: null,
         dpo: null,
-        setor: ''
+        setor: '',
+        intranet_id: null,
+        intranet_department_id: null,
+        intranet_setor_chamado: null
       }
     }
   },
@@ -159,6 +181,27 @@ let config = {
       },
   },
   methods: {
+    async editPassword(id){
+      try {
+        this.editPasswordModal = true;
+        this.whereId = id;
+      } catch (error) {
+        this.editPasswordModal = false;
+        alert("Erro ao mostrar modal para editar senha.");
+      }
+    },
+    async editPasswordPost(){
+      try {
+        this.carregando = true;
+        this.editPasswordModal = false;
+        const response = await axios.post(`${import.meta.env.VITE_BACKEND_IP}/users/alterPassword/${this.whereId}`, password, config);
+        this.carregando = false;
+      } catch (error) {
+        console.log("Erro ao resetar senha. Favor tentar novamente mais tarde.");
+        this.editPasswordModal = false;
+        this.carregando = false;
+      }
+    },
     async openNewUserModal(){
       this.newUserModal ? this.newUserModal = false : this.newUserModal = true;
     },
@@ -228,8 +271,9 @@ let config = {
             this.pageRefresh();
           }
       } catch (error) {
-          console.log(error)
-          alert("Erro ao editar usuário")
+        this.carregando = false;
+        console.log(error)
+        alert("Erro ao editar usuário")
       }
     },
     async infoEditarModal(id){
