@@ -24,6 +24,7 @@ import KorpPedsComp from './components/korp/KorpPedsComp.vue';
 import KorpPedComp from './components/korp/KorpPedComp.vue';
 import EngenhariaLanding from './components/engenharia/EngenhariaLanding.vue';
 import EngenhariaMoldes from './components/engenharia/EngenhariaMoldes.vue';
+import EngenhariaMolde from './components/engenharia/EngenhariaMolde.vue';
 
 const router = createRouter({
     history: createWebHistory(),
@@ -50,6 +51,7 @@ const router = createRouter({
       {path: '/korp/pedido-de-compra/:id', component: KorpPedComp},
       {path: '/engenharia', component: EngenhariaLanding},
       {path: '/engenharia/moldes', component: EngenhariaMoldes},
+      {path: '/engenharia/moldes/:id', component: EngenhariaMolde},
       { path: '/:notFound(.*)', redirect: '/home' }
     ]
   });

@@ -35,7 +35,7 @@
                 <p>{{ molde.DESCRICAO }}</p>
             </td>
             <td>
-                <router-link :to="`/korp/produto/${molde.ID}`"><button class="button-8"><i style="font-size: 14px;" class="fa-solid fa-eye"></i></button></router-link>
+                <router-link :to="`/engenharia/moldes/${molde.ID}`"><button class="button-8"><i style="font-size: 14px;" class="fa-solid fa-eye"></i></button></router-link>
             </td>
             </tr>
         </tbody>
