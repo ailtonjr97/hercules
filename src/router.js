@@ -44,9 +44,9 @@ const router = createRouter({
       { path: '/totvs', component: Totvs},
       { path: '/totvs/apis', component: TotvsApis},
       {path: '/arquivos', component: AnexPage},
-      {path: '/korp', component: KorpLanding},
-      {path: '/korp/produtos', component: KorpProdutos},
-      {path: '/korp/produto/:id', component: KorpProduto},
+      {path: '/korp', component: KorpLanding, meta: {hideNavbar: true}},
+      {path: '/korp/produtos', component: KorpProdutos, meta: {hideNavbar: true}},
+      {path: '/korp/produto/:id', component: KorpProduto, meta: {hideNavbar: true}},
       {path: '/korp/pedidos-de-compra', component: KorpPedsComp},
       {path: '/korp/pedido-de-compra/:id', component: KorpPedComp},
       {path: '/engenharia', component: EngenhariaLanding},
@@ -59,7 +59,7 @@ const router = createRouter({
 
 router.beforeEach(async function(to, from, next) {
   let loggedIn = false;
-  if(to.path == '/login'){
+  if(to.path){
     next();
   }else{
       if(document.cookie){
