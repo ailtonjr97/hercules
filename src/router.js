@@ -13,7 +13,9 @@ import AnexPage from './components/ui/AnexPage.vue';
 import DocumentosArquivados from './components/qualidade/DocumentosArquivados.vue';
 import Totvs from './components/totvs/Totvs.vue';
 import TotvsApis from './components/totvs/TotvsApis.vue';
-import Ti from './components/ti/Ti.vue';
+import TotvsGruposDeVenda from './components/totvs/TotvsGruposDeVenda.vue';
+import TotvsMovimentosServicosWms from './components/totvs/TotvsMovimentosServicosWms.vue';
+
 import ChamadosTi from './components/ti/Chamados.vue';
 import Rh from './components/rh/Rh.vue';
 import RhDocumentos from './components/rh/Documentos.vue';
@@ -29,20 +31,22 @@ import EngenhariaMolde from './components/engenharia/EngenhariaMolde.vue';
 const router = createRouter({
     history: createWebHistory(),
     routes: [
-      { path: '/', redirect: '/home' },
-      { path: '/login', component: Login, meta: {hideNavbar: true, requiresAuth: false }},
-      { path: '/home', component: Home},
-      { path: '/usuarios', component: Usuarios},
-      { path: '/usuarios/inativos', component: UsuariosInativos },
-      { path: '/controladoria', component: Controladoria, meta: {carregando: true}},
-      { path: '/qualidade', component: Qualidade, meta: {carregando: true}},
-      { path: '/qualidade/documentos', component: QualidadeDocumentos, meta: {carregando: true}},
-      { path: '/qualidade/documentos/arquivados', component: DocumentosArquivados, meta: {carregando: true}},
-      { path: '/rh', component: Rh},
-      { path: '/rh/documentos', component: RhDocumentos},
-      { path: '/chamados', component: ChamadosTi},
-      { path: '/totvs', component: Totvs},
-      { path: '/totvs/apis', component: TotvsApis},
+      {path: '/', redirect: '/home' },
+      {path: '/login', component: Login, meta: {hideNavbar: true, requiresAuth: false }},
+      {path: '/home', component: Home},
+      {path: '/usuarios', component: Usuarios},
+      {path: '/usuarios/inativos', component: UsuariosInativos },
+      {path: '/controladoria', component: Controladoria, meta: {carregando: true}},
+      {path: '/qualidade', component: Qualidade, meta: {carregando: true}},
+      {path: '/qualidade/documentos', component: QualidadeDocumentos, meta: {carregando: true}},
+      {path: '/qualidade/documentos/arquivados', component: DocumentosArquivados, meta: {carregando: true}},
+      {path: '/rh', component: Rh},
+      {path: '/rh/documentos', component: RhDocumentos},
+      {path: '/chamados', component: ChamadosTi},
+      {path: '/totvs', component: Totvs},
+      {path: '/totvs/apis', component: TotvsApis},
+      {path: '/totvs/grupos-de-venda', component: TotvsGruposDeVenda},
+      {path: '/totvs/movimentos-servicos-wms', component: TotvsMovimentosServicosWms},
       {path: '/arquivos', component: AnexPage},
       {path: '/korp', component: KorpLanding, meta: {hideNavbar: true}},
       {path: '/korp/produtos', component: KorpProdutos, meta: {hideNavbar: true}},
@@ -59,7 +63,7 @@ const router = createRouter({
 
 router.beforeEach(async function(to, from, next) {
   let loggedIn = false;
-  if(to.path){
+  if(to.path == '/login'){
     next();
   }else{
       if(document.cookie){
