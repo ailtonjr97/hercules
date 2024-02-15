@@ -27,6 +27,8 @@ import KorpPedComp from './components/korp/KorpPedComp.vue';
 import EngenhariaLanding from './components/engenharia/EngenhariaLanding.vue';
 import EngenhariaMoldes from './components/engenharia/EngenhariaMoldes.vue';
 import EngenhariaMolde from './components/engenharia/EngenhariaMolde.vue';
+import ComercialLanding from './components/comercial/ComercialLanding.vue';
+import ComercialCotacaoFrete from './components/comercial/ComercialCotacaoFrete.vue';
 
 const router = createRouter({
     history: createWebHistory(),
@@ -56,6 +58,8 @@ const router = createRouter({
       {path: '/engenharia', component: EngenhariaLanding},
       {path: '/engenharia/moldes', component: EngenhariaMoldes},
       {path: '/engenharia/moldes/:id', component: EngenhariaMolde},
+      {path: '/comercial', component: ComercialLanding},
+      {path: '/comercial/cotacao-de-frete', component: ComercialCotacaoFrete},
       { path: '/:notFound(.*)', redirect: '/home' }
     ]
   });

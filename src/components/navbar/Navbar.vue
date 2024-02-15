@@ -54,6 +54,14 @@
                         </div>
                     </router-link>
                 </li>
+                <li class="nav-item" style="margin: 0 0 0 0; width: 120px;">
+                    <router-link to="/comercial" class="nav-link">
+                        <div class="item">
+                            <i class="fa-solid fa-comments-dollar" style="margin-left: 50%;"></i>
+                            <span class="caption">Comercial</span>
+                        </div>
+                    </router-link>
+                </li>
                 <li class="nav-item" style="margin: 0 0 0 0; width: 110px;">
                     <router-link to="/chamados" class="nav-link">
                         <div class="item">
