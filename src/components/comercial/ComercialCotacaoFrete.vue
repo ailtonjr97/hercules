@@ -19,6 +19,13 @@
             <th>ID</th>
             <th>Pedido</th>
             <th>Cotador</th>
+            <th>Status</th>
+            <th>Data Solicitação</th>
+            <th>Data Resposta</th>
+            <th>Revisão</th>
+            <th>Valor</th>
+            <th>Transportadora</th>
+            <th>Prazo</th>
             <th>Ações</th>
             </tr>
         </thead>
@@ -34,7 +41,28 @@
                 <p>{{ resposta.cotador_id }}</p>
             </td>
             <td>
-                <button class="button-8"><i style="font-size: 14px;" class="fa-solid fa-eye" @click="abrirModalInfo(resposta.id)"></i></button>
+                <p>{{ resposta.status }}</p>
+            </td>
+            <td>
+                <p>{{ resposta.data_solicit }}</p>
+            </td>
+            <td>
+                <p>{{ resposta.data_resp }}</p>
+            </td>
+            <td>
+                <p>{{ resposta.revisao }}</p>
+            </td>
+            <td>
+                <p>{{ resposta.valor }}</p>
+            </td>
+            <td>
+                <p>{{ resposta.id_transportadora }}</p>
+            </td>
+            <td>
+                <p>{{ resposta.prazo }}</p>
+            </td>
+            <td>
+                <button title="Visualizar" class="button-8" @click="openEditarModal(resposta.id)"><i style="font-size: 14px;" class="fa-solid fa-pen"></i></button>
             </td>
             </tr>
         </tbody>
@@ -42,32 +70,35 @@
     </div>
     </div>
 
-    <modal v-if="exportarModal" :title="'Exportar para:'">
-        <template v-slot:body>
-            <div class="row">
-                <div class="col">
-                    <a href=""></a>
-                    <img src="/images/excel.png" alt="" style="width: 10%; cursor: pointer;" @click="exportarExcel">
-                    <img src="/images/pdf.png" alt="" style="width: 10%; cursor: pointer; margin-left: 2%;" @click="exportarPdf">
-                </div>
+<modal v-if="exportarModal" :title="'Exportar para:'">
+    <template v-slot:body>
+        <div class="row">
+            <div class="col">
+                <a href=""></a>
+                <img src="/images/excel.png" alt="" style="width: 10%; cursor: pointer;" @click="exportarExcel">
+                <img src="/images/pdf.png" alt="" style="width: 10%; cursor: pointer; margin-left: 2%;" @click="exportarPdf">
             </div>
-        </template>
-        <template v-slot:buttons v-if="!carregandoinfo">
-            <button class="button-8" @click="exportarModal = false">Fechar</button> 
-        </template>
-    </modal>
+        </div>
+    </template>
+    <template v-slot:buttons v-if="!carregandoinfo">
+        <button class="button-8" @click="exportarModal = false">Fechar</button> 
+    </template>
+</modal>
 
-    <modal v-if="modalInfo" :title="'Informações:'">
+<modal v-if="modalInfo" :title="`Pedido ${proposta.pedido}:`">
     <template v-slot:body>
     <loading v-if="carregandoinfo"></loading>
     <div v-if="!carregandoinfo">
         <div class="row">
-            <form-floating :placeholder="'ID:'" :id="'id'" :type="'text'" v-model="proposta.id" ></form-floating>
+            <form-floating :placeholder="'Transportadora:'" :id="'id_transportadora'" :type="'text'" v-model="editar.id_transportadora" ></form-floating>
+            <form-floating :placeholder="'Valor:'" :id="'valor'" :type="'text'" v-model="editar.valor" ></form-floating>
+            <form-floating :placeholder="'Prazo:'" :id="'prazo'" :type="'text'" v-model="editar.prazo" ></form-floating>
         </div>
     </div>
     </template>
     <template v-slot:buttons>
-        <button class="button-8 mt-4" @click="fecharModalInfo()">Fechar</button>
+        <button class="button-8 mt-2" @click="fecharModalInfo()">Fechar</button>
+        <button class="button-8 mt-2" @click="salvarModalInfo(proposta.id)">Salvar</button>
     </template>
 </modal>
 
@@ -99,6 +130,7 @@ export default{
     },
     data(){
         return{
+            proposta: {},
             modalInfo: false,
             exportarModal: false,
             pedido: '',
@@ -110,11 +142,25 @@ export default{
             fullLoad: false,
             carregandoinfo: false,
             carregando: true,
-            proposta: {}
+            editar: {
+                id_transportadora: null,
+                valor: '',
+                prazo: ''
+            }
         }
     },
     methods: {
-        async abrirModalInfo(id){
+        async salvarModalInfo(id){
+            try {
+                this.modalInfo = false;
+                await axios.post(`${import.meta.env.VITE_BACKEND_IP}/comercial/proposta-de-frete/${id}`, this.editar, config);
+                this.refresh();
+                this.editar = {}
+            } catch (error) {
+                alert("Falha ao salvar informações. Tente novamente mais tarde.")
+            }
+        },
+        async openEditarModal(id){
             try {
                 this.modalInfo = true;
                 this.carregandoinfo = true;
@@ -127,8 +173,8 @@ export default{
             }
         },
         async fecharModalInfo(){
-            this.carregandoinfo = false;
             this.modalInfo = false;
+            this.carregandoinfo = false;
         },
         async exportarExcel(){
             try {
