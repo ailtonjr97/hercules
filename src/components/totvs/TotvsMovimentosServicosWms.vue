@@ -131,7 +131,7 @@ methods: {
             alert("Falha ao mostrar mais informações.");
         }
     },
-    fecharModalInfo(){
+    async fecharModalInfo(){
         this.carregandoinfo = false;
         this.modalInfo = false;
     },

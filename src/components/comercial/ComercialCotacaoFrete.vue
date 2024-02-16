@@ -34,13 +34,14 @@
                 <p>{{ resposta.cotador_id }}</p>
             </td>
             <td>
-                <router-link :to="`/engenharia/moldes/${resposta.id}`"><button class="button-8"><i style="font-size: 14px;" class="fa-solid fa-eye"></i></button></router-link>
+                <button class="button-8"><i style="font-size: 14px;" class="fa-solid fa-eye" @click="abrirModalInfo(resposta.id)"></i></button>
             </td>
             </tr>
         </tbody>
         </table>
     </div>
     </div>
+
     <modal v-if="exportarModal" :title="'Exportar para:'">
         <template v-slot:body>
             <div class="row">
@@ -55,6 +56,21 @@
             <button class="button-8" @click="exportarModal = false">Fechar</button> 
         </template>
     </modal>
+
+    <modal v-if="modalInfo" :title="'Informações:'">
+    <template v-slot:body>
+    <loading v-if="carregandoinfo"></loading>
+    <div v-if="!carregandoinfo">
+        <div class="row">
+            <form-floating :placeholder="'ID:'" :id="'id'" :type="'text'" v-model="proposta.id" ></form-floating>
+        </div>
+    </div>
+    </template>
+    <template v-slot:buttons>
+        <button class="button-8 mt-4" @click="fecharModalInfo()">Fechar</button>
+    </template>
+</modal>
+
 </template>
     
 <script>
@@ -64,6 +80,7 @@ import TableTop from '../ui/TableTop.vue';
 import TableSearch from '../ui/TableSearch.vue';
 import FormFloating from '../ui/FormFloating.vue';
 import Modal from '../ui/Modal.vue';
+import Loading from '../ui/Loading.vue';
 
 const config = {
     headers: {
@@ -77,10 +94,12 @@ export default{
         TableSearch,
         TableTop,
         Popup,
-        Modal
+        Modal,
+        Loading
     },
     data(){
         return{
+            modalInfo: false,
             exportarModal: false,
             pedido: '',
             cotador_id: null,
@@ -91,9 +110,26 @@ export default{
             fullLoad: false,
             carregandoinfo: false,
             carregando: true,
+            proposta: {}
         }
     },
     methods: {
+        async abrirModalInfo(id){
+            try {
+                this.modalInfo = true;
+                this.carregandoinfo = true;
+                const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/proposta-de-frete/${id}`, config);
+                this.proposta = response.data[0];
+                this.carregandoinfo = false;
+            } catch (error) {
+                this.carregandoinfo = false;
+                alert("Falha ao mostrar mais informações.");
+            }
+        },
+        async fecharModalInfo(){
+            this.carregandoinfo = false;
+            this.modalInfo = false;
+        },
         async exportarExcel(){
             try {
                 this.carregando = true;
