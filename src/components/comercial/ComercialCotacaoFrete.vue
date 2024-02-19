@@ -4,6 +4,7 @@
     <div v-if="fullLoad" style="overflow: hidden; padding: 0.5%;">
     <table-top :resultados="resultados">
         <template v-slot:tableButtons>
+            <button class="button-8 mb-2" @click="novaCotacao">Nova Cotação</button>
             <button class="button-8 mb-2" @click="refresh">Atualizar</button>
             <button class="button-8 mb-2" @click="exportarModal = true">Exportar</button>
         </template>
@@ -102,6 +103,22 @@
     </template>
 </modal>
 
+<modal v-if="novaCotacaoModal" :title="`Nova Cotação`">
+    <template v-slot:body>
+    <loading v-if="carregandoinfo"></loading>
+    <div v-if="!carregandoinfo">
+        <div class="row">
+            <form-floating :placeholder="'Número do Pedido:'" :id="'numped'" :type="'text'" v-model="numped" ></form-floating><br>
+            <p style="color: red;" v-if="alertaPedido">Pedido não encontrado no Protheus.</p>
+        </div>
+    </div>
+    </template>
+    <template v-slot:buttons v-if="!carregandoinfo">
+        <button class="button-8 mt-2" @click="fecharNovaCotacaoModal()">Fechar</button>
+        <button class="button-8 mt-2" @click="salvarModalCotacao(numped)">Salvar</button>
+    </template>
+</modal>
+
 </template>
     
 <script>
@@ -130,6 +147,10 @@ export default{
     },
     data(){
         return{
+            alertaPedido: false,
+            values: [],
+            numped: '',
+            novaCotacaoModal: false,
             proposta: {},
             modalInfo: false,
             exportarModal: false,
@@ -150,12 +171,54 @@ export default{
         }
     },
     methods: {
+        async salvarModalCotacao(numped){
+            try {
+                this.carregandoinfo = true;
+                if(numped){
+                    const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/sck/${numped}`, config);
+                    response.data.objects.forEach(element => {
+                        this.values.push({id: element.cknum})
+                    });
+                    const filtro = this.values.find(x => x.id == numped)
+                    if (filtro){
+                        this.carregandoinfo = false;
+                        this.alertaPedido = false;
+                    }else{
+                        this.alertaPedido = true;
+                        this.carregandoinfo = false;
+                    }
+                }else{
+                    alert("Favor preencher o número do pedido.");
+                    this.carregandoinfo = false;
+                }
+            } catch (error) {
+                console.log(error)
+               this.carregandoinfo = false;
+               alert("Erro na operação. Favor entrar em contato com a TI.");
+            }
+        },
+        async fecharNovaCotacaoModal(){
+            this.novaCotacaoModal = false;
+            this.carregandoinfo = false;
+            this.numped = '';
+            this.alertaPedido = false;
+        },
+        async novaCotacao(){
+            try {
+                this.carregandoinfo = true;
+                this.novaCotacaoModal = true;
+                this.carregandoinfo = false;
+            } catch (error) {
+                this.carregandoinfo = false;
+                alert("Falha ao salvar informações. Tente novamente mais tarde.")
+            }
+        },
         async salvarModalInfo(id){
             try {
                 this.modalInfo = false;
                 await axios.post(`${import.meta.env.VITE_BACKEND_IP}/comercial/proposta-de-frete/${id}`, this.editar, config);
                 this.refresh();
-                this.editar = {}
+                this.editar = {};
             } catch (error) {
                 alert("Falha ao salvar informações. Tente novamente mais tarde.")
             }
