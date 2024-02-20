@@ -108,7 +108,7 @@
     <loading v-if="carregandoinfo"></loading>
     <div v-if="!carregandoinfo">
         <div class="row">
-            <form-floating :placeholder="'Número do Pedido:'" :id="'numped'" :type="'text'" v-model="numped" ></form-floating><br>
+            <form-floating :placeholder="'Número do Pedido:'" :id="'numped'" :type="'number'" v-model="numped" ></form-floating><br>
             <p style="color: red;" v-if="alertaPedido">Pedido não encontrado no Protheus.</p>
         </div>
     </div>
@@ -176,25 +176,14 @@ export default{
                 this.carregandoinfo = true;
                 if(numped){
                     const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/sck/${numped}`, config);
-                    response.data.objects.forEach(element => {
-                        this.values.push({id: element.cknum})
-                    });
-                    const filtro = this.values.find(x => x.id == numped)
-                    if (filtro){
-                        this.carregandoinfo = false;
-                        this.alertaPedido = false;
-                    }else{
-                        this.alertaPedido = true;
-                        this.carregandoinfo = false;
-                    }
+
                 }else{
                     alert("Favor preencher o número do pedido.");
                     this.carregandoinfo = false;
                 }
             } catch (error) {
-                console.log(error)
-               this.carregandoinfo = false;
-               alert("Erro na operação. Favor entrar em contato com a TI.");
+                this.alertaPedido = true;
+                this.carregandoinfo = false;
             }
         },
         async fecharNovaCotacaoModal(){
