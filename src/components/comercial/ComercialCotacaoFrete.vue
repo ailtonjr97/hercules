@@ -6,7 +6,7 @@
         <template v-slot:tableButtons>
             <button class="button-8 mb-2" @click="novaCotacao">Nova Cotação</button>
             <button class="button-8 mb-2" @click="refresh">Atualizar</button>
-            <button class="button-8 mb-2" @click="exportarModal = true">Exportar</button>
+            <!-- <button class="button-8 mb-2" @click="exportarModal = true">Exportar</button> -->
         </template>
     </table-top>
     <div class="row mb-2">
@@ -63,7 +63,8 @@
                 <p>{{ resposta.prazo }}</p>
             </td>
             <td>
-                <button title="Visualizar" class="button-8" @click="openEditarModal(resposta.id)"><i style="font-size: 14px;" class="fa-solid fa-pen"></i></button>
+                <button title="Editar" class="button-8" @click="openEditarModal(resposta.id)"><i style="font-size: 14px;" class="fa-solid fa-pen"></i></button>
+                <button title="Itens" class="button-8" @click="openItensModal(resposta.pedido)"><i style="font-size: 14px;" class="fa-solid fa-list"></i></button>
             </td>
             </tr>
         </tbody>
@@ -119,9 +120,43 @@
     </template>
 </modal>
 
+<modal v-if="itensModal" :title="`Itens:`">
+    <template v-slot:body>
+    <loading v-if="carregandoinfo"></loading>
+    <div v-if="!carregandoinfo">
+        <div class="table-wrapper table-responsive table-striped mb-5">
+        <table class="fl-table" id="myTable">
+        <thead>
+            <tr style="height: 25px">
+            <th>Produto</th>
+            <th>Descrição</th>
+            <th>Quantidade</th>
+            <th>Loja</th>
+            <th>Observação</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="item in itens" :key="item.id">
+            <td><p>{{ item.produto }}</p></td>
+            <td><p>{{ item.descri }}</p></td>
+            <td><p>{{ item.qtdven }}</p></td>
+            <td><p>{{ item.loja }}</p></td>
+            <td><p>{{ item.obs }}</p></td>
+            </tr>
+        </tbody>
+        </table>
+    </div>
+    </div>
+    </template>
+    <template v-slot:buttons v-if="!carregandoinfo">
+        <button class="button-8 mt-2" @click="fecharItensModal()">Fechar</button>
+    </template>
+</modal>
+
 </template>
     
 <script>
+import { jwtDecode } from "jwt-decode";
 import axios from 'axios';
 import Popup from '../ui/Popup.vue';
 import TableTop from '../ui/TableTop.vue';
@@ -147,6 +182,8 @@ export default{
     },
     data(){
         return{
+            itens: [],
+            itensModal: false,
             alertaPedido: false,
             values: [],
             numped: '',
@@ -158,7 +195,6 @@ export default{
             cotador_id: null,
             results: 1000,
             popup: false,
-            moldes: [],
             resultados: null,
             fullLoad: false,
             carregandoinfo: false,
@@ -171,12 +207,39 @@ export default{
         }
     },
     methods: {
+        async fecharItensModal(){
+            this.itensModal = false;
+            this.carregandoinfo = false;
+            this.itens = [];
+        },
+        async openItensModal(numped){
+            try {
+                this.carregandoinfo = true;
+                this.itensModal = true;
+                const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/proposta-frete-itens/${numped}`, config);
+                this.itens = response.data;
+                this.carregandoinfo = false;
+            } catch (error) {
+                alert("Falha ao buscar informações. Tente novamente mais tarde.")
+            }
+        },
         async salvarModalCotacao(numped){
             try {
                 this.carregandoinfo = true;
                 if(numped){
                     const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/sck/${numped}`, config);
-
+                    if(response){
+                        const itens = []
+                        response.data.objects.forEach(element => {
+                            itens.push({produto: element.produto, qtdven: element.qtdven, loja: element.loja, descri: element.descri, obs: element.obs})
+                        });
+                        this.fecharNovaCotacaoModal();
+                        this.carregando = true;
+                        const token = document.cookie.replace('jwt=', '');
+                        const decoded = jwtDecode(token);
+                        await axios.post(`${import.meta.env.VITE_BACKEND_IP}/comercial/nova-proposta-de-frete/${numped}/${decoded.id}`, itens, config);
+                        this.refresh();
+                    }
                 }else{
                     alert("Favor preencher o número do pedido.");
                     this.carregandoinfo = false;
@@ -232,7 +295,7 @@ export default{
             try {
                 this.carregando = true;
                 axios({
-                    url: `${import.meta.env.VITE_BACKEND_IP}/engenharia/moldes/excel?codigo=${this.codigo}&resultados=${this.results}&descricao=${this.descricao}`,
+                    url: `${import.meta.env.VITE_BACKEND_IP}/comercial/proposta-de-frete/pesquisa?pedido=${pedido}&resultados=${results}&cotador_id=${cotador_id}`,
                     method: 'GET',
                     responseType: 'blob', // important
                     headers: {
