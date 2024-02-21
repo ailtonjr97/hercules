@@ -39,7 +39,7 @@
                 <p>{{ resposta.pedido }}</p>
             </td>
             <td>
-                <p>{{ resposta.cotador_id }}</p>
+                <p>{{ resposta.name }}</p>
             </td>
             <td>
                 <p>{{ resposta.status }}</p>
@@ -92,9 +92,38 @@
     <loading v-if="carregandoinfo"></loading>
     <div v-if="!carregandoinfo">
         <div class="row">
-            <form-floating :placeholder="'Transportadora:'" :id="'id_transportadora'" :type="'text'" v-model="editar.id_transportadora" ></form-floating>
+            <form-floating :placeholder="'Transportadora:'" :id="'id_transportadora'" :type="'text'" v-model="transp_nome" readonly></form-floating>
             <form-floating :placeholder="'Valor:'" :id="'valor'" :type="'text'" v-model="editar.valor" ></form-floating>
             <form-floating :placeholder="'Prazo:'" :id="'prazo'" :type="'text'" v-model="editar.prazo" ></form-floating>
+        </div>
+        <div class="row mt-2">
+            <div class="row mb-2">
+                <form-floating :placeholder="'Nome:'" :id="'nome_transp'" :type="'text'" v-model="transp_nome" v-on:keyup.enter="pesquisa(pedido, cotador_id, results)"></form-floating>
+            </div>
+            <div class="table-wrapper table-responsive table-striped mb-5">
+                <table class="fl-table" id="myTable">
+                <thead>
+                    <tr style="height: 25px">
+                    <th>Código:</th>
+                    <th>Pedido</th>
+                    <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="transportadora in transportadoras" :key="transportadora.cod">
+                    <td>
+                        <p>{{ transportadora.cod }}</p>
+                    </td>
+                    <td>
+                        <p>{{ transportadora.nome }}</p>
+                    </td>
+                    <td>
+                        <button title="Escolher" class="button-8" @click="transp_nome = transportadora.cod"><i style="font-size: 14px;" class="fa-solid fa-pen"></i></button>
+                    </td>
+                    </tr>
+                </tbody>
+                </table>
+            </div>
         </div>
     </div>
     </template>
@@ -182,6 +211,8 @@ export default{
     },
     data(){
         return{
+            transp_nome: '',
+            transportadoras : [],
             itens: [],
             itensModal: false,
             alertaPedido: false,
@@ -281,6 +312,9 @@ export default{
                 this.carregandoinfo = true;
                 const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/proposta-de-frete/${id}`, config);
                 this.proposta = response.data[0];
+                const transp = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/transportadoras`, config);
+                this.transportadoras = transp.data;
+                console.log(this.transportadoras)
                 this.carregandoinfo = false;
             } catch (error) {
                 this.carregandoinfo = false;
