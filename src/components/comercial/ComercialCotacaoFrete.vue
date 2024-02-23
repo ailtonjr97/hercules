@@ -77,7 +77,7 @@
                 <p>{{ resposta.cotador }}</p>
             </td>
             <td>
-                <div class="row" style="width: 70%; margin-left: 25%;">
+                <div class="row" style="width: 80%; margin-left: 15%;">
                     <div class="col-md-4"><button title="Editar" class="button-8" v-if="!resposta.cotador_id_2" @click="openEditarModal(resposta.id)"><i style="font-size: 14px;" class="fa-solid fa-pen"></i></button></div>
                     <div class="col-md-4"><button title="Itens" class="button-8" @click="openItensModal(resposta.pedido)"><i style="font-size: 14px;" class="fa-solid fa-list"></i></button></div>
                 </div>
@@ -416,11 +416,12 @@ export default{
                 !this.editar.prazo || this.editar.prazo == ''){
                     alert('Favor preencher todos os campos.');
                 }else{
+                    this.modalInfo = false;
+                    this.carregando = true;
                     const token = document.cookie.replace('jwt=', '');
                     const decoded = jwtDecode(token);
                     this.editar.cotador_id_2 = decoded.id
                     this.erroBuscaTransp = false;
-                    this.modalInfo = false;
                     await axios.post(`${import.meta.env.VITE_BACKEND_IP}/comercial/proposta-de-frete/${id}`, this.editar, config);
                     this.refresh();
                     this.editar = {};
