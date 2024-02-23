@@ -6,11 +6,13 @@
         <template v-slot:tableButtons>
             <button class="button-8 mb-2" @click="novaCotacao">Nova Cotação</button>
             <button class="button-8 mb-2" @click="refresh">Atualizar</button>
+            <button class="button-8 mb-2" @click="showAllRev">Mostrar todas revisões</button>
             <button class="button-8 mb-2" @click="exportarModal = true">Exportar</button>
         </template>
     </table-top>
     <div class="row mb-2">
-        <form-floating :placeholder="'Pedido:'" :id="'pedido'" :type="'text'" v-model="pedido" v-on:keyup.enter="pesquisa(pedido, cotador_id, results)"></form-floating>
+        <form-floating :placeholder="'Pedido:'" :id="'pedido'" :type="'text'" v-model="pedido" v-if="!pedidoAllRev" v-on:keyup.enter="pesquisa(pedido, cotador_id, results)"></form-floating>
+        <form-floating :placeholder="'Pedido todas revisões:'" :id="'pedido'" :type="'text'" v-if="pedidoAllRev" v-model="pedido" v-on:keyup.enter="pesquisaAllRev(pedido, cotador_id, results)"></form-floating>
         <form-floating :placeholder="'Resultados:'" :id="'resultado'" :type="'number'" v-model="results" v-on:keyup.enter="pesquisa(pedido, cotador_id, results)"></form-floating>
     </div>
     <div class="table-wrapper table-responsive table-striped mb-5">
@@ -20,6 +22,7 @@
             <th>ID</th>
             <th>Pedido</th>
             <th>Cliente</th>
+            <th>Valor</th>
             <th>Vendedor</th>
             <th>Status</th>
             <th>Data Solicitação</th>
@@ -44,6 +47,9 @@
                 <button title="Editar" class="button-8" @click="openClienteModal(resposta.cliente)">{{ resposta.cliente }}</button>
             </td>
             <td>
+                <p>{{ resposta.valor_pedido }}</p>
+            </td>
+            <td>
                 <p>{{ resposta.vendedor }}</p>
             </td>
             <td>
@@ -65,7 +71,7 @@
                 <p>{{ resposta.nome_transportadora }}</p>
             </td>
             <td>
-                <p>{{ resposta.prazo }}</p>
+                <p>{{ resposta.prazo }} <span v-if="resposta.prazo">dias</span></p>
             </td>
             <td>
                 <p>{{ resposta.cotador }}</p>
@@ -87,8 +93,10 @@
         <div class="row">
             <div class="col">
                 <a href=""></a>
-                <img src="/images/excel.png" alt="" style="width: 10%; cursor: pointer;" @click="exportarExcel">
-                <img src="/images/pdf.png" alt="" style="width: 10%; cursor: pointer; margin-left: 2%;" @click="exportarPdf">
+                <img v-if="!pedidoAllRev" src="/images/excel.png" alt="" style="width: 10%; cursor: pointer;" @click="exportarExcel">
+                <img v-if="!pedidoAllRev" src="/images/pdf.png" alt="" style="width: 10%; cursor: pointer; margin-left: 2%;" @click="exportarPdf">
+                <img v-if="pedidoAllRev" src="/images/excel.png" alt="" style="width: 10%; cursor: pointer;" @click="exportarExcelAllRev">
+                <img v-if="pedidoAllRev" src="/images/pdf.png" alt="" style="width: 10%; cursor: pointer; margin-left: 2%;" @click="exportarPdfAllRev">
             </div>
         </div>
     </template>
@@ -263,6 +271,7 @@ export default{
     },
     data(){
         return{
+            pedidoAllRev: false,
             cliente: [],
             clienteModal: false,
             carregandoInfoTransp: false,
@@ -296,6 +305,19 @@ export default{
         }
     },
     methods: {
+        async showAllRev(){
+            try {
+                this.pedidoAllRev = true;
+                this.carregando = true;
+                const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial//proposta-de-frete-semrev`, config);
+                this.respostas = response.data;
+                this.resultados = response.data.length;
+                this.carregando = false;
+            } catch (error) {
+                this.carregando = false;
+                alert('Falha ao buscar informações. Favor tentar novamente mais tarde.')
+            }
+        },
         async fecharClienteModal(){
             this.clienteModal = false;
             this.cliente = [];
@@ -353,7 +375,7 @@ export default{
                     if(response){
                         const itens = []
                         response.data.objects.forEach(element => {
-                            itens.push({produto: element.produto, qtdven: element.qtdven, loja: element.loja, descri: element.descri, obs: element.obs})
+                            itens.push({produto: element.produto, qtdven: element.qtdven, loja: element.loja, descri: element.descri, obs: element.obs, valor: element.valor})
                         });
                         this.fecharNovaCotacaoModal();
                         this.carregando = true;
@@ -389,8 +411,10 @@ export default{
         },
         async salvarModalInfo(id){
             try {
-                if(!this.editar.transp_nome_select || this.editar.transp_nome_select == ''){
-                    alert('Campo transportadora não pode ser vazio.');
+                if(!this.editar.transp_nome_select || this.editar.transp_nome_select == '' || 
+                !this.editar.valor || this.editar.valor == '' || 
+                !this.editar.prazo || this.editar.prazo == ''){
+                    alert('Favor preencher todos os campos.');
                 }else{
                     const token = document.cookie.replace('jwt=', '');
                     const decoded = jwtDecode(token);
@@ -461,11 +485,78 @@ export default{
                 this.carregando = false;
             }
         },
+        async exportarExcelAllRev(){
+            try {
+                this.carregando = true;
+                axios({
+                    url: `${import.meta.env.VITE_BACKEND_IP}/comercial/proposta-de-frete-semrev/excel?pedido=${this.pedido}&resultados=${this.results}`,
+                    method: 'GET',
+                    responseType: 'blob', // important
+                    headers: {
+                        'Authorization': document.cookie,
+                    }
+                }).then((response) => {
+                    // create file link in browser's memory
+                    const href = URL.createObjectURL(response.data);
+
+                    // create "a" HTML element with href to file & click
+                    const link = document.createElement('a');
+                    link.href = href;
+                    link.setAttribute('download', 'arquivo.xlsx');
+                    document.body.appendChild(link);
+                    link.click();
+
+                    // clean up "a" element & remove ObjectURL
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(href);
+
+                    this.carregando = false;
+                });
+                this.exportarModal = false;
+            } catch (error) {
+                console.log(error)
+                alert("Falha ao baixar arquivo. Tentar novamente mais tarde.");
+                this.carregando = false;
+            }
+        },
         async exportarPdf(){
             try {
                 this.carregando = true;
                 axios({
                     url: `${import.meta.env.VITE_BACKEND_IP}/comercial/proposta-de-frete/pdf?pedido=${this.pedido}&resultados=${this.results}`,
+                    method: 'GET',
+                    responseType: 'blob', // important
+                    headers: {
+                        'Authorization': document.cookie,
+                    }
+                }).then((response) => {
+                    // create file link in browser's memory
+                    const href = URL.createObjectURL(response.data);
+
+                    // create "a" HTML element with href to file & click
+                    const link = document.createElement('a');
+                    link.href = href;
+                    link.setAttribute('download', 'arquivo.pdf');
+                    document.body.appendChild(link);
+                    link.click();
+
+                    // clean up "a" element & remove ObjectURL
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(href);
+
+                    this.carregando = false;
+                });
+                this.exportarModal = false;
+            } catch (error) {
+                alert("Falha ao baixar arquivo. Tentar novamente mais tarde.");
+                this.carregando = false;
+            }
+        },
+        async exportarPdfAllRev(){
+            try {
+                this.carregando = true;
+                axios({
+                    url: `${import.meta.env.VITE_BACKEND_IP}/comercial/proposta-de-frete-semrev/pdf?pedido=${this.pedido}&resultados=${this.results}`,
                     method: 'GET',
                     responseType: 'blob', // important
                     headers: {
@@ -506,8 +597,22 @@ export default{
                 this.carregando = false;
             }
         },
+        async pesquisaAllRev(pedido, cotador_id, results){
+            try {
+                this.carregando = true;
+                const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/proposta-de-frete-semrev/pesquisa?pedido=${pedido}&resultados=${results}&cotador_id=${cotador_id}`, config);
+                this.respostas = response.data;
+                this.resultados = response.data.length;
+                this.carregando = false;
+            } catch (error) {
+                console.log(error)
+                alert("Falha ao pesquisar. Favor tentar mais tarde.");
+                this.carregando = false; 
+            }
+        },
         async refresh(){
             try {
+                this.pedidoAllRev = false;
                 this.carregando = true;
                 const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/proposta-de-frete`, config);
                 this.respostas = response.data;
