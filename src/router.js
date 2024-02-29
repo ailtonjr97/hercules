@@ -19,16 +19,11 @@ import TotvsMovimentosServicosWms from './components/totvs/TotvsMovimentosServic
 import ChamadosTi from './components/ti/Chamados.vue';
 import Rh from './components/rh/Rh.vue';
 import RhDocumentos from './components/rh/Documentos.vue';
-import KorpLanding from './components/korp/KorpLanding.vue';
-import KorpProdutos from './components/korp/KorpProdutos.vue';
-import KorpProduto from './components/korp/KorpProduto.vue';
-import KorpPedsComp from './components/korp/KorpPedsComp.vue';
-import KorpPedComp from './components/korp/KorpPedComp.vue';
-import EngenhariaLanding from './components/engenharia/EngenhariaLanding.vue';
-import EngenhariaMoldes from './components/engenharia/EngenhariaMoldes.vue';
-import EngenhariaMolde from './components/engenharia/EngenhariaMolde.vue';
 import ComercialLanding from './components/comercial/ComercialLanding.vue';
 import ComercialCotacaoFrete from './components/comercial/ComercialCotacaoFrete.vue';
+import ComercialGruposDeClientes from './components/comercial/ComercialGruposDeClientes.vue';
+
+import LogisticaLanding from './components/logistica/LogisticaLanding.vue';
 
 const router = createRouter({
     history: createWebHistory(),
@@ -50,16 +45,10 @@ const router = createRouter({
       {path: '/totvs/grupos-de-venda', component: TotvsGruposDeVenda},
       {path: '/totvs/movimentos-servicos-wms', component: TotvsMovimentosServicosWms},
       {path: '/arquivos', component: AnexPage},
-      {path: '/korp', component: KorpLanding, meta: {hideNavbar: true}},
-      {path: '/korp/produtos', component: KorpProdutos, meta: {hideNavbar: true}},
-      {path: '/korp/produto/:id', component: KorpProduto, meta: {hideNavbar: true}},
-      {path: '/korp/pedidos-de-compra', component: KorpPedsComp},
-      {path: '/korp/pedido-de-compra/:id', component: KorpPedComp},
-      {path: '/engenharia', component: EngenhariaLanding},
-      {path: '/engenharia/moldes', component: EngenhariaMoldes},
-      {path: '/engenharia/moldes/:id', component: EngenhariaMolde},
       {path: '/comercial', component: ComercialLanding},
       {path: '/comercial/cotacao-de-frete', component: ComercialCotacaoFrete},
+      {path: '/comercial/grupos-de-clientes', component: ComercialGruposDeClientes},
+      {path: '/logistica', component: LogisticaLanding},
       { path: '/:notFound(.*)', redirect: '/home' }
     ]
   });

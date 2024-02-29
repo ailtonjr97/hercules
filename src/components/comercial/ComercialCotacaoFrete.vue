@@ -78,8 +78,11 @@
             </td>
             <td>
                 <div class="row" style="width: 80%; margin-left: 15%;">
-                    <div class="col-md-4"><button title="Editar" class="button-8" v-if="!resposta.cotador_id_2" @click="openEditarModal(resposta.id)"><i style="font-size: 14px;" class="fa-solid fa-pen"></i></button></div>
-                    <div class="col-md-4"><button title="Itens" class="button-8" @click="openItensModal(resposta.pedido)"><i style="font-size: 14px;" class="fa-solid fa-list"></i></button></div>
+                    <div class="col d-flex justify-content-evenly">
+                        <div><button title="Editar" class="button-8" v-if="!resposta.cotador_id_2" @click="openEditarModal(resposta.id)"><i style="font-size: 14px;" class="fa-solid fa-pen"></i></button></div>
+                        <div><button title="Escolher" class="button-8" v-if="resposta.cotador_id_2" @click="updateFreteCot(resposta.pedido, resposta.id)"><i style="font-size: 14px;" class="fa-solid fa-check"></i></button></div>
+                        <div><button title="Itens" class="button-8" @click="openItensModal(resposta.pedido)"><i style="font-size: 14px;" class="fa-solid fa-list"></i></button></div>
+                    </div>
                 </div>
             </td>
             </tr>
@@ -305,11 +308,25 @@ export default{
         }
     },
     methods: {
+        async updateFreteCot(numped, id){
+            try {
+                this.carregando = true;
+                await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/update-frete-cot?cj_num=${numped}&cj_cst_fts=${id}`, config);
+                this.popup = true;
+                setTimeout(()=>{
+                    this.popup = false;
+                }, 2000);
+                this.carregando = false;
+            } catch (error) {
+                this.carregando = false;
+                alert("Erro ao realizar ação. Favor tentar novamente mais tarde.")
+            }
+        },
         async showAllRev(){
             try {
                 this.pedidoAllRev = true;
                 this.carregando = true;
-                const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial//proposta-de-frete-semrev`, config);
+                const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/proposta-de-frete-semrev`, config);
                 this.respostas = response.data;
                 this.resultados = response.data.length;
                 this.carregando = false;
@@ -389,6 +406,7 @@ export default{
                     this.carregandoinfo = false;
                 }
             } catch (error) {
+                console.log(error)
                 this.alertaPedido = true;
                 this.carregandoinfo = false;
             }

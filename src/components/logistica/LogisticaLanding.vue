@@ -9,10 +9,10 @@
             </thead>
             <tbody>
                 <tr>
-                <td> <router-link class="button-8 mb-2" to="/comercial/cotacao-de-frete">Cotação de Frete</router-link> </td>
+                <td> <router-link class="button-8 mb-2" to="/comercial/movimentos-servicos-wms">Movimentos Serviços WMS</router-link> </td>
                 </tr>
                 <tr>
-                <td><router-link class="button-8 mb-2" to="/comercial/grupos-de-clientes">Grupos de Clientes</router-link></td>
+                <td> <router-link class="button-8 mb-2" to="/comercial/saldo-por-endereco-wms">Saldo por Endereco WMS</router-link> </td>
                 </tr>
             </tbody>
             </table>
