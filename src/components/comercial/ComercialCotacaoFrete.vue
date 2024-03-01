@@ -80,7 +80,7 @@
                 <div class="row" style="width: 80%; margin-left: 15%;">
                     <div class="col d-flex justify-content-evenly">
                         <div><button title="Editar" class="button-8" v-if="!resposta.cotador_id_2" @click="openEditarModal(resposta.id)"><i style="font-size: 14px;" class="fa-solid fa-pen"></i></button></div>
-                        <div><button title="Escolher" class="button-8" v-if="resposta.cotador_id_2" @click="updateFreteCot(resposta.pedido, resposta.id)"><i style="font-size: 14px;" class="fa-solid fa-check"></i></button></div>
+                        <div><button title="Escolher" class="button-8" v-if="resposta.cotador_id_2" @click="updateFreteCot(resposta.pedido, resposta.id, resposta.valor, resposta.id_transportadora)"><i style="font-size: 14px;" class="fa-solid fa-check"></i></button></div>
                         <div><button title="Itens" class="button-8" @click="openItensModal(resposta.pedido)"><i style="font-size: 14px;" class="fa-solid fa-list"></i></button></div>
                     </div>
                 </div>
@@ -116,8 +116,8 @@
         <div class="row">
             <form-floating :placeholder="'Cód. Transportadora:'" :id="'id_transportadora'" :type="'text'" v-model="editar.transp_nome_select" readonly></form-floating>
             <form-floating :placeholder="'Nome Transportadora:'" :id="'nome_transportadora'" :type="'text'" v-model="editar.transp_nome2_select" readonly></form-floating>
-            <form-floating :placeholder="'Valor:'" :id="'valor'" :type="'text'" v-model="editar.valor" ></form-floating>
-            <form-floating :placeholder="'Prazo (Dias):'" :id="'prazo'" :type="'text'" v-model="editar.prazo" ></form-floating>
+            <form-floating :placeholder="'Valor:'" :id="'valor'" :type="'number'" v-model="editar.valor" ></form-floating>
+            <form-floating :placeholder="'Prazo (Dias):'" :id="'prazo'" :type="'number'" v-model="editar.prazo" ></form-floating>
         </div>
         <div class="row mt-2">
             <div class="row mb-2">
@@ -308,10 +308,10 @@ export default{
         }
     },
     methods: {
-        async updateFreteCot(numped, id){
+        async updateFreteCot(numped, id, valor, transp){
             try {
                 this.carregando = true;
-                await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/update-frete-cot?cj_num=${numped}&cj_cst_fts=${id}`, config);
+                await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/update-frete-cot?cj_num=${numped}&cj_cst_fts=${id}&valor=${valor}&transp=${transp}`, config);
                 this.popup = true;
                 setTimeout(()=>{
                     this.popup = false;
@@ -646,13 +646,17 @@ export default{
     },
     async created(){
             try {
-                const config = {
+                const token = document.cookie.replace('jwt=', '');
+                let config = {
                     headers: {
-                    'Authorization': document.cookie,
+                        'Authorization': token
                     }
-                }
+                };
+                const decoded = jwtDecode(token);
                 const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/proposta-de-frete`, config);
                 this.respostas = response.data;
+                const logado = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/users/${decoded.id}`, config);
+                console.log(logado.data[0].setor)
                 this.resultados = response.data.length;
                 this.fullLoad = true;
                 this.carregando = false;
