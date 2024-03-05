@@ -14,6 +14,9 @@
                 <tr>
                 <td><router-link class="button-8 mb-2" to="/comercial/grupos-de-clientes">Grupos de Clientes</router-link></td>
                 </tr>
+                <tr>
+                <td><router-link class="button-8 mb-2" to="/comercial/orcamentos">Orçamentos</router-link></td>
+                </tr>
             </tbody>
             </table>
         </div>

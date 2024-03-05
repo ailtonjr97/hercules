@@ -22,6 +22,7 @@ import RhDocumentos from './components/rh/Documentos.vue';
 import ComercialLanding from './components/comercial/ComercialLanding.vue';
 import ComercialCotacaoFrete from './components/comercial/ComercialCotacaoFrete.vue';
 import ComercialGruposDeClientes from './components/comercial/ComercialGruposDeClientes.vue';
+import ComercialOrcamentos from './components/comercial/ComercialOrcamentos.vue';
 
 import LogisticaLanding from './components/logistica/LogisticaLanding.vue';
 
@@ -48,6 +49,7 @@ const router = createRouter({
       {path: '/comercial', component: ComercialLanding},
       {path: '/comercial/cotacao-de-frete', component: ComercialCotacaoFrete},
       {path: '/comercial/grupos-de-clientes', component: ComercialGruposDeClientes},
+      {path: '/comercial/orcamentos', component: ComercialOrcamentos},
       {path: '/logistica', component: LogisticaLanding},
       { path: '/:notFound(.*)', redirect: '/home' }
     ]

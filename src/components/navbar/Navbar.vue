@@ -16,7 +16,7 @@
                         </div>
                     </router-link>
                 </li>
-                <li class="nav-item" style="margin-left: 5%;">
+                <li class="nav-item" style="margin-left: 5%;" :style="[isAdmin != 0 ? {'display': 'block'} : {'display': 'none'}]">
                     <router-link to="/totvs/apis" class="nav-link">
                         <div class="item">
                             <img src="/images/totvs_icon.png" alt="" style="width: 90%; border-radius: 5px;">

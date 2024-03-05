@@ -79,7 +79,7 @@
             <td>
                 <div class="row" style="width: 80%; margin-left: 15%;">
                     <div class="col d-flex justify-content-evenly">
-                        <div><button title="Editar" class="button-8" v-if="!resposta.cotador_id_2 && setor == 'Logística'" @click="openEditarModal(resposta.id)"><i style="font-size: 14px;" class="fa-solid fa-pen"></i></button></div>
+                        <div><button title="Cotar" class="button-8" v-if="!resposta.cotador_id_2 && setor == 'Logística'" @click="openEditarModal(resposta.id)"><i style="font-size: 14px;" class="fa-solid fa-pen"></i></button></div>
                         <div><button title="Escolher" class="button-8" v-if="resposta.cotador_id_2 && setor == 'Comercial'" @click="updateFreteCot(resposta.pedido, resposta.id, resposta.valor, resposta.id_transportadora)"><i style="font-size: 14px;" class="fa-solid fa-check"></i></button></div>
                         <div><button title="Itens" class="button-8" @click="openItensModal(resposta.pedido)"><i style="font-size: 14px;" class="fa-solid fa-list"></i></button></div>
                     </div>
@@ -165,8 +165,8 @@
     <loading v-if="carregandoinfo"></loading>
     <div v-if="!carregandoinfo">
         <div class="row">
-            <form-floating :placeholder="'Número do Pedido:'" :id="'numped'" :type="'number'" v-model="numped" ></form-floating><br>
-            <p style="color: red;" v-if="alertaPedido">Pedido não encontrado no Protheus.</p>
+            <form-floating :placeholder="'Número do Orçamento:'" :id="'numped'" :type="'number'" v-model="numped" ></form-floating><br>
+            <p style="color: red;" v-if="alertaPedido">Orçamento não encontrado no Protheus.</p>
         </div>
     </div>
     </template>
