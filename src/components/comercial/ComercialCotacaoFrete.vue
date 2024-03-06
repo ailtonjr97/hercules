@@ -165,14 +165,15 @@
     <loading v-if="carregandoinfo"></loading>
     <div v-if="!carregandoinfo">
         <div class="row">
+            <select-floating :placeholder="'Filial'" :id="'user-setor'" :options="optionsFiliais" v-model="filial"></select-floating>
             <form-floating :placeholder="'Número do Orçamento:'" :id="'numped'" :type="'number'" v-model="numped" ></form-floating><br>
-            <p style="color: red;" v-if="alertaPedido">Orçamento não encontrado no Protheus.</p>
+            <p style="color: red;" v-if="alertaPedido">Orçamento não encontrado no Protheus. Verificar se esse pedido pertençe a filial.</p>
         </div>
     </div>
     </template>
     <template v-slot:buttons v-if="!carregandoinfo">
         <button class="button-8 mt-2" @click="fecharNovaCotacaoModal()">Fechar</button>
-        <button class="button-8 mt-2" @click="salvarModalCotacao(numped)">Salvar</button>
+        <button class="button-8 mt-2" @click="salvarModalCotacao(numped, filial)">Salvar</button>
     </template>
 </modal>
 
@@ -256,6 +257,7 @@ import TableSearch from '../ui/TableSearch.vue';
 import FormFloating from '../ui/FormFloating.vue';
 import Modal from '../ui/Modal.vue';
 import Loading from '../ui/Loading.vue';
+import SelectFloating from '../ui/SelectFloating.vue';
 
 const config = {
     headers: {
@@ -265,6 +267,7 @@ const config = {
 
 export default{
     components: {
+        SelectFloating,
         FormFloating,
         TableSearch,
         TableTop,
@@ -274,6 +277,7 @@ export default{
     },
     data(){
         return{
+            filial: '',
             setor: '',
             pedidoAllRev: false,
             cliente: [],
@@ -307,6 +311,18 @@ export default{
                 cotador_id_2: null
             }
         }
+    },
+    computed: {
+    optionsFiliais(){
+            return [
+                {valor: "0101001", descri: 'FIBRACEM MATRIZ'},
+                {valor: "0101002", descri: 'FIBRACEM FILIAL CD.'},
+                {valor: "0101003", descri: 'FIBRACEM ESPIRITO SANTO CD'},
+                {valor: "0101004", descri: 'FIBRACEM INDUSTRIA LINHARES'},
+                {valor: "0101005", descri: 'FIBRACEM IMPORTACAO LINHARES'},
+                {valor: "0101006", descri: 'FIBRACEM INJECOES'}
+            ];
+        },
     },
     methods: {
         async updateFreteCot(numped, id, valor, transp){
@@ -385,29 +401,28 @@ export default{
                 alert("Falha ao buscar informações. Tente novamente mais tarde.")
             }
         },
-        async salvarModalCotacao(numped){
+        async salvarModalCotacao(numped, filial){
             try {
                 this.carregandoinfo = true;
-                if(numped){
+                if(numped && filial){
                     const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/sck/${numped}`, config);
                     if(response){
                         const itens = []
                         response.data.objects.forEach(element => {
                             itens.push({produto: element.produto, qtdven: element.qtdven, loja: element.loja, descri: element.descri, obs: element.obs, valor: element.valor})
                         });
-                        this.fecharNovaCotacaoModal();
-                        this.carregando = true;
                         const token = document.cookie.replace('jwt=', '');
                         const decoded = jwtDecode(token);
-                        await axios.post(`${import.meta.env.VITE_BACKEND_IP}/comercial/nova-proposta-de-frete/${numped}/${decoded.id}`, itens, config);
+                        const respostaScj = await axios.post(`${import.meta.env.VITE_BACKEND_IP}/comercial/nova-proposta-de-frete/${numped}/${decoded.id}/${filial}`, itens, config);
+                        this.fecharNovaCotacaoModal();
+                        this.carregando = true;
                         this.refresh();
                     }
                 }else{
-                    alert("Favor preencher o número do pedido.");
+                    alert("Favor preencher o número do pedido e filial.");
                     this.carregandoinfo = false;
                 }
             } catch (error) {
-                console.log(error)
                 this.alertaPedido = true;
                 this.carregandoinfo = false;
             }

@@ -9,13 +9,13 @@
             </thead>
             <tbody>
                 <tr>
-                <td> <router-link class="button-8 mb-2" to="/comercial/cotacao-de-frete">Cotação de Frete</router-link> </td>
-                </tr>
-                <tr>
-                <td><router-link class="button-8 mb-2" to="/comercial/grupos-de-clientes">Grupos de Clientes</router-link></td>
-                </tr>
-                <tr>
-                <td><router-link class="button-8 mb-2" to="/comercial/orcamentos">Orçamentos</router-link></td>
+                    <div class="row" style="max-width: 99%;">
+                        <div class="col mt-2" style="margin-left: 0.5%;">
+                            <router-link class="button-8 mb-2" to="/comercial/cotacao-de-frete">Cotação de Frete</router-link>
+                            <router-link class="button-8 mb-2" to="/comercial/grupos-de-clientes">Grupos de Clientes</router-link>
+                            <router-link class="button-8 mb-2" to="/comercial/clientes">Clientes</router-link>
+                        </div>
+                    </div>
                 </tr>
             </tbody>
             </table>
