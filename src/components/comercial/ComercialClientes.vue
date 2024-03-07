@@ -69,7 +69,7 @@
     </template>
     <template v-slot:buttons v-if="!carregandoinfo">
         <button class="button-8 mt-2" @click="fecharClienteModal()">Fechar</button>
-        <button class="button-8 mt-2" @click="salvarModalCotacao(numped, filial)">Salvar</button>
+        <button class="button-8 mt-2" @click="editarCliente()">Salvar</button>
     </template>
 </modal>
 </template>
@@ -122,6 +122,24 @@ data(){
     }
 },
 methods: {
+    async editarCliente(){
+        try {
+            this.clienteModal = false;
+            this.carregando = true;
+            let jsonCliente = {};
+            jsonCliente = {"A1_COD": this.clienteInfo.cod, "A1_NOME": this.clienteInfo.nome.toString().toUpperCase()};
+            await axios.post(`${import.meta.env.VITE_BACKEND_IP}/comercial/sa1/api/update`, jsonCliente, config);
+            await axios.post(`${import.meta.env.VITE_BACKEND_IP}/comercial/sa1/api/update-local`, jsonCliente, config);
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/sa1`, config);
+            this.dados = response.data;
+            this.resultados = response.data.length;
+            this.carregando = false;
+        } catch (error) {
+            console.log(error)
+            this.carregando = false;
+            alert("Erro ao alterar cadastro do cliente. Favor tentar novamente mais tarde")
+        }
+    },
     async fecharClienteModal(){
         this.clienteModal = false;
         this.carregandoinfo = false;
@@ -149,7 +167,7 @@ methods: {
             if(!nome){
                 nome = ''
             }
-            const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/sa1/pesquisa?codigo=${codigo}&nome=${nome}&resultados=${results}`, config);
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/sa1-pesquisa?codigo=${codigo}&nome=${nome}&resultados=${results}`, config);
             this.dados = response.data;
             this.resultados = response.data.length;
             this.carregando = false;
@@ -161,7 +179,7 @@ methods: {
     async refresh(){
         try {
             this.carregando = true;
-            await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/sa1/update`, config);
+            await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/sa1-update`, config);
             const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/sa1`, config);
             this.dados = response.data;
             this.resultados = response.data.length;
