@@ -47,8 +47,8 @@
     <loading v-if="carregandoinfo"></loading>
     <div v-if="!carregandoinfo">
         <div class="row mb-2">
-            <div class="col-sm-1"><form-floating :placeholder="'ID:'" :id="'id'" :type="'text'" v-model="clienteInfo.cod" ></form-floating></div>
-            <div class="col"><form-floating :placeholder="'Nome:'" :id="'cod'" :type="'text'" v-model="clienteInfo.nome" ></form-floating></div>
+            <div class="col-sm-1"><form-floating :placeholder="'ID:'" :id="'id'" :type="'text'" v-model="clienteInfo.cod" readonly></form-floating></div>
+            <div class="col"><form-floating v-bind:style= "[clienteInfo.nome.toString().length > 80 || clienteInfo.nome.toString().length < 3 ? {'color': 'red'} : {'color': 'inherit'}]" :placeholder="`(${clienteInfo.nome.toString().length}) Nome:`" :id="'cod'" :type="'text'" v-model="clienteInfo.nome"></form-floating></div>
         </div>
         <div class="row mb-2">
             <div class="col-sm-2"><form-floating :placeholder="'Código Municipal:'" :id="'cod_mun'" :type="'text'" v-model="clienteInfo.cod_mun" ></form-floating></div>
@@ -64,6 +64,7 @@
             <div class="col-sm-1"><form-floating :placeholder="'Tipo:'" :id="'tipo'" :type="'text'" v-model="clienteInfo.tipo" ></form-floating></div>
             <div class="col-sm-2"><form-floating :placeholder="'CGC:'" :id="'cgc'" :type="'text'" v-model="clienteInfo.cgc" ></form-floating></div>
             <div class="col-sm-1"><form-floating :placeholder="'Filial:'" :id="'filial'" :type="'text'" v-model="clienteInfo.filial" ></form-floating></div>
+            <div class="col"><form-floating :placeholder="'Nome Reduzido:'" :id="'nreduz'" :type="'text'" v-model="clienteInfo.nreduz"></form-floating></div>
         </div>
     </div>
     </template>
@@ -124,16 +125,26 @@ data(){
 methods: {
     async editarCliente(){
         try {
-            this.clienteModal = false;
-            this.carregando = true;
-            let jsonCliente = {};
-            jsonCliente = {"A1_COD": this.clienteInfo.cod, "A1_NOME": this.clienteInfo.nome.toString().toUpperCase()};
-            await axios.post(`${import.meta.env.VITE_BACKEND_IP}/comercial/sa1/api/update`, jsonCliente, config);
-            await axios.post(`${import.meta.env.VITE_BACKEND_IP}/comercial/sa1/api/update-local`, jsonCliente, config);
-            const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/sa1`, config);
-            this.dados = response.data;
-            this.resultados = response.data.length;
-            this.carregando = false;
+            //console.log(this.clienteInfo.nome.toString().length)
+            if(this.clienteInfo.nome.toString().length > 80 || this.clienteInfo.nome.toString().length < 3 || this.clienteInfo.cod_mun.toString().length){
+                alert("Campo 'Nome' não pode ter mais de 80 caracteres e nem menos de 3 caracteres.");
+                return null;
+            }else{
+                this.clienteModal = false;
+                this.carregando = true;
+                let jsonCliente = {};
+                jsonCliente = {"A1_COD": this.clienteInfo.cod, "A1_NOME": this.clienteInfo.nome.toString().toUpperCase()};
+                await axios.post(`${import.meta.env.VITE_BACKEND_IP}/comercial/sa1/api/update`, jsonCliente, config);
+                await axios.post(`${import.meta.env.VITE_BACKEND_IP}/comercial/sa1/api/update-local`, jsonCliente, config);
+                const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/sa1`, config);
+                this.dados = response.data;
+                this.resultados = response.data.length;
+                this.carregando = false;
+                this.popup = true;
+                setTimeout(()=>{
+                    this.popup = false;
+                }, 2000);
+            }
         } catch (error) {
             console.log(error)
             this.carregando = false;
@@ -154,6 +165,7 @@ methods: {
             this.clienteInfo = response.data;
             this.carregandoinfo = false;
         } catch (error) {
+            console.log(error)
             this.carregandoinfo = false;
             alert("Falha ao abrir modal. Tente novamente mais tarde")
         }
