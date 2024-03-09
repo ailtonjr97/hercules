@@ -126,7 +126,7 @@ methods: {
     async editarCliente(){
         try {
             //console.log(this.clienteInfo.nome.toString().length)
-            if(this.clienteInfo.nome.toString().length > 80 || this.clienteInfo.nome.toString().length < 3 || this.clienteInfo.cod_mun.toString().length){
+            if(this.clienteInfo.nome.toString().length > 80 || this.clienteInfo.nome.toString().length < 3){
                 alert("Campo 'Nome' não pode ter mais de 80 caracteres e nem menos de 3 caracteres.");
                 return null;
             }else{
