@@ -2,7 +2,7 @@
 	<!--- Navbar --->
 <nav class="navbar navbar-expand-lg" style="background-color: #3a619b;">
   <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
+    <span class="navbar-toggler-icon"><i class="fa-solid fa-bars" style="color: white;"></i></span>
   </button>
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent" style="background-color: #3a619b; z-index: 99;">
