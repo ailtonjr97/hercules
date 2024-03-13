@@ -24,6 +24,7 @@ import ComercialCotacaoFrete from './components/comercial/ComercialCotacaoFrete.
 import ComercialGruposDeClientes from './components/comercial/ComercialGruposDeClientes.vue';
 import ComercialOrcamentos from './components/comercial/ComercialOrcamentos.vue';
 import ComercialClientes from './components/comercial/ComercialClientes.vue';
+import ComercialVendedores from './components/comercial/ComercialVendedores.vue';
 
 import LogisticaLanding from './components/logistica/LogisticaLanding.vue';
 
@@ -52,6 +53,7 @@ const router = createRouter({
       {path: '/comercial/grupos-de-clientes', component: ComercialGruposDeClientes},
       {path: '/comercial/orcamentos', component: ComercialOrcamentos},
       {path: '/comercial/clientes', component: ComercialClientes},
+      {path: '/comercial/vendedores', component: ComercialVendedores},
       {path: '/logistica', component: LogisticaLanding},
       { path: '/:notFound(.*)', redirect: '/home' }
     ]
