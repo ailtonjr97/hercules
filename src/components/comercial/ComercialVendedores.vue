@@ -111,7 +111,7 @@ async created(){
             'Authorization': document.cookie,
             }
         }
-        const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/sa3/update`, config);
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/sa3`, config);
         this.apis = response.data;
         this.resultados = response.data.length;
         this.carregando = false;
