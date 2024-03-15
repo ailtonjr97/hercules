@@ -35,6 +35,7 @@
             <td><p>{{ api.email }}</p></td>
             <td>
                 <button title="Editar" class="button-8" @click="openEditarModal(api.id)"><i style="font-size: 14px;" class="fa-solid fa-pen"></i></button>
+                <button title="Excluir" class="button-8" @click="openExcluirModal(api.filial, api.cod, api.nome)"><i style="font-size: 14px;" class="fa-solid fa-trash"></i></button>
             </td>
             </tr>
         </tbody>
@@ -62,25 +63,25 @@
         </div>
         <div class="row">
             <div class="col-sm-2">
-                <form-floating :placeholder="'Endereço:'" :id="'end'" :type="'text'" v-model="vendedor[0].end"></form-floating>
+                <form-floating v-bind:style= "[vendedor[0].end.toString().length > 40 || vendedor[0].end.toString().length < 3 ? {'color': 'red'} : {'color': 'inherit'}]" :placeholder="`(${vendedor[0].end.toString().length}) Endereço:`" :id="'end'" :type="'text'" v-model="vendedor[0].end"></form-floating>
             </div>
             <div class="col-sm-2">
-                <form-floating :placeholder="'Bairro:'" :id="'bairro'" :type="'text'" v-model="vendedor[0].bairro"></form-floating>
+                <form-floating v-bind:style= "[vendedor[0].bairro.toString().length > 20 || vendedor[0].bairro.toString().length < 3 ? {'color': 'red'} : {'color': 'inherit'}]" :placeholder="`(${vendedor[0].bairro.toString().length}) Bairro:`" :id="'bairro'" :type="'text'" v-model="vendedor[0].bairro"></form-floating>
             </div>
             <div class="col-sm-2">
-                <form-floating :placeholder="'Município:'" :id="'mun'" :type="'text'" v-model="vendedor[0].mun"></form-floating>
+                <form-floating v-bind:style= "[vendedor[0].mun.toString().length > 15 || vendedor[0].mun.toString().length < 3 ? {'color': 'red'} : {'color': 'inherit'}]" :placeholder="`(${vendedor[0].mun.toString().length}) Município:`" :id="'mun'" :type="'text'" v-model="vendedor[0].mun"></form-floating>
             </div>
             <div class="col-sm-1">
-                <form-floating :placeholder="'Estado:'" :id="'est'" :type="'text'" v-model="vendedor[0].est"></form-floating>
+                <form-floating v-bind:style= "[vendedor[0].est.toString().length > 2 || vendedor[0].est.toString().length <= 1 ? {'color': 'red'} : {'color': 'inherit'}]" :placeholder="`(${vendedor[0].est.toString().length}) UF:`" :id="'est'" :type="'text'" v-model="vendedor[0].est"></form-floating>
             </div>
             <div class="col">
-                <form-floating :placeholder="'CEP:'" :id="'cep'" :type="'text'" v-model="vendedor[0].cep"></form-floating>
+                <form-floating v-bind:style= "[vendedor[0].cep.toString().length > 8 || vendedor[0].cep.toString().length < 3 ? {'color': 'red'} : {'color': 'inherit'}]" :placeholder="`(${vendedor[0].cep.toString().length}) CEP:`" :id="'cep'" :type="'number'" v-model="vendedor[0].cep"></form-floating>
             </div>
-            <div class="col-sm-1">
-                <form-floating :placeholder="'DDD:'" :id="'dddtel'" :type="'text'" v-model="vendedor[0].dddtel"></form-floating>
+            <div class="col-sm-2">
+                <form-floating v-bind:style= "[vendedor[0].dddtel.toString().length > 3 || vendedor[0].dddtel.toString().length < 1 ? {'color': 'red'} : {'color': 'inherit'}]" :placeholder="`(${vendedor[0].dddtel.toString().length}) DDD:`" :id="'dddtel'" :type="'text'" v-model="vendedor[0].dddtel"></form-floating>
             </div>
             <div class="col">
-                <form-floating :placeholder="'Telefone:'" :id="'tel'" :type="'text'" v-model="vendedor[0].tel"></form-floating>
+                <form-floating v-bind:style= "[vendedor[0].tel.toString().length > 15 || vendedor[0].tel.toString().length < 7 ? {'color': 'red'} : {'color': 'inherit'}]" :placeholder="`(${vendedor[0].tel.toString().length}) Telefone:`" :id="'tel'" :type="'text'" v-model="vendedor[0].tel"></form-floating>
             </div>
         </div>
     </div>
@@ -88,6 +89,22 @@
     <template v-slot:buttons v-if="!carregandoinfo">
         <button class="button-8 mt-2" @click="fecharVendedorModal()">Fechar</button>
         <button class="button-8 mt-2" @click="salvarVendedorModal()">Salvar</button>
+    </template>
+</modal>
+
+<modal v-if="excluirModal" :title="`Excluir`">
+    <template v-slot:body>
+    <loading v-if="carregandoinfo"></loading>
+    <div v-if="!carregandoinfo">
+        <div class="row mb-2">
+            <h1 style="text-align: center;">{{ excluir.nome }}</h1>
+            <h4 style="text-align: center;">Deseja realmente excluir esse usuário?</h4>
+        </div>
+    </div>
+    </template>
+    <template v-slot:buttons v-if="!carregandoinfo">
+        <button class="button-8 mt-2" @click="excluirModal = false">Não</button>
+        <button class="button-8 mt-2" @click="excluirVendedor()">Sim</button>
     </template>
 </modal>
 
@@ -124,6 +141,12 @@ components: {
 },
 data(){
     return{
+        excluir: {
+            "filial": '',
+            "cod": '',
+            "nome": ''
+        },
+        excluirModal: false,
         vendedorModal: false,
         popup: false,
         carregandoinfo: false,
@@ -135,10 +158,51 @@ data(){
     }
 },
 methods: {
+    async excluirVendedor(){
+        try {
+            this.carregandoinfo = false;
+            this.excluirModal = false;
+            this.carregando = true;
+            let jsonCliente = {};
+            jsonCliente = {
+                "A3_FILIAL": this.excluir.filial, 
+                "A3_COD": this.excluir.cod,
+            };
+            await axios.post(`${import.meta.env.VITE_BACKEND_IP}/comercial/sa3/api/delete`, jsonCliente, config);
+            this.refresh()
+        } catch (error) {
+            this.carregandoinfo = false;
+            this.excluirModal = false;
+            this.carregando = false;
+            alert("Erro ao executar ação. Favor tente novamente mais tarde.")
+        }
+    },
+    async openExcluirModal(filial, cod, nome){
+        try {
+            this.excluir.filial = filial;
+            this.excluir.cod = cod;
+            this.excluir.nome = nome;
+            this.carregandoinfo = true;
+            this.excluirModal = true;
+            this.carregandoinfo = false;
+        } catch (error) {
+            this.carregandoinfo = false;
+            this.excluirModal = false;
+            alert("Erro ao executar ação. Favor tente novamente mais tarde.")
+        }
+    },
     async salvarVendedorModal(){
         try {
             if(this.vendedor[0].nome.toString().length > 40 || this.vendedor[0].nome.toString().length < 3 ||
-            this.vendedor[0].email.toString().length > 100 || this.vendedor[0].email.toString().length < 3){
+            this.vendedor[0].email.toString().length > 100 || this.vendedor[0].email.toString().length < 3 ||
+            this.vendedor[0].end.toString().length > 40 || this.vendedor[0].end.toString().length < 3 ||
+            this.vendedor[0].bairro.toString().length > 20 || this.vendedor[0].bairro.toString().length < 3 ||
+            this.vendedor[0].mun.toString().length > 15 || this.vendedor[0].mun.toString().length < 3 ||
+            this.vendedor[0].est.toString().length > 2 || this.vendedor[0].est.toString().length <= 1 ||
+            this.vendedor[0].cep.toString().length > 8 || this.vendedor[0].cep.toString().length < 3 ||
+            this.vendedor[0].dddtel.toString().length > 3 || this.vendedor[0].dddtel.toString().length < 1 ||
+            this.vendedor[0].tel.toString().length > 15 || this.vendedor[0].tel.toString().length < 7
+            ){
                 alert("Favor preencher de forma correta os campos em vermelho.");
                 return null;
             }else{
@@ -149,7 +213,14 @@ methods: {
                     "A3_FILIAL": this.vendedor[0].filial, 
                     "A3_COD": this.vendedor[0].cod, 
                     "A3_NOME": this.vendedor[0].nome,
-                    "A3_EMAIL": this.vendedor[0].email
+                    "A3_EMAIL": this.vendedor[0].email,
+                    "A3_END": this.vendedor[0].end,
+                    "A3_BAIRRO": this.vendedor[0].bairro,
+                    "A3_MUN": this.vendedor[0].mun,
+                    "A3_EST": this.vendedor[0].est,
+                    "A3_CEP": this.vendedor[0].cep,
+                    "A3_DDDTEL": this.vendedor[0].dddtel,
+                    "A3_TEL": this.vendedor[0].tel,
                 };
                 await axios.post(`${import.meta.env.VITE_BACKEND_IP}/comercial/sa3/api/update`, jsonCliente, config);
                 jsonCliente = {};
@@ -164,8 +235,8 @@ methods: {
     },
     async openEditarModal(id){
         try {
-            this.vendedorModal = true;
             this.carregandoinfo = true;
+            this.vendedorModal = true;
             const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/sa3/vendedor/${id}`, config);
             this.vendedor = response.data;
             this.carregandoinfo = false;
