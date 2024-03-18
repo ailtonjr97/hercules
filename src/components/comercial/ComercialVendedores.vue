@@ -2,23 +2,20 @@
     <popup v-if="popup"></popup>
     <div v-if="carregando" id="loading"></div>
     <div style="overflow: hidden; padding: 0.5%;">
-    <table-top :resultados="resultados">
+    <table-top :resultados="resultados" :class="'mb-2'">
         <template v-slot:tableButtons>
-            <button class="button-8 mb-2" @click="refresh()">Atualizar</button>
+            <!-- <button class="button-8 mb-2" @click="refresh()">Atualizar</button> -->
         </template>
     </table-top>
     <div class="row mb-2">
-        <table-search :id="'procuraBtn0'" :num="0" :placeholder="'ID:'"></table-search>
-        <table-search :id="'procuraBtn1'" :num="1" :placeholder="'Filial:'"></table-search>
-        <table-search :id="'procuraBtn2'" :num="2" :placeholder="'Código:'"></table-search>
-        <table-search :id="'procuraBtn3'" :num="3" :placeholder="'Nome:'"></table-search>
-        <table-search :id="'procuraBtn4'" :num="4" :placeholder="'E-mail:'"></table-search>
+        <form-floating :placeholder="'Código:'" :id="'cod'" :type="'text'" v-model="codigo" v-on:keyup.enter="pesquisa(codigo, nome, email)"></form-floating>
+        <form-floating :placeholder="'Nome:'" :id="'nome'" :type="'text'" v-model="nome" v-on:keyup.enter="pesquisa(codigo, nome, email)"></form-floating>
+        <form-floating :placeholder="'E-mail:'" :id="'email'" :type="'text'" v-model="email" v-on:keyup.enter="pesquisa(codigo, nome, email)"></form-floating>
     </div>
     <div class="table-wrapper table-responsive table-striped mb-5">
         <table class="fl-table" id="myTable">
         <thead>
             <tr style="height: 25px">
-            <th>ID</th>
             <th>Filial</th>
             <th>Código</th>
             <th>Nome</th>
@@ -28,13 +25,12 @@
         </thead>
         <tbody>
             <tr v-for="api in apis">
-            <td><p>{{ api.id }}</p></td>
             <td><p>{{ api.filial }}</p></td>
             <td><p>{{ api.cod }}</p></td>
             <td><p>{{ api.nome }}</p></td>
             <td><p>{{ api.email }}</p></td>
             <td>
-                <button title="Editar" class="button-8" @click="openEditarModal(api.id)"><i style="font-size: 14px;" class="fa-solid fa-pen"></i></button>
+                <button title="Editar" class="button-8" @click="openEditarModal(api.cod)"><i style="font-size: 14px;" class="fa-solid fa-pen"></i></button>
                 <button title="Excluir" class="button-8" @click="openExcluirModal(api.filial, api.cod, api.nome)"><i style="font-size: 14px;" class="fa-solid fa-trash"></i></button>
             </td>
             </tr>
@@ -141,6 +137,9 @@ components: {
 },
 data(){
     return{
+        codigo: '',
+        nome: '',
+        email: '',
         excluir: {
             "filial": '',
             "cod": '',
@@ -158,6 +157,19 @@ data(){
     }
 },
 methods: {
+    async pesquisa(codigo, nome, email){
+        try {
+            this.carregando = true;
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/sa3/pesquisa?codigo=${codigo}&nome=${nome}&email=${email}`, config);
+            this.apis = response.data;
+            this.resultados = response.data.length;
+            this.carregando = false;
+        } catch (error) {
+            this.carregando = false;
+            alert("Falha ao pesquisar. Favor tentar mais tarde.");
+            this.carregando = false;
+        }
+    },
     async excluirVendedor(){
         try {
             this.carregandoinfo = false;
@@ -233,11 +245,11 @@ methods: {
             alert("Erro ao alterar cadastro do cliente. Favor tentar novamente mais tarde");
         }
     },
-    async openEditarModal(id){
+    async openEditarModal(cod){
         try {
             this.carregandoinfo = true;
             this.vendedorModal = true;
-            const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/sa3/vendedor/${id}`, config);
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/sa3/pesquisa?codigo=${cod}`, config);
             this.vendedor = response.data;
             this.carregandoinfo = false;
         } catch (error) {
@@ -273,7 +285,8 @@ async created(){
             'Authorization': document.cookie,
             }
         }
-        const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/sa3`, config);
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/sa3/pesquisa`, config);
+        console.log(response.data)
         this.apis = response.data;
         this.resultados = response.data.length;
         this.carregando = false;
