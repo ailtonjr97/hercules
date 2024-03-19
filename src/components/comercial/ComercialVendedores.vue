@@ -2,9 +2,10 @@
     <popup v-if="popup"></popup>
     <div v-if="carregando" id="loading"></div>
     <div style="overflow: hidden; padding: 0.5%;">
-    <table-top :resultados="resultados" :class="'mb-2'">
+    <table-top :resultados="resultados">
         <template v-slot:tableButtons>
-            <!-- <button class="button-8 mb-2" @click="refresh()">Atualizar</button> -->
+            <button class="button-8 mb-2" @click="novoVendedor = true">Novo</button>
+            <button class="button-8 mb-2" @click="refresh()">Atualizar</button>
         </template>
     </table-top>
     <div class="row mb-2">
@@ -71,7 +72,7 @@
                 <form-floating v-bind:style= "[vendedor[0].est.toString().length > 2 || vendedor[0].est.toString().length <= 1 ? {'color': 'red'} : {'color': 'inherit'}]" :placeholder="`(${vendedor[0].est.toString().length}) UF:`" :id="'est'" :type="'text'" v-model="vendedor[0].est"></form-floating>
             </div>
             <div class="col">
-                <form-floating v-bind:style= "[vendedor[0].cep.toString().length > 8 || vendedor[0].cep.toString().length < 3 ? {'color': 'red'} : {'color': 'inherit'}]" :placeholder="`(${vendedor[0].cep.toString().length}) CEP:`" :id="'cep'" :type="'number'" v-model="vendedor[0].cep"></form-floating>
+                <form-floating v-bind:style= "[vendedor[0].cep.toString().length > 8 || vendedor[0].cep.toString().length < 3 ? {'color': 'red'} : {'color': 'inherit'}]" :placeholder="`(${vendedor[0].cep.toString().length}) CEP:`" :id="'cep'" :type="'text'" v-model="vendedor[0].cep"></form-floating>
             </div>
             <div class="col-sm-2">
                 <form-floating v-bind:style= "[vendedor[0].dddtel.toString().length > 3 || vendedor[0].dddtel.toString().length < 1 ? {'color': 'red'} : {'color': 'inherit'}]" :placeholder="`(${vendedor[0].dddtel.toString().length}) DDD:`" :id="'dddtel'" :type="'text'" v-model="vendedor[0].dddtel"></form-floating>
@@ -101,6 +102,23 @@
     <template v-slot:buttons v-if="!carregandoinfo">
         <button class="button-8 mt-2" @click="excluirModal = false">Não</button>
         <button class="button-8 mt-2" @click="excluirVendedor()">Sim</button>
+    </template>
+</modal>
+
+<modal v-if="novoVendedor" :title="`Cadastrar novo vendedor`">
+    <template v-slot:body>
+    <loading v-if="carregandoinfo"></loading>
+    <div v-if="!carregandoinfo">
+        <div class="row mb-2">
+            <div class="col">
+                <form-floating v-bind:style= "[nomeVendedor.toString().length > 40 || nomeVendedor.toString().length < 3 ? {'color': 'red'} : {'color': 'inherit'}]"  :id="'nome'" :type="'text'" :placeholder="`(${nomeVendedor.toString().length}) Nome:`" v-model="nomeVendedor"></form-floating>
+            </div>
+        </div>
+    </div>
+    </template>
+    <template v-slot:buttons v-if="!carregandoinfo">
+        <button class="button-8 mt-2" @click="novoVendedor = false">fechar</button>
+        <button class="button-8 mt-2" @click="criarNovoVendedor()">Cadastrar</button>
     </template>
 </modal>
 
@@ -137,6 +155,8 @@ components: {
 },
 data(){
     return{
+        nomeVendedor: '',
+        novoVendedor: false,
         codigo: '',
         nome: '',
         email: '',
@@ -157,6 +177,28 @@ data(){
     }
 },
 methods: {
+    async criarNovoVendedor(){
+        try {
+            if(this.nomeVendedor.toString().length > 40 || this.nomeVendedor.toString().length < 3){
+                alert("Favor preencher de forma correta os campos em vermelho.");
+                return null;
+            }else{
+                this.novoVendedor = false;
+                this.carregando = true;
+                let jsonCliente = {};
+                jsonCliente = {
+                    "A3_NOME": this.nomeVendedor
+                };
+                await axios.post(`${import.meta.env.VITE_BACKEND_IP}/comercial/sa3/api/insert`, jsonCliente, config);
+                this.nomeVendedor = '';
+            }
+        } catch (error) {
+            this.nomeVendedor = '';
+            alert('Falha ao cadastrar usuário. Tente novamente mais tarde.')
+            this.carregando = false;
+            this.novoVendedor = false;
+        }
+    },
     async pesquisa(codigo, nome, email){
         try {
             this.carregando = true;
@@ -250,6 +292,7 @@ methods: {
             this.carregandoinfo = true;
             this.vendedorModal = true;
             const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/sa3/pesquisa?codigo=${cod}`, config);
+            console.log(response.data)
             this.vendedor = response.data;
             this.carregandoinfo = false;
         } catch (error) {
@@ -264,7 +307,7 @@ methods: {
     async refresh(){
         try {
             this.carregando = true;
-            const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/sa3/update`, config);
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/sa3/pesquisa`, config);
             this.apis = response.data;
             this.resultados = response.data.length;
             this.carregando = false;
@@ -286,7 +329,6 @@ async created(){
             }
         }
         const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/sa3/pesquisa`, config);
-        console.log(response.data)
         this.apis = response.data;
         this.resultados = response.data.length;
         this.carregando = false;
