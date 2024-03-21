@@ -191,6 +191,7 @@ methods: {
                 };
                 await axios.post(`${import.meta.env.VITE_BACKEND_IP}/comercial/sa3/api/insert`, jsonCliente, config);
                 this.nomeVendedor = '';
+                this.refresh()
             }
         } catch (error) {
             this.nomeVendedor = '';
