@@ -4,7 +4,7 @@
     <div v-if="fullLoad" style="overflow: hidden; padding: 0.5%;">
     <table-top :resultados="resultados">
         <template v-slot:tableButtons>
-            <button class="button-8 mb-2" @click="novaCotacao()">Nova Cotação</button>
+            <button class="button-8 mb-2" @click="novaCotacao()" v-if="setor == 'Comercial'">Nova Cotação</button>
             <button class="button-8 mb-2" @click="refresh()">Atualizar</button>
             <button class="button-8 mb-2" @click="showAllRev()">Mostrar todas revisões</button>
             <button class="button-8 mb-2" @click="exportarModal = true">Exportar</button>
