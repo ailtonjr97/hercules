@@ -15,6 +15,7 @@
                             <router-link class="button-8 mb-2" to="/comercial/grupos-de-clientes">Grupos de Clientes</router-link>
                             <router-link class="button-8 mb-2" to="/comercial/clientes">Clientes</router-link>
                             <router-link class="button-8 mb-2" to="/comercial/vendedores">Vendedores</router-link>
+                            <router-link class="button-8 mb-2" to="/comercial/track-order">Track Order</router-link>
                         </div>
                     </div>
                 </tr>

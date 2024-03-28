@@ -25,6 +25,7 @@ import ComercialGruposDeClientes from './components/comercial/ComercialGruposDeC
 import ComercialOrcamentos from './components/comercial/ComercialOrcamentos.vue';
 import ComercialClientes from './components/comercial/ComercialClientes.vue';
 import ComercialVendedores from './components/comercial/ComercialVendedores.vue';
+import ComercialTrack from './components/comercial/ComercialTrack.vue';
 
 import LogisticaLanding from './components/logistica/LogisticaLanding.vue';
 
@@ -54,6 +55,7 @@ const router = createRouter({
       {path: '/comercial/orcamentos', component: ComercialOrcamentos},
       {path: '/comercial/clientes', component: ComercialClientes},
       {path: '/comercial/vendedores', component: ComercialVendedores},
+      {path: '/comercial/track-order', component: ComercialTrack},
       {path: '/logistica', component: LogisticaLanding},
       { path: '/:notFound(.*)', redirect: '/home' }
     ]
