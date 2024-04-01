@@ -167,7 +167,7 @@
         <div class="row">
             <select-floating :placeholder="'Filial'" :id="'user-setor'" :options="optionsFiliais" v-model="filial"></select-floating>
             <form-floating :placeholder="'Número do Orçamento:'" :id="'numped'" :type="'number'" v-model="numped" ></form-floating><br>
-            <p style="color: red;" v-if="alertaPedido">Orçamento não encontrado no Protheus. Verificar se esse pedido pertençe a filial.</p>
+            <p style="color: red;" v-if="alertaPedido">Orçamento não encontrado no Protheus. Verificar se esse orçamento pertence a filial.</p>
         </div>
     </div>
     </template>

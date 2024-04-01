@@ -4,6 +4,7 @@
     <div style="overflow: hidden; padding: 0.5%;">
     <table-top :resultados="resultados">
         <template v-slot:tableButtons>
+            <button class="button-8 mb-2" @click="abrirNovoModal()">Novo</button>
             <button class="button-8 mb-2" @click="refresh()">Atualizar</button>
         </template>
     </table-top>
@@ -17,65 +18,53 @@
             <tr style="height: 25px">
             <th>Ações</th>
             <th>ID</th>
+            <th>Filial</th>
             <th>Pedido</th>
             <th>Separado CD</th>
             <th>Liberado Comercial</th>
             <th>Liberado Faturamento</th>
             <th>Faturado</th>
             <th>Liberado Expedição</th>
-            <th>Expedição</th>
+            <th>Expedido</th>
             </tr>
         </thead>
         <tbody>
-            <tr>
-            <td>
-                <button v-on:click="mudaSeta()" data-bs-toggle="collapse" data-bs-target="#demo" title="Itens" class="button-8"><i v-if="!abriu" class="fa-solid fa-arrow-up"></i><i v-if="abriu" class="fa-solid fa-arrow-down"></i></button>
-            </td>
-            <td>
-                999999
-            </td>
-            <td>
-                99999
-            </td>
-            <td>
-                <input type="checkbox" name="" id="">
-            </td>
-            <td>
-                <input type="checkbox" name="" id="">
-            </td>
-            <td>
-                <input type="checkbox" name="" id="">
-            </td>
-            <td>
-                <input type="checkbox" name="" id="">
-            </td>
-            <td>
-                <input type="checkbox" name="" id="">
-            </td>
-            <td>
-                <input type="checkbox" name="" id="">
-            </td>
+            <tr v-for="api in apis">
+                <td><button v-on:click="mudaSeta()" data-bs-toggle="collapse" data-bs-target="#demo" title="Itens" class="button-8"><i v-if="!abriu" class="fa-solid fa-arrow-up"></i><i v-if="abriu" class="fa-solid fa-arrow-down"></i></button></td>
+                <td>{{ api.id }}</td>
+                <td>{{ api.filial_pedido}}</td>
+                <td>{{ api.num_pedido}}</td>
+                <td><input type="checkbox" name="separado_cd" id="separado_cd" :checked="api.separado_cd == 1 ? true: false"></td>
+                <td><input type="checkbox" name="liberado_comercial" id="liberado_comercial" :checked="api.liberado_comercial == 1 ? true: false"></td>
+                <td><input type="checkbox" name="liberado_faturamento" id="liberado_faturamento" :checked="api.liberado_faturamento == 1 ? true: false"></td>
+                <td><input type="checkbox" name="faturado" id="faturado" :checked="api.faturado == 1 ? true: false"></td>
+                <td><input type="checkbox" name="liberado_expedicao" id="liberado_expedicao" :checked="api.liberado_expedicao == 1 ? true: false"></td>
+                <td><input type="checkbox" name="expedido" id="expedido" :checked="api.expedido == 1 ? true: false"></td>
             </tr>
-            <div class="row">
-                <div class="col">
-                    <div  id="demo" class="panel-collapse collapse">
-                        <div class="table-wrapper table-responsive table-striped mb-5">
-                            <table class="fl-table" id="myTable">
-                                <thead>
-                                    <th>Teste</th>
-                                </thead>
-                                <tbody>
-                                    <td>teste</td>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </tbody>
         </table>
     </div>
 </div>
+
+<modal v-if="novoModal" :title="'Criar nova cotação:'">
+    <template v-slot:body>
+        <div class="row">
+            <div class="col">
+                <select-floating :placeholder="'Filial'" :id="'user-setor'" :options="optionsFiliais" v-model="filial"></select-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Número do Pedido:'" :id="'numped'" :type="'number'" v-model="numped" ></form-floating><br>
+            </div>
+            <p style="color: red;" v-if="alertaPedido">Pedido não encontrado no Protheus. Verificar se esse pedido pertence a filial.</p>
+        </div>
+    </template>
+    <template v-slot:buttons v-if="!carregandoinfo">
+        <button class="button-8" @click="fecharNovoModal()">Fechar</button>
+        <button class="button-8 mt-2" @click="salvarModalCotacao(numped, filial)">Salvar</button>
+    </template>
+</modal>
+
+
 </template>
 
 <script>
@@ -109,27 +98,72 @@ components: {
 },
 data(){
     return{
+        alertaPedido: false,
+        numped: '',
+        filial: '',
+        novoModal: false,
         abriu: false,
         popup: false,
         disableBtn: false,
-        carregandoinfoApi: false,
         carregandoinfo: false,
-        modalRelatorio: false,
         resultados: 0,
         carregando: true,
         apis: [],
-        modalApi: false,
-        carregandoinfo: false,
-        visualizar: {},
-        dadosRelatorio: {},
-        lista: {
-            metodo: '',
-            descricao: '',
-            caminho: ''
-        }
     }
 },
+computed: {
+    optionsFiliais(){
+            return [
+                {valor: "0101001", descri: 'FIBRACEM MATRIZ'},
+                {valor: "0101002", descri: 'FIBRACEM FILIAL CD.'},
+                {valor: "0101003", descri: 'FIBRACEM ESPIRITO SANTO CD'},
+                {valor: "0101004", descri: 'FIBRACEM INDUSTRIA LINHARES'},
+                {valor: "0101005", descri: 'FIBRACEM IMPORTACAO LINHARES'},
+                {valor: "0101006", descri: 'FIBRACEM INJECOES'}
+            ];
+        },
+    },
 methods: {
+    async salvarModalCotacao(numped, filial){
+        try {
+            this.carregandoinfo = true;
+            if(numped && filial){
+                const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/totvs/api/sc5/get_id`, config);
+                console.log(response.data)
+                // if(response){
+                //     const itens = []
+                //     response.data.objects.forEach(element => {
+                //         itens.push({produto: element.produto, qtdven: element.qtdven, loja: element.loja, descri: element.descri, obs: element.obs, valor: element.valor})
+                //     });
+                //     const token = document.cookie.replace('jwt=', '');
+                //     const decoded = jwtDecode(token);
+                //     const respostaScj = await axios.post(`${import.meta.env.VITE_BACKEND_IP}/comercial/nova-proposta-de-frete/${numped}/${decoded.id}/${filial}`, itens, config);
+                //     this.fecharNovaCotacaoModal();
+                //     this.carregando = true;
+                //     this.refresh();
+                // }
+            }else{
+                alert("Favor preencher o número do pedido e filial.");
+                this.carregandoinfo = false;
+            }
+        } catch (error) {
+            this.alertaPedido = true;
+            this.carregandoinfo = false;
+        }
+    },
+    async abrirNovoModal(){
+        try {
+            this.novoModal = true;
+            //throw new Error
+        } catch (error) {
+            alert("Falha ao abrir modal. Tente novamente mais tarde.");
+        }
+    },
+    async fecharNovoModal(){
+        this.filial = '';
+        this.numped = '';
+        this.novoModal = false;
+    },
     async mudaSeta(){
         if(this.abriu){
             this.abriu = false
@@ -140,7 +174,7 @@ methods: {
     async refresh(){
         try {
             this.carregando = true;
-            const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/totvs/api/acy/get_all`, config);
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/track_order/get_all`, config);
             this.apis = response.data;
             this.resultados = response.data.length;
             this.carregando = false;
@@ -157,11 +191,9 @@ async created(){
             'Authorization': document.cookie,
             }
         }
-        // const response = await axios.get(`http://45.6.155.3:1807/rest/CONSULTA_ACY/get_all`,
-        // {auth: {username: 'ailton souza', password: 'bagre157'}});
-        // console.log(response.data)
-        // this.apis = response.data;
-        // this.resultados = response.data.length;
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/track_order/get_all`, config);
+        this.apis = response.data;
+        this.resultados = response.data.length;
         this.carregando = false;
     } catch (error) {
         console.log(error)
