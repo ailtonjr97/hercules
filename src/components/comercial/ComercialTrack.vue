@@ -99,74 +99,7 @@
 
 </template>
 
-<style>
-@import url('https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css');
- .pcs:after {
-	 content: " pcs";
-}
- .cur:before {
-	 content: "$";
-}
- .per:after {
-	 content: "%";
-}
- * {
-	 box-sizing: border-box;
-}
- body {
-	 padding: 0.2em 2em;
-}
- table {
-	 width: 100%;
-}
- table th {
-	 text-align: left;
-	 border-bottom: 1px solid #ccc;
-}
- table th, table td {
-	 padding: 0.4em;
-}
- table.fold-table > tbody > tr.view td, table.fold-table > tbody > tr.view th {
-	 cursor: pointer;
-}
- table.fold-table > tbody > tr.view td:first-child, table.fold-table > tbody > tr.view th:first-child {
-	 position: relative;
-	 padding-left: 20px;
-}
- table.fold-table > tbody > tr.view td:first-child:before, table.fold-table > tbody > tr.view th:first-child:before {
-	 position: absolute;
-	 top: 50%;
-	 left: 5px;
-	 width: 9px;
-	 height: 16px;
-	 margin-top: -8px;
-	 font: 16px fontawesome;
-	 color: #999;
-	 content: "\f0d7";
-	 transition: all 0.3s ease;
-}
- table.fold-table > tbody > tr.view:nth-child(4n-1) {
-	 background: #eee;
-}
- table.fold-table > tbody > tr.view.open td:first-child:before, table.fold-table > tbody > tr.view.open th:first-child:before {
-	 transform: rotate(-180deg);
-	 color: #333;
-}
- table.fold-table > tbody > tr.fold {
-	 display: none;
-}
- table.fold-table > tbody > tr.fold.open {
-	 display: table-row;
-}
- 
-</style>
-
 <script>
-$(function(){
-  $(".fold-table tr.view").on("click", function(){
-    $(this).toggleClass("open").next(".fold").toggleClass("open");
-  });
-});
 
 const config = {
     headers: {
@@ -292,9 +225,10 @@ async created(){
             }
         }
         const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/track_order/get_all`, config);
-        this.apis = response.data;
-        this.resultados = response.data.length;
-        this.carregando = false;
+        console.log(response.data)
+        // this.apis = response.data;
+        // this.resultados = response.data.length;
+        // this.carregando = false;
     } catch (error) {
         console.log(error)
         alert("Erro ao carregar página. Favor tentar mais tarde.");
