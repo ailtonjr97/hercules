@@ -16,7 +16,7 @@
         <table class="fl-table" id="myTable">
         <thead>
             <tr style="height: 25px">
-            <th>Ações</th>
+            <th>Itens</th>
             <th>ID</th>
             <th>Filial</th>
             <th>Pedido</th>
@@ -30,7 +30,39 @@
         </thead>
         <tbody>
             <tr v-for="api in apis">
-                <td><button v-on:click="mudaSeta()" data-bs-toggle="collapse" data-bs-target="#demo" title="Itens" class="button-8"><i v-if="!abriu" class="fa-solid fa-arrow-up"></i><i v-if="abriu" class="fa-solid fa-arrow-down"></i></button></td>
+                <td style="width: 600px;"><button v-on:click="mudaSeta()" data-bs-toggle="collapse" data-bs-target="#demo" title="Itens" class="button-8"><i v-if="!abriu" class="fa-solid fa-arrow-up"></i><i v-if="abriu" class="fa-solid fa-arrow-down"></i></button></td>
+                <td>{{ api.id }}</td>
+                <td>{{ api.filial_pedido}}</td>
+                <td>{{ api.num_pedido}}</td>
+                <td><input type="checkbox" name="separado_cd" id="separado_cd" :checked="api.separado_cd == 1 ? true: false"></td>
+                <td><input type="checkbox" name="liberado_comercial" id="liberado_comercial" :checked="api.liberado_comercial == 1 ? true: false"></td>
+                <td><input type="checkbox" name="liberado_faturamento" id="liberado_faturamento" :checked="api.liberado_faturamento == 1 ? true: false"></td>
+                <td><input type="checkbox" name="faturado" id="faturado" :checked="api.faturado == 1 ? true: false"></td>
+                <td><input type="checkbox" name="liberado_expedicao" id="liberado_expedicao" :checked="api.liberado_expedicao == 1 ? true: false"></td>
+                <td><input type="checkbox" name="expedido" id="expedido" :checked="api.expedido == 1 ? true: false"></td>
+            </tr>
+            <tr>
+                <div  id="demo" class="panel-collapse collapse">
+                    <div class="table-wrapper table-striped">
+                        <table class="fl-table" id="myTable">
+                            <thead>
+                                <th style="word-wrap: break-word; width: 5px;">Item</th>
+                                <th>Separado CD</th>
+                                <th>Quantidade</th>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="word-wrap: break-word; width: 5px;">Caixa de emenda 24F</td>
+                                    <td><input type="checkbox" name="" id=""></td>
+                                    <td>200</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </tr>
+            <tr v-for="api in apis">
+                <td style="width: 600px;"><button title="Itens" class="button-8"><i v-if="!abriu" class="fa-solid fa-arrow-up"></i><i v-if="abriu" class="fa-solid fa-arrow-down"></i></button></td>
                 <td>{{ api.id }}</td>
                 <td>{{ api.filial_pedido}}</td>
                 <td>{{ api.num_pedido}}</td>
@@ -67,7 +99,75 @@
 
 </template>
 
+<style>
+@import url('https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css');
+ .pcs:after {
+	 content: " pcs";
+}
+ .cur:before {
+	 content: "$";
+}
+ .per:after {
+	 content: "%";
+}
+ * {
+	 box-sizing: border-box;
+}
+ body {
+	 padding: 0.2em 2em;
+}
+ table {
+	 width: 100%;
+}
+ table th {
+	 text-align: left;
+	 border-bottom: 1px solid #ccc;
+}
+ table th, table td {
+	 padding: 0.4em;
+}
+ table.fold-table > tbody > tr.view td, table.fold-table > tbody > tr.view th {
+	 cursor: pointer;
+}
+ table.fold-table > tbody > tr.view td:first-child, table.fold-table > tbody > tr.view th:first-child {
+	 position: relative;
+	 padding-left: 20px;
+}
+ table.fold-table > tbody > tr.view td:first-child:before, table.fold-table > tbody > tr.view th:first-child:before {
+	 position: absolute;
+	 top: 50%;
+	 left: 5px;
+	 width: 9px;
+	 height: 16px;
+	 margin-top: -8px;
+	 font: 16px fontawesome;
+	 color: #999;
+	 content: "\f0d7";
+	 transition: all 0.3s ease;
+}
+ table.fold-table > tbody > tr.view:nth-child(4n-1) {
+	 background: #eee;
+}
+ table.fold-table > tbody > tr.view.open td:first-child:before, table.fold-table > tbody > tr.view.open th:first-child:before {
+	 transform: rotate(-180deg);
+	 color: #333;
+}
+ table.fold-table > tbody > tr.fold {
+	 display: none;
+}
+ table.fold-table > tbody > tr.fold.open {
+	 display: table-row;
+}
+ 
+</style>
+
 <script>
+$(function(){
+  $(".fold-table tr.view").on("click", function(){
+    $(this).toggleClass("open").next(".fold").toggleClass("open");
+  });
+});
+
 const config = {
     headers: {
     'Authorization': document.cookie,
