@@ -29,44 +29,37 @@
             </tr>
         </thead>
         <tbody>
+            <div>
+                
+            </div>
             <tr v-for="api in apis">
-                <td style="width: 600px;"><button v-on:click="mudaSeta()" data-bs-toggle="collapse" data-bs-target="#demo" title="Itens" class="button-8"><i v-if="!abriu" class="fa-solid fa-arrow-up"></i><i v-if="abriu" class="fa-solid fa-arrow-down"></i></button></td>
-                <td>{{ api.id }}</td>
-                <td>{{ api.filial_pedido}}</td>
-                <td>{{ api.num_pedido}}</td>
-                <td><input type="checkbox" name="separado_cd" id="separado_cd" :checked="api.separado_cd == 1 ? true: false"></td>
-                <td><input type="checkbox" name="liberado_comercial" id="liberado_comercial" :checked="api.liberado_comercial == 1 ? true: false"></td>
-                <td><input type="checkbox" name="liberado_faturamento" id="liberado_faturamento" :checked="api.liberado_faturamento == 1 ? true: false"></td>
-                <td><input type="checkbox" name="faturado" id="faturado" :checked="api.faturado == 1 ? true: false"></td>
-                <td><input type="checkbox" name="liberado_expedicao" id="liberado_expedicao" :checked="api.liberado_expedicao == 1 ? true: false"></td>
-                <td><input type="checkbox" name="expedido" id="expedido" :checked="api.expedido == 1 ? true: false"></td>
-            </tr>
-            <tr>
-                <div  id="demo" class="panel-collapse collapse">
-                    <div class="table-wrapper table-striped">
-                        <table class="fl-table" id="myTable">
-                            <thead>
-                                <th style="word-wrap: break-word; width: 5px;">Item</th>
-                                <th>Separado CD</th>
-                                <th>Quantidade</th>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td style="word-wrap: break-word; width: 5px;">Caixa de emenda 24F</td>
-                                    <td><input type="checkbox" name="" id=""></td>
-                                    <td>200</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </tr>
-            <tr v-for="api in apis">
-                <td style="width: 600px;"><button title="Itens" class="button-8"><i v-if="!abriu" class="fa-solid fa-arrow-up"></i><i v-if="abriu" class="fa-solid fa-arrow-down"></i></button></td>
-                <td>{{ api.id }}</td>
-                <td>{{ api.filial_pedido}}</td>
-                <td>{{ api.num_pedido}}</td>
-                <td><input type="checkbox" name="separado_cd" id="separado_cd" :checked="api.separado_cd == 1 ? true: false"></td>
+                <td style="width: 600px;">
+                    <button v-on:click="mudaSeta()" data-bs-toggle="collapse" :data-bs-target="'#a' + api.C5_FILIAL + api.C5_NUM" title="Itens" class="button-8"><i v-if="!abriu" class="fa-solid fa-arrow-up"></i><i v-if="abriu" class="fa-solid fa-arrow-down"></i></button>
+                    <tr>
+                        <div :id="'a' + api.C5_FILIAL + api.C5_NUM" class="panel-collapse collapse mt-2 mb-2">
+                            <div class="table-wrapper table-striped">
+                                <table class="fl-table" id="myTable">
+                                    <thead>
+                                        <th>Item</th>
+                                        <th>Separado CD</th>
+                                        <th>Quantidade</th>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td style="word-wrap: break-word; width: 5px;">Caixa de emenda 24F</td>
+                                            <td><input type="checkbox" name="" id=""></td>
+                                            <td>200</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </tr>
+                </td>
+                <td>{{ api.R_E_C_N_O_ }}</td>
+                <td>{{ api.C5_FILIAL}}</td>
+                <td>{{ api.C5_NUM}}</td>
+                <td><input type="checkbox" name="separado_cd" id="separado_cd" :checked="api.C5_XSEPCD ? true: false" disabled></td>
                 <td><input type="checkbox" name="liberado_comercial" id="liberado_comercial" :checked="api.liberado_comercial == 1 ? true: false"></td>
                 <td><input type="checkbox" name="liberado_faturamento" id="liberado_faturamento" :checked="api.liberado_faturamento == 1 ? true: false"></td>
                 <td><input type="checkbox" name="faturado" id="faturado" :checked="api.faturado == 1 ? true: false"></td>
@@ -225,10 +218,9 @@ async created(){
             }
         }
         const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/track_order/get_all`, config);
-        console.log(response.data)
-        // this.apis = response.data;
-        // this.resultados = response.data.length;
-        // this.carregando = false;
+        this.apis = response.data;
+        this.resultados = response.data.length;
+        this.carregando = false;
     } catch (error) {
         console.log(error)
         alert("Erro ao carregar página. Favor tentar mais tarde.");
