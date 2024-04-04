@@ -40,15 +40,17 @@
                             <div class="table-wrapper table-striped">
                                 <table class="fl-table" id="myTable">
                                     <thead>
+                                        <th>Filial</th>
                                         <th>Item</th>
                                         <th>Separado CD</th>
                                         <th>Quantidade</th>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td style="word-wrap: break-word; width: 5px;">Caixa de emenda 24F</td>
-                                            <td><input type="checkbox" name="" id=""></td>
-                                            <td>200</td>
+                                        <tr v-for="iten in api.itens[0]">
+                                            <td>{{ iten.C6_FILIAL }}</td>
+                                            <td style="word-wrap: break-word; width: 5px;">{{ iten.C6_PRODUTO }}</td>
+                                            <td><input type="checkbox" name="" id="" :checked="iten.C6_XSEPCD ? true: false"></td>
+                                            <td>{{ iten.C6_QTDVEN }}</td>
                                         </tr>
                                     </tbody>
                                 </table>
