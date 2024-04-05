@@ -4,7 +4,6 @@
     <div style="overflow: hidden; padding: 0.5%;">
     <table-top :resultados="resultados">
         <template v-slot:tableButtons>
-            <button class="button-8 mb-2" @click="abrirNovoModal()">Novo</button>
             <button class="button-8 mb-2" @click="refresh()">Atualizar</button>
         </template>
     </table-top>
@@ -40,17 +39,15 @@
                             <div class="table-wrapper table-striped">
                                 <table class="fl-table" id="myTable">
                                     <thead>
-                                        <th>Filial</th>
                                         <th>Item</th>
-                                        <th>Separado CD</th>
                                         <th>Quantidade</th>
+                                        <th>Separado CD</th>
                                     </thead>
                                     <tbody>
                                         <tr v-for="iten in api.itens[0]">
-                                            <td>{{ iten.C6_FILIAL }}</td>
                                             <td style="word-wrap: break-word; width: 5px;">{{ iten.C6_PRODUTO }}</td>
-                                            <td><input type="checkbox" name="" id="" :checked="iten.C6_XSEPCD ? true: false"></td>
                                             <td>{{ iten.C6_QTDVEN }}</td>
+                                            <td><input type="checkbox" name="" id="" :checked="iten.C6_XSEPCD ? true: false" :disabled="iten.C6_XSEPCD ? true: false" @click="marcaSepC6(iten.C6_FILIAL, iten.C6_NUM)"></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -139,44 +136,15 @@ data(){
         apis: [],
     }
 },
-computed: {
-    optionsFiliais(){
-            return [
-                {valor: "0101001", descri: 'FIBRACEM MATRIZ'},
-                {valor: "0101002", descri: 'FIBRACEM FILIAL CD.'},
-                {valor: "0101003", descri: 'FIBRACEM ESPIRITO SANTO CD'},
-                {valor: "0101004", descri: 'FIBRACEM INDUSTRIA LINHARES'},
-                {valor: "0101005", descri: 'FIBRACEM IMPORTACAO LINHARES'},
-                {valor: "0101006", descri: 'FIBRACEM INJECOES'}
-            ];
-        },
-    },
 methods: {
-    async salvarModalCotacao(numped, filial){
+    async marcaSepC6(filial, num){
         try {
-            this.carregandoinfo = true;
-            if(numped && filial){
-                const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/totvs/api/sc5/get_id`, config);
-                console.log(response.data)
-                // if(response){
-                //     const itens = []
-                //     response.data.objects.forEach(element => {
-                //         itens.push({produto: element.produto, qtdven: element.qtdven, loja: element.loja, descri: element.descri, obs: element.obs, valor: element.valor})
-                //     });
-                //     const token = document.cookie.replace('jwt=', '');
-                //     const decoded = jwtDecode(token);
-                //     const respostaScj = await axios.post(`${import.meta.env.VITE_BACKEND_IP}/comercial/nova-proposta-de-frete/${numped}/${decoded.id}/${filial}`, itens, config);
-                //     this.fecharNovaCotacaoModal();
-                //     this.carregando = true;
-                //     this.refresh();
-                // }
-            }else{
-                alert("Favor preencher o número do pedido e filial.");
-                this.carregandoinfo = false;
-            }
+            this.carregando = true;
+            console.log(filial, num)
+            this.carregando = true;
         } catch (error) {
-            this.alertaPedido = true;
-            this.carregandoinfo = false;
+            alert("Falha ao executar ação. Tente novamente mais tarde.")
+            this.carregando = false;
         }
     },
     async abrirNovoModal(){
