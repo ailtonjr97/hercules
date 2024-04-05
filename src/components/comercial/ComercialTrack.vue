@@ -47,7 +47,7 @@
                                         <tr v-for="iten in api.itens[0]">
                                             <td style="word-wrap: break-word; width: 5px;">{{ iten.C6_PRODUTO }}</td>
                                             <td>{{ iten.C6_QTDVEN }}</td>
-                                            <td><input type="checkbox" name="" id="" :checked="iten.C6_XSEPCD ? true: false" :disabled="iten.C6_XSEPCD ? true: false" @click="marcaSepC6(iten.C6_FILIAL, iten.C6_NUM)"></td>
+                                            <td><input type="checkbox" name="" id="" :checked="iten.C6_XSEPCD ? true: false" :disabled="iten.C6_XSEPCD ? true: false" @click="marcaSepC6(iten.C6_FILIAL, iten.C6_NUM, iten.C6_ITEM, iten.C6_PRODUTO)"></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -137,11 +137,14 @@ data(){
     }
 },
 methods: {
-    async marcaSepC6(filial, num){
+    async marcaSepC6(filial, num, item, produto){
         try {
-            this.carregando = true;
-            console.log(filial, num)
-            this.carregando = true;
+            await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/track_order/update_c6xsepcd/${filial}/${num}/${item}/${produto}`, config);
+            this.refresh();
+            this.popup = true;
+            setTimeout(()=>{
+                this.popup = false;
+            }, 2000);
         } catch (error) {
             alert("Falha ao executar ação. Tente novamente mais tarde.")
             this.carregando = false;
