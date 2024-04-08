@@ -7,10 +7,10 @@
             <button class="button-8 mb-2" @click="refresh()">Atualizar</button>
         </template>
     </table-top>
-    <div class="row mb-2">
+<!--     <div class="row mb-2">
         <table-search :id="'procuraBtn0'" :num="0" :placeholder="'Código:'"></table-search>
         <table-search :id="'procuraBtn1'" :num="1" :placeholder="'Descrição:'"></table-search>
-    </div>
+    </div> -->
     <div class="table-wrapper table-responsive table-striped mb-5">
         <table class="fl-table" id="myTable">
         <thead>
@@ -32,8 +32,8 @@
                 
             </div>
             <tr v-for="api in apis">
-                <td style="width: 600px;">
-                    <button v-on:click="mudaSeta()" data-bs-toggle="collapse" :data-bs-target="'#a' + api.C5_FILIAL + api.C5_NUM" title="Itens" class="button-8"><i v-if="!abriu" class="fa-solid fa-arrow-up"></i><i v-if="abriu" class="fa-solid fa-arrow-down"></i></button>
+                <td>
+                    <button data-bs-toggle="collapse" :data-bs-target="'#a' + api.C5_FILIAL + api.C5_NUM" title="Itens" class="button-8"><i class="fa-solid fa-bars"></i></button>
                     <tr>
                         <div :id="'a' + api.C5_FILIAL + api.C5_NUM" class="panel-collapse collapse mt-2 mb-2">
                             <div class="table-wrapper table-striped">
@@ -47,7 +47,7 @@
                                         <tr v-for="iten in api.itens[0]">
                                             <td style="word-wrap: break-word; width: 5px;">{{ iten.C6_PRODUTO }}</td>
                                             <td>{{ iten.C6_QTDVEN }}</td>
-                                            <td><input type="checkbox" name="" id="" :checked="iten.C6_XSEPCD ? true: false" :disabled="iten.C6_XSEPCD ? true: false" @click="marcaSepC6(iten.C6_FILIAL, iten.C6_NUM, iten.C6_ITEM, iten.C6_PRODUTO)"></td>
+                                            <td><input type="checkbox" name="" id="" :checked="iten.C6_XSEPCD ? true: false" @click="marcaSepC6(iten.C6_FILIAL, iten.C6_NUM, iten.C6_ITEM, iten.C6_PRODUTO, $event)"></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -58,12 +58,12 @@
                 <td>{{ api.R_E_C_N_O_ }}</td>
                 <td>{{ api.C5_FILIAL}}</td>
                 <td>{{ api.C5_NUM}}</td>
-                <td><input type="checkbox" name="separado_cd" id="separado_cd" :checked="api.C5_XSEPCD ? true: false" disabled></td>
-                <td><input type="checkbox" name="liberado_comercial" id="liberado_comercial" :checked="api.liberado_comercial == 1 ? true: false"></td>
-                <td><input type="checkbox" name="liberado_faturamento" id="liberado_faturamento" :checked="api.liberado_faturamento == 1 ? true: false"></td>
-                <td><input type="checkbox" name="faturado" id="faturado" :checked="api.faturado == 1 ? true: false"></td>
-                <td><input type="checkbox" name="liberado_expedicao" id="liberado_expedicao" :checked="api.liberado_expedicao == 1 ? true: false"></td>
-                <td><input type="checkbox" name="expedido" id="expedido" :checked="api.expedido == 1 ? true: false"></td>
+                <td><input @click="$event.preventDefault()" type="checkbox" name="separado_cd" id="separado_cd" :checked="api.C5_XSEPCD ? true : false"></td>
+                <td><input @click="marcaLibCom(api.C5_FILIAL, api.C5_NUM, api.C5_XLIBFAT, $event)" type="checkbox" name="liberado_comercial" id="liberado_comercial" :checked="api.C5_XLIBCOM ? true : false" :disabled="!api.C5_XSEPCD"></td>
+                <td><input @click="marcaLibFat(api.C5_FILIAL, api.C5_NUM, api.C5_XFATURD, $event)" type="checkbox" name="liberado_faturamento" id="liberado_faturamento" :checked="api.C5_XLIBFAT ? true : false" :disabled="!api.C5_XLIBCOM"></td>
+                <td><input @click="marcaFaturd(api.C5_FILIAL, api.C5_NUM, api.C5_XLIBEXP, $event)" type="checkbox" name="faturado" id="faturado" :checked="api.C5_XFATURD ? true : false" :disabled="!api.C5_XLIBFAT"></td>
+                <td><input @click="marcaLibexp(api.C5_FILIAL, api.C5_NUM, api.C5_XEXPEDI, $event)" type="checkbox" name="liberado_expedicao" id="liberado_expedicao" :checked="api.C5_XLIBEXP ? true : false" :disabled="!api.C5_XFATURD"></td>
+                <td><input @click="marcaExpedi(api.C5_FILIAL, api.C5_NUM, $event)" type="checkbox" name="expedido" id="expedido" :checked="api.C5_XEXPEDI ? true : false" :disabled="!api.C5_XLIBEXP"></td>
             </tr>
         </tbody>
         </table>
@@ -100,7 +100,7 @@ const config = {
 }
 
 import axios from 'axios';
-
+import { jwtDecode } from "jwt-decode";
 import TableTop from '../ui/TableTop.vue';
 import TableSearch from '../ui/TableSearch.vue';
 import Modal from '../ui/Modal.vue';
@@ -123,6 +123,7 @@ components: {
 },
 data(){
     return{
+        setor: '',
         alertaPedido: false,
         numped: '',
         filial: '',
@@ -137,15 +138,149 @@ data(){
     }
 },
 methods: {
-    async marcaSepC6(filial, num, item, produto){
+    async marcaExpedi(filial, num, e){
         try {
-            await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/track_order/update_c6xsepcd/${filial}/${num}/${item}/${produto}`, config);
-            this.refresh();
-            this.popup = true;
-            setTimeout(()=>{
-                this.popup = false;
-            }, 2000);
+            if(this.setor != "Logística"){
+                alert("Somente usuários do setor Logística podem editar esse campo.");
+                e.preventDefault();
+            }else{
+                this.carregando = true;
+                if(e.target.checked){
+                    await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/track_order/update_campo/${filial}/${num}/C5_XEXPEDI/T`, config);
+                }else if (!e.target.checked){
+                    await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/track_order/update_campo/${filial}/${num}/C5_XEXPEDI/F`, config);
+                }
+                this.refresh();
+                this.popup = true;
+                setTimeout(()=>{
+                    this.popup = false;
+                }, 2000);
+            }
         } catch (error) {
+            console.log(error)
+            alert("Falha ao executar ação. Tente novamente mais tarde.");
+            this.carregando = false;
+        }
+    },
+    async marcaLibexp(filial, num, expedi, e){
+        try {
+            if(expedi){
+                alert("Não é permitido editar esse campo enquanto o campo 'Expedido' estiver preenchido.");
+                e.preventDefault();
+            }else if(this.setor != "Financeiro"){
+                alert("Somente usuários do setor Financeiro podem editar esse campo.");
+                e.preventDefault();
+            }else{
+                this.carregando = true;
+                if(e.target.checked){
+                    await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/track_order/update_campo/${filial}/${num}/C5_XLIBEXP/T`, config);
+                }else if (!e.target.checked){
+                    await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/track_order/update_campo/${filial}/${num}/C5_XLIBEXP/F`, config);
+                }
+                this.refresh();
+                this.popup = true;
+                setTimeout(()=>{
+                    this.popup = false;
+                }, 2000);
+            }
+        } catch (error) {
+            alert("Falha ao executar ação. Tente novamente mais tarde.");
+            this.carregando = false;
+        }
+    },
+    async marcaFaturd(filial, num, lebxp, e){
+        try {
+            if(lebxp){
+                alert("Não é permitido editar esse campo enquanto o campo 'Liberado Expedicao' estiver preenchido.");
+                e.preventDefault();
+            }else if(this.setor != "Financeiro"){
+                alert("Somente usuários do setor Financeiro podem editar esse campo.");
+                e.preventDefault();
+            }else{
+                this.carregando = true;
+                if(e.target.checked){
+                    await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/track_order/update_campo/${filial}/${num}/C5_XFATURD/T`, config);
+                }else if (!e.target.checked){
+                    await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/track_order/update_campo/${filial}/${num}/C5_XFATURD/F`, config);
+                }
+                this.refresh();
+                this.popup = true;
+                setTimeout(()=>{
+                    this.popup = false;
+                }, 2000);
+            }
+        } catch (error) {
+            alert("Falha ao executar ação. Tente novamente mais tarde.");
+            this.carregando = false;
+        }
+    },
+    async marcaLibFat(filial, num, faturd, e){
+        try {
+            if(faturd){
+                alert("Não é permitido editar esse campo enquanto o campo 'Faturado' estiver preenchido.");
+                e.preventDefault();
+            }else if(this.setor != "Financeiro"){
+                alert("Somente usuários do setor Financeiro podem editar esse campo.");
+                e.preventDefault();
+            }else{
+                this.carregando = true;
+                if(e.target.checked){
+                    await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/track_order/update_campo/${filial}/${num}/C5_XLIBFAT/T`, config);
+                }else if (!e.target.checked){
+                    await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/track_order/update_campo/${filial}/${num}/C5_XLIBFAT/F`, config);
+                }
+                this.refresh();
+                this.popup = true;
+                setTimeout(()=>{
+                    this.popup = false;
+                }, 2000);
+            }
+        } catch (error) {
+            alert("Falha ao executar ação. Tente novamente mais tarde.");
+            this.carregando = false;
+        }
+    },
+    async marcaLibCom(filial, num, libfat, e){
+        try {
+            if(libfat){
+                alert("Não é permitido editar esse campo enquanto o campo 'Liberado Faturamento' estiver preenchido.");
+                e.preventDefault();
+            }else if(this.setor != "Comercial"){
+                alert("Somente usuários do setor Comercial podem editar esse campo.");
+                e.preventDefault();
+            }else{
+                this.carregando = true;
+                if(e.target.checked){
+                    await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/track_order/update_campo/${filial}/${num}/C5_XLIBCOM/T`, config);
+                }else if (!e.target.checked){
+                    await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/track_order/update_campo/${filial}/${num}/C5_XLIBCOM/F`, config);
+                }
+                this.refresh();
+                this.popup = true;
+                setTimeout(()=>{
+                    this.popup = false;
+                }, 2000);
+            }
+        } catch (error) {
+            alert("Falha ao executar ação. Tente novamente mais tarde.");
+            this.carregando = false;
+        }
+    },
+    async marcaSepC6(filial, num, item, produto, event){
+        try {
+            if(!event.target.checked){
+                event.preventDefault()
+            }else{
+                this.carregando = true;
+                await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/track_order/update_c6xsepcd/${filial}/${num}/${item}/${produto}`, config);
+                this.refresh();
+                this.popup = true;
+                setTimeout(()=>{
+                    this.popup = false;
+                }, 2000);
+            }
+        } catch (error) {
+            event.preventDefault()
             alert("Falha ao executar ação. Tente novamente mais tarde.")
             this.carregando = false;
         }
@@ -153,7 +288,6 @@ methods: {
     async abrirNovoModal(){
         try {
             this.novoModal = true;
-            //throw new Error
         } catch (error) {
             alert("Falha ao abrir modal. Tente novamente mais tarde.");
         }
@@ -172,9 +306,19 @@ methods: {
     },
     async refresh(){
         try {
+            this.apis = []
             this.carregando = true;
+            const token = document.cookie.replace('jwt=', '');
+            let config = {
+                headers: {
+                    'Authorization': token
+                }
+            };
+            const decoded = jwtDecode(token);
             const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/track_order/get_all`, config);
+            const logado = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/users/${decoded.id}`, config);
             this.apis = response.data;
+            this.setor = logado.data[0].setor;
             this.resultados = response.data.length;
             this.carregando = false;
         } catch (error) {
@@ -185,13 +329,17 @@ methods: {
 },
 async created(){
     try {
-        const config = {
+        const token = document.cookie.replace('jwt=', '');
+        let config = {
             headers: {
-            'Authorization': document.cookie,
+                'Authorization': token
             }
-        }
+        };
+        const decoded = jwtDecode(token);
         const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/track_order/get_all`, config);
+        const logado = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/users/${decoded.id}`, config);
         this.apis = response.data;
+        this.setor = logado.data[0].setor;
         this.resultados = response.data.length;
         this.carregando = false;
     } catch (error) {

@@ -179,6 +179,7 @@ let config = {
               {valor: "Produção", descri: 'Produção'},
               {valor: "Logística", descri: 'Logística'},
               {valor: "Comercial", descri: 'Comercial'},
+              {valor: "Financeiro", descri: 'Financeiro'},
           ];
       },
   },
