@@ -39,15 +39,21 @@
                             <div class="table-wrapper table-striped">
                                 <table class="fl-table" id="myTable">
                                     <thead>
-                                        <th>Item</th>
+                                        <th>Código</th>
+                                        <th>Descrição</th>
                                         <th>Quantidade</th>
                                         <th>Separado CD</th>
+                                        <th>Usuário</th>
+                                        <th>Data</th>
                                     </thead>
                                     <tbody>
                                         <tr v-for="iten in api.itens[0]">
                                             <td style="word-wrap: break-word; width: 5px;">{{ iten.C6_PRODUTO }}</td>
                                             <td>{{ iten.C6_QTDVEN }}</td>
+                                            <td>{{ iten.C6_DESCRI }}</td>
                                             <td><input type="checkbox" name="" id="" :checked="iten.C6_XSEPCD ? true: false" @click="marcaSepC6(iten.C6_FILIAL, iten.C6_NUM, iten.C6_ITEM, iten.C6_PRODUTO, $event)"></td>
+                                            <td>{{ iten.C6_XNSEPCD }}</td>
+                                            <td>{{ iten.C6_XHSEPCD }}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -58,12 +64,36 @@
                 <td>{{ api.R_E_C_N_O_ }}</td>
                 <td>{{ api.C5_FILIAL}}</td>
                 <td>{{ api.C5_NUM}}</td>
-                <td><input @click="$event.preventDefault()" type="checkbox" name="separado_cd" id="separado_cd" :checked="api.C5_XSEPCD ? true : false"></td>
-                <td><input @click="marcaLibCom(api.C5_FILIAL, api.C5_NUM, api.C5_XLIBFAT, $event)" type="checkbox" name="liberado_comercial" id="liberado_comercial" :checked="api.C5_XLIBCOM ? true : false" :disabled="!api.C5_XSEPCD"></td>
-                <td><input @click="marcaLibFat(api.C5_FILIAL, api.C5_NUM, api.C5_XFATURD, $event)" type="checkbox" name="liberado_faturamento" id="liberado_faturamento" :checked="api.C5_XLIBFAT ? true : false" :disabled="!api.C5_XLIBCOM"></td>
-                <td><input @click="marcaFaturd(api.C5_FILIAL, api.C5_NUM, api.C5_XLIBEXP, $event)" type="checkbox" name="faturado" id="faturado" :checked="api.C5_XFATURD ? true : false" :disabled="!api.C5_XLIBFAT"></td>
-                <td><input @click="marcaLibexp(api.C5_FILIAL, api.C5_NUM, api.C5_XEXPEDI, $event)" type="checkbox" name="liberado_expedicao" id="liberado_expedicao" :checked="api.C5_XLIBEXP ? true : false" :disabled="!api.C5_XFATURD"></td>
-                <td><input @click="marcaExpedi(api.C5_FILIAL, api.C5_NUM, $event)" type="checkbox" name="expedido" id="expedido" :checked="api.C5_XEXPEDI ? true : false" :disabled="!api.C5_XLIBEXP"></td>
+                <td>
+                    <input @click="$event.preventDefault()" type="checkbox" name="separado_cd" id="separado_cd" :checked="api.C5_XSEPCD ? true : false">
+                    {{ api.C5_XNSEPCD  }}
+                    {{ api.C5_XHSEPCD }}
+                </td>
+                <td>
+                    <input @click="marcaLibCom(api.C5_FILIAL, api.C5_NUM, api.C5_XLIBFAT, $event)" type="checkbox" name="liberado_comercial" id="liberado_comercial" :checked="api.C5_XLIBCOM ? true : false" :disabled="!api.C5_XSEPCD">
+                    {{ api.C5_XNLIBCO  }}
+                    {{ api.C5_XHLIBCO }}
+                </td>
+                <td>
+                    <input @click="marcaLibFat(api.C5_FILIAL, api.C5_NUM, api.C5_XFATURD, $event)" type="checkbox" name="liberado_faturamento" id="liberado_faturamento" :checked="api.C5_XLIBFAT ? true : false" :disabled="!api.C5_XLIBCOM"><br>
+                    {{ api.C5_XNSEPCD  }}
+                    {{ api.C5_XHSEPCD }}
+                </td>
+                <td>
+                    <input @click="marcaFaturd(api.C5_FILIAL, api.C5_NUM, api.C5_XLIBEXP, $event)" type="checkbox" name="faturado" id="faturado" :checked="api.C5_XFATURD ? true : false" :disabled="!api.C5_XLIBFAT"><br>
+                    {{ api.C5_XNSEPCD  }}<br>
+                    {{ api.C5_XHSEPCD }}
+                </td>
+                <td>
+                    <input @click="marcaLibexp(api.C5_FILIAL, api.C5_NUM, api.C5_XEXPEDI, $event)" type="checkbox" name="liberado_expedicao" id="liberado_expedicao" :checked="api.C5_XLIBEXP ? true : false" :disabled="!api.C5_XFATURD"><br>
+                    {{ api.C5_XNSEPCD  }}<br>
+                    {{ api.C5_XHSEPCD }}
+                </td>
+                <td>
+                    <input @click="marcaExpedi(api.C5_FILIAL, api.C5_NUM, $event)" type="checkbox" name="expedido" id="expedido" :checked="api.C5_XEXPEDI ? true : false" :disabled="!api.C5_XLIBEXP"><br>
+                    {{ api.C5_XNSEPCD  }}<br>
+                    {{ api.C5_XHSEPCD }}
+                </td>
             </tr>
         </tbody>
         </table>
@@ -123,6 +153,7 @@ components: {
 },
 data(){
     return{
+        nome: '',
         setor: '',
         alertaPedido: false,
         numped: '',
@@ -159,6 +190,7 @@ methods: {
         } catch (error) {
             console.log(error)
             alert("Falha ao executar ação. Tente novamente mais tarde.");
+            e.preventDefault();
             this.carregando = false;
         }
     },
@@ -185,6 +217,7 @@ methods: {
             }
         } catch (error) {
             alert("Falha ao executar ação. Tente novamente mais tarde.");
+            e.preventDefault();
             this.carregando = false;
         }
     },
@@ -211,6 +244,7 @@ methods: {
             }
         } catch (error) {
             alert("Falha ao executar ação. Tente novamente mais tarde.");
+            e.preventDefault();
             this.carregando = false;
         }
     },
@@ -237,6 +271,7 @@ methods: {
             }
         } catch (error) {
             alert("Falha ao executar ação. Tente novamente mais tarde.");
+            e.preventDefault();
             this.carregando = false;
         }
     },
@@ -251,9 +286,9 @@ methods: {
             }else{
                 this.carregando = true;
                 if(e.target.checked){
-                    await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/track_order/update_campo/${filial}/${num}/C5_XLIBCOM/T`, config);
+                    await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/track_order/update_campo/${filial}/${num}/C5_XLIBCOM/T/${this.nome}/C5_XNLIBCO/C5_XHLIBCO`, config);
                 }else if (!e.target.checked){
-                    await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/track_order/update_campo/${filial}/${num}/C5_XLIBCOM/F`, config);
+                    await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/track_order/update_campo/${filial}/${num}/C5_XLIBCOM/F/${this.nome}/C5_XNLIBCO/C5_XHLIBCO`, config);
                 }
                 this.refresh();
                 this.popup = true;
@@ -263,6 +298,7 @@ methods: {
             }
         } catch (error) {
             alert("Falha ao executar ação. Tente novamente mais tarde.");
+            e.preventDefault();
             this.carregando = false;
         }
     },
@@ -270,9 +306,12 @@ methods: {
         try {
             if(!event.target.checked){
                 event.preventDefault()
+            }else if (this.setor != "Logística"){
+                alert("Somente usuários do setor da Logística podem editar esse campo.");
+                event.preventDefault()
             }else{
                 this.carregando = true;
-                await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/track_order/update_c6xsepcd/${filial}/${num}/${item}/${produto}`, config);
+                await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/track_order/update_c6xsepcd/${filial}/${num}/${item}/${produto}/${this.nome}`, config);
                 this.refresh();
                 this.popup = true;
                 setTimeout(()=>{
@@ -283,25 +322,6 @@ methods: {
             event.preventDefault()
             alert("Falha ao executar ação. Tente novamente mais tarde.")
             this.carregando = false;
-        }
-    },
-    async abrirNovoModal(){
-        try {
-            this.novoModal = true;
-        } catch (error) {
-            alert("Falha ao abrir modal. Tente novamente mais tarde.");
-        }
-    },
-    async fecharNovoModal(){
-        this.filial = '';
-        this.numped = '';
-        this.novoModal = false;
-    },
-    async mudaSeta(){
-        if(this.abriu){
-            this.abriu = false
-        }else{
-            this.abriu = true
         }
     },
     async refresh(){
@@ -340,6 +360,7 @@ async created(){
         const logado = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/users/${decoded.id}`, config);
         this.apis = response.data;
         this.setor = logado.data[0].setor;
+        this.nome = logado.data[0].name;
         this.resultados = response.data.length;
         this.carregando = false;
     } catch (error) {
