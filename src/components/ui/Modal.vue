@@ -1,6 +1,6 @@
 <template>
 <!-- Modal -->
-<div class="modal mb-5" id="modal-name" :style="[close ? {'display': 'none'} : {'display': 'block'}]">
+<div class="modal mb-2" id="modal-name" :style="[close ? {'display': 'none'} : {'display': 'block'}]">
   <div class="modal-sandbox"></div>
   <div class="modal-box">
     <div class="modal-header">
@@ -8,9 +8,9 @@
       <slot name="close"></slot>
     </div>
     <div class="modal-body">
-      <slot name="carregando">
-        </slot>
+      <slot name="carregando"></slot>
       <slot name="body"></slot>
+      <h3 style="text-align: center;">{{ textoPadrao }}</h3>
       <br />
       <div style="text-align: center;">
         <slot name="buttons"></slot>
@@ -36,6 +36,11 @@
             type: String,
             required: true,
             default: "User title."
+        },
+        textoPadrao: {
+            type: String,
+            required: false,
+            default: ""
         },
     },
     methods: {

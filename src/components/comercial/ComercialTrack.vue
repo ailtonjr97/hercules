@@ -8,7 +8,7 @@
         </template>
     </table-top>
     <div class="row mb-2">
-        <table-search :id="'procuraBtn3'" :num="3" :placeholder="'Pedido:'"></table-search>
+        <form-floating  v-on:keyup.enter="pesquisa()" v-model="pedido" :id="'procuraBtn0'" :num="0" :placeholder="'Pedido:'" :type="'text'"></form-floating >
         <form-floating  v-on:keyup.enter="pesquisa()" v-model="limit" :id="'procuraBtn1'" :num="1" :placeholder="'Limite:'" :type="'number'"></form-floating >
     </div>
     <div class="table-wrapper table-responsive table-striped mb-5">
@@ -19,6 +19,7 @@
             <th>ID</th>
             <th>Filial</th>
             <th>Pedido</th>
+            <th>Data de Entrega</th>
             <th>Separado CD</th>
             <th>Liberado Comercial</th>
             <th>Liberado Faturamento</th>
@@ -64,6 +65,7 @@
                 <td>{{ api.R_E_C_N_O_ }}</td>
                 <td>{{ api.C5_FILIAL}}</td>
                 <td>{{ api.C5_NUM}}</td>
+                <td>{{ api.C5_FECENT}}</td>
                 <td>
                     <input class="mt-4" @click="$event.preventDefault()" type="checkbox" name="separado_cd" id="separado_cd" :checked="api.C5_XSEPCD ? true : false"><br>
                     {{ api.C5_XNSEPCD  }}<br>
@@ -100,21 +102,14 @@
     </div>
 </div>
 
-<modal v-if="novoModal" :title="'Criar nova cotação:'">
+<modal v-if="mostraErro" :title="`Erro:`" :textoPadrao="textoPad">
     <template v-slot:body>
-        <div class="row">
-            <div class="col">
-                <select-floating :placeholder="'Filial'" :id="'user-setor'" :options="optionsFiliais" v-model="filial"></select-floating>
-            </div>
-            <div class="col">
-                <form-floating :placeholder="'Número do Pedido:'" :id="'numped'" :type="'number'" v-model="numped" ></form-floating><br>
-            </div>
-            <p style="color: red;" v-if="alertaPedido">Pedido não encontrado no Protheus. Verificar se esse pedido pertence a filial.</p>
-        </div>
+    <loading v-if="carregandoinfo"></loading>
+    <div v-if="!carregandoinfo">
+    </div>
     </template>
     <template v-slot:buttons v-if="!carregandoinfo">
-        <button class="button-8" @click="fecharNovoModal()">Fechar</button>
-        <button class="button-8 mt-2" @click="salvarModalCotacao(numped, filial)">Salvar</button>
+        <button class="button-8 mt-2" @click="this.mostraErro = false">Fechar</button>
     </template>
 </modal>
 
@@ -153,6 +148,9 @@ components: {
 },
 data(){
     return{
+        mostraErro: false,
+        textoPad: '',
+        pedido: '',
         limit: null,
         nome: '',
         setor: '',
@@ -170,6 +168,11 @@ data(){
     }
 },
 methods: {
+    async mostraModal(erro){
+        this.mostraErro = true;
+        this.textoPad = erro;
+        this.carregando = false;
+    },
     async pesquisa(){
         try {
             this.carregando = true;
@@ -180,24 +183,24 @@ methods: {
                 }
             };
             const decoded = jwtDecode(token);
-            if(this.limit || this.limit == ''){
-                this.limit == 100
-            }
-            const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/track_order/get_all?limit=${this.limit}`, config);
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/track_order/get_all?limit=${this.limit}&pedido=${this.pedido}`, config);
             const logado = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/users/${decoded.id}`, config);
             this.apis = response.data;
             this.setor = logado.data[0].setor;
             this.resultados = response.data.length;
             this.carregando = false;
         } catch (error) {
-            alert("Falha ao buscar resultados.");
-            this.carregando = false;
+            if(error.response.status == 404){
+                this.mostraModal("Nenhum resultado encontrado.");
+            }else{
+                this.mostraModal("Falha ao buscar resultados.");
+            }
         }
     },
     async marcaExpedi(filial, num, e){
         try {
             if(this.setor != "Logística"){
-                alert("Somente usuários do setor Logística podem editar esse campo.");
+                this.mostraModal("Somente usuários do setor da Logística podem editar esse campo.");
                 e.preventDefault();
             }else{
                 this.carregando = true;
@@ -213,19 +216,17 @@ methods: {
                 }, 2000);
             }
         } catch (error) {
-            console.log(error)
-            alert("Falha ao executar ação. Tente novamente mais tarde.");
+            this.mostraModal("Falha ao executar ação. Tente novamente mais tarde.");
             e.preventDefault();
-            this.carregando = false;
         }
     },
     async marcaLibexp(filial, num, expedi, e){
         try {
             if(expedi){
-                alert("Não é permitido editar esse campo enquanto o campo 'Expedido' estiver preenchido.");
+                this.mostraModal("Não é permitido editar esse campo enquanto o campo 'Expedido' estiver preenchido.");
                 e.preventDefault();
             }else if(this.setor != "Financeiro"){
-                alert("Somente usuários do setor Financeiro podem editar esse campo.");
+                this.mostraModal("Somente usuários do setor Financeiro podem editar esse campo.");
                 e.preventDefault();
             }else{
                 this.carregando = true;
@@ -241,18 +242,17 @@ methods: {
                 }, 2000);
             }
         } catch (error) {
-            alert("Falha ao executar ação. Tente novamente mais tarde.");
+            this.mostraModal("Falha ao executar ação. Tente novamente mais tarde.");
             e.preventDefault();
-            this.carregando = false;
         }
     },
     async marcaFaturd(filial, num, lebxp, e){
         try {
             if(lebxp){
-                alert("Não é permitido editar esse campo enquanto o campo 'Liberado Expedicao' estiver preenchido.");
+                this.mostraModal("Não é permitido editar esse campo enquanto o campo 'Liberado Expedicao' estiver preenchido.");
                 e.preventDefault();
             }else if(this.setor != "Financeiro"){
-                alert("Somente usuários do setor Financeiro podem editar esse campo.");
+                this.mostraModal("Somente usuários do setor Financeiro podem editar esse campo.");
                 e.preventDefault();
             }else{
                 this.carregando = true;
@@ -268,18 +268,17 @@ methods: {
                 }, 2000);
             }
         } catch (error) {
-            alert("Falha ao executar ação. Tente novamente mais tarde.");
+            this.mostraModal("Falha ao executar ação. Tente novamente mais tarde.");
             e.preventDefault();
-            this.carregando = false;
         }
     },
     async marcaLibFat(filial, num, faturd, e){
         try {
             if(faturd){
-                alert("Não é permitido editar esse campo enquanto o campo 'Faturado' estiver preenchido.");
+                this.mostraModal("Não é permitido editar esse campo enquanto o campo 'Faturado' estiver preenchido.");
                 e.preventDefault();
             }else if(this.setor != "Financeiro"){
-                alert("Somente usuários do setor Financeiro podem editar esse campo.");
+                this.mostraModal("Somente usuários do setor Financeiro podem editar esse campo.");
                 e.preventDefault();
             }else{
                 this.carregando = true;
@@ -295,18 +294,17 @@ methods: {
                 }, 2000);
             }
         } catch (error) {
-            alert("Falha ao executar ação. Tente novamente mais tarde.");
+            this.mostraModal("Falha ao executar ação. Tente novamente mais tarde.");
             e.preventDefault();
-            this.carregando = false;
         }
     },
     async marcaLibCom(filial, num, libfat, e){
         try {
             if(libfat){
-                alert("Não é permitido editar esse campo enquanto o campo 'Liberado Faturamento' estiver preenchido.");
+                this.mostraModal("Não é permitido editar esse campo enquanto o campo 'Liberado Faturamento' estiver preenchido.");
                 e.preventDefault();
             }else if(this.setor != "Comercial"){
-                alert("Somente usuários do setor Comercial podem editar esse campo.");
+                this.mostraModal("Somente usuários do setor Comercial podem editar esse campo.");
                 e.preventDefault();
             }else{
                 this.carregando = true;
@@ -322,9 +320,8 @@ methods: {
                 }, 2000);
             }
         } catch (error) {
-            alert("Falha ao executar ação. Tente novamente mais tarde.");
+            this.mostraModal("Falha ao executar ação. Tente novamente mais tarde.")
             e.preventDefault();
-            this.carregando = false;
         }
     },
     async marcaSepC6(filial, num, item, produto, event){
@@ -332,7 +329,7 @@ methods: {
             if(!event.target.checked){
                 event.preventDefault()
             }else if (this.setor != "Logística"){
-                alert("Somente usuários do setor da Logística podem editar esse campo.");
+                this.mostraModal("Somente usuários do setor da Logística podem editar esse campo.")
                 event.preventDefault()
             }else{
                 this.carregando = true;
@@ -344,9 +341,8 @@ methods: {
                 }, 2000);
             }
         } catch (error) {
+            mostraModal("Falha ao executar ação. Tente novamente mais tarde.")
             event.preventDefault()
-            alert("Falha ao executar ação. Tente novamente mais tarde.")
-            this.carregando = false;
         }
     },
     async refresh(){
@@ -359,15 +355,14 @@ methods: {
                 }
             };
             const decoded = jwtDecode(token);
-            const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/track_order/get_all?limit=100`, config);
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/track_order/get_all?limit=100&pedido=${this.pedido}`, config);
             const logado = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/users/${decoded.id}`, config);
             this.apis = response.data;
             this.setor = logado.data[0].setor;
             this.resultados = response.data.length;
             this.carregando = false;
         } catch (error) {
-            alert("Falha ao recarregar página.");
-            this.carregando = false;
+            this.mostraModal("Falha ao recarregar página.")
         }
     },
 },
@@ -388,7 +383,6 @@ async created(){
         this.resultados = response.data.length;
         this.carregando = false;
     } catch (error) {
-        console.log(error)
         alert("Erro ao carregar página. Favor tentar mais tarde.");
         this.carregando = false;
     }
