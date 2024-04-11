@@ -23,7 +23,7 @@
                         </div>
                     </router-link>
                 </li>
-                <li class="nav-item" style="margin: 0 5% 0 0; width: 35px;">
+                <li class="nav-item" style="margin: 0 5% 0 0; width: 55px;">
                     <router-link to="/qualidade" class="nav-link">
                         <div class="item">
                             <i class="fa-solid fa-file-circle-check" style="margin-left: 50%;"></i>
@@ -31,14 +31,14 @@
                         </div>
                     </router-link>
                 </li>
-                <li class="nav-item" style="margin: 0 0 0 10px; width: 40px;">
+                <!-- <li class="nav-item" style="margin: 0 0 0 10px; width: 40px;">
                     <router-link to="/rh" class="nav-link">
                         <div class="item">
                             <i class="fa-solid fa-users"></i>
                             <span class="caption">RH</span>
                         </div>
                     </router-link>
-                </li>
+                </li> -->
                 <li class="nav-item" style="margin: 0 0 0 1%; width: 100px;">
                     <router-link to="/comercial" class="nav-link">
                         <div class="item">
@@ -47,14 +47,14 @@
                         </div>
                     </router-link>
                 </li>
-                <li class="nav-item" style="margin: 0 0 0 1%; width: 90px;">
+                <!-- <li class="nav-item" style="margin: 0 0 0 1%; width: 90px;">
                     <router-link to="/logistica" class="nav-link">
                         <div class="item">
                             <i class="fa-solid fa-truck" style="margin-left: 30%;"></i>
                             <span class="caption">Logística</span>
                         </div>
                     </router-link>
-                </li>
+                </li> -->
 <!--                 <li class="nav-item" style="margin: 0 0 0 0; width: 110px;">
                     <router-link to="/chamados" class="nav-link">
                         <div class="item">
@@ -63,7 +63,7 @@
                         </div>
                     </router-link>
                 </li> -->
-                <li style="margin: 0 0 0 1%;" :style="[isAdmin != 0 ? {'display': 'block'} : {'display': 'none'}]" class="nav-item pl-1 bloqueados">
+                <li style="margin: 0 0 0 4%;" :style="[isAdmin != 0 ? {'display': 'block'} : {'display': 'none'}]" class="nav-item pl-1 bloqueados">
                     <router-link to="/usuarios" class="nav-link">
                         <div class="item">
                             <i class="fa-solid fa-user" style="margin-left: 22%;"></i>
