@@ -8,8 +8,9 @@
         </template>
     </table-top>
     <div class="row mb-2">
+        <form-floating  v-on:keyup.enter="pesquisa()" v-model="filial" :id="'procuraBtn3'" :num="3" :placeholder="'Filial:'" :type="'number'"></form-floating >
         <form-floating  v-on:keyup.enter="pesquisa()" v-model="pedido" :id="'procuraBtn0'" :num="0" :placeholder="'Pedido:'" :type="'text'"></form-floating >
-        <form-floating  v-on:keyup.enter="pesquisa()" v-model="dataEnt" :id="'procuraBtn2'" :num="2" :placeholder="'Data de Entrega:'" :type="'number'"></form-floating >
+        <form-floating  v-on:keyup.enter="pesquisa()" v-model="dataEnt" :id="'procuraBtn2'" :num="2" :placeholder="'Data de Entrega:'" :type="'date'"></form-floating >
         <form-floating  v-on:keyup.enter="pesquisa()" v-model="limit" :id="'procuraBtn1'" :num="1" :placeholder="'Limite:'" :type="'number'"></form-floating >
     </div>
     <div class="table-wrapper table-responsive table-striped mb-5">
@@ -66,7 +67,7 @@
                 <td>{{ api.R_E_C_N_O_ }}</td>
                 <td>{{ api.C5_FILIAL}}</td>
                 <td>{{ api.C5_NUM}}</td>
-                <td>{{ api.C5_FECENT}}</td>
+                <td>{{api.C5_FECENT}}</td>
                 <td>
                     <input class="mt-4" @click="$event.preventDefault()" type="checkbox" name="separado_cd" id="separado_cd" :checked="api.C5_XSEPCD ? true : false"><br>
                     {{ api.C5_XNSEPCD  }}<br>
@@ -149,6 +150,7 @@ components: {
 },
 data(){
     return{
+        filial: '',
         dataEnt: '',
         mostraErro: false,
         textoPad: '',
@@ -169,6 +171,19 @@ data(){
         apis: [],
     }
 },
+computed: {
+    optionsFiliais(){
+            return [
+                {valor: "", descri: ''},
+                {valor: "0101001", descri: 'FIBRACEM MATRIZ'},
+                {valor: "0101002", descri: 'FIBRACEM FILIAL CD.'},
+                {valor: "0101003", descri: 'FIBRACEM ESPIRITO SANTO CD'},
+                {valor: "0101004", descri: 'FIBRACEM INDUSTRIA LINHARES'},
+                {valor: "0101005", descri: 'FIBRACEM IMPORTACAO LINHARES'},
+                {valor: "0101006", descri: 'FIBRACEM INJECOES'}
+            ];
+        },
+    },
 methods: {
     async mostraModal(erro){
         this.mostraErro = true;
@@ -185,7 +200,7 @@ methods: {
                 }
             };
             const decoded = jwtDecode(token);
-            const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/track_order/get_all?limit=${this.limit}&pedido=${this.pedido}&data_ent=${this.dataEnt}`, config);
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/track_order/get_all?limit=${this.limit}&pedido=${this.pedido}&data_ent=${this.dataEnt}&filial=${this.filial}`, config);
             const logado = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/users/${decoded.id}`, config);
             this.apis = response.data;
             this.setor = logado.data[0].setor;
@@ -357,7 +372,7 @@ methods: {
                 }
             };
             const decoded = jwtDecode(token);
-            const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/track_order/get_all?limit=100&pedido=${this.pedido}&data_ent=${this.dataEnt}`, config);
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/track_order/get_all?limit=100&pedido=${this.pedido}&data_ent=${this.dataEnt}&filial=${this.filial}`, config);
             const logado = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/users/${decoded.id}`, config);
             this.apis = response.data;
             this.setor = logado.data[0].setor;
@@ -377,7 +392,7 @@ async created(){
             }
         };
         const decoded = jwtDecode(token);
-        const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/track_order/get_all?limit=100&pedido=&data_ent=`, config);
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/track_order/get_all?limit=100&pedido=&data_ent=&filial=`, config);
         const logado = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/users/${decoded.id}`, config);
         this.apis = response.data;
         this.setor = logado.data[0].setor;
