@@ -70,9 +70,7 @@ methods: {
             };
             const decoded = jwtDecode(token);
             const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/track_order/get_all?limit=100&pedido=${this.pedido}&data_ent=${this.dataEnt}&filial=${this.filial}`, config);
-            const logado = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/users/${decoded.id}`, config);
             this.apis = response.data;
-            this.setor = logado.data[0].setor;
             this.resultados = response.data.length;
             this.carregando = false;
         } catch (error) {
@@ -81,25 +79,22 @@ methods: {
     },
 },
 async created(){
-    try {
-        const token = document.cookie.replace('jwt=', '');
-        let config = {
-            headers: {
-                'Authorization': token
-            }
-        };
-        const decoded = jwtDecode(token);
-        const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/track_order/get_all?limit=100&pedido=&data_ent=&filial=`, config);
-        const logado = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/users/${decoded.id}`, config);
-        this.apis = response.data;
-        this.setor = logado.data[0].setor;
-        this.nome = logado.data[0].name;
-        this.resultados = response.data.length;
-        this.carregando = false;
-    } catch (error) {
-        alert("Erro ao carregar página. Favor tentar mais tarde.");
-        this.carregando = false;
+        try {
+            const token = document.cookie.replace('jwt=', '');
+            let config = {
+                headers: {
+                    'Authorization': token
+                }
+            };
+            const decoded = jwtDecode(token);
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/track_order/get_all?limit=100&pedido=&data_ent=&filial=`, config);
+            this.apis = response.data;
+            this.resultados = response.data.length;
+            this.carregando = false;
+        } catch (error) {
+            alert("Erro ao carregar página. Favor tentar mais tarde.");
+            this.carregando = false;
+        }
     }
-}
 }
 </script>
