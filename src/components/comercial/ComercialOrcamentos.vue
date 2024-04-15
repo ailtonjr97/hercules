@@ -1,40 +1,10 @@
 <template>
     <popup v-if="popup"></popup>
     <div v-if="carregando" id="loading"></div>
-    <div style="overflow: hidden; padding: 0.5%;">
-    <table-top :resultados="resultados">
-        <template v-slot:tableButtons>
-            <button class="button-8 mb-2" @click="refresh()">Atualizar</button>
-        </template>
-    </table-top>
-    <div class="row mb-2">
-        <table-search :id="'procuraBtn0'" :num="0" :placeholder="'Código:'"></table-search>
-        <table-search :id="'procuraBtn1'" :num="1" :placeholder="'Descrição:'"></table-search>
-    </div>
-    <div class="table-wrapper table-responsive table-striped mb-5">
-        <table class="fl-table" id="myTable">
-        <thead>
-            <tr style="height: 25px">
-            <th>Código</th>
-            <th>Descrição</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr v-for="api in apis">
-            <td>
-                <p>{{ api.grpven }}</p>
-            </td>
-            <td>
-                <p>{{ api.descri }}</p>
-            </td>
-            </tr>
-        </tbody>
-        </table>
-    </div>
-</div>
 </template>
 
 <script>
+
 const config = {
     headers: {
     'Authorization': document.cookie,
@@ -42,7 +12,7 @@ const config = {
 }
 
 import axios from 'axios';
-
+import { jwtDecode } from "jwt-decode";
 import TableTop from '../ui/TableTop.vue';
 import TableSearch from '../ui/TableSearch.vue';
 import Modal from '../ui/Modal.vue';
@@ -65,52 +35,68 @@ components: {
 },
 data(){
     return{
+        mostraErro: false,
+        novoModal: false,
         popup: false,
         disableBtn: false,
-        carregandoinfoApi: false,
         carregandoinfo: false,
-        modalRelatorio: false,
         resultados: 0,
         carregando: true,
         apis: [],
-        modalApi: false,
-        carregandoinfo: false,
-        visualizar: {},
-        dadosRelatorio: {},
-        lista: {
-            metodo: '',
-            descricao: '',
-            caminho: ''
-        }
     }
 },
+computed: {
+    optionsFiliais(){
+            return [
+                {valor: "", descri: ''},
+                {valor: "0101001", descri: 'FIBRACEM MATRIZ'},
+                {valor: "0101002", descri: 'FIBRACEM FILIAL CD.'},
+                {valor: "0101003", descri: 'FIBRACEM ESPIRITO SANTO CD'},
+                {valor: "0101004", descri: 'FIBRACEM INDUSTRIA LINHARES'},
+                {valor: "0101005", descri: 'FIBRACEM IMPORTACAO LINHARES'},
+                {valor: "0101006", descri: 'FIBRACEM INJECOES'}
+            ];
+        },
+    },
 methods: {
     async refresh(){
         try {
             this.carregando = true;
-            const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/totvs/api/acy/get_all`, config);
+            const token = document.cookie.replace('jwt=', '');
+            let config = {
+                headers: {
+                    'Authorization': token
+                }
+            };
+            const decoded = jwtDecode(token);
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/track_order/get_all?limit=100&pedido=${this.pedido}&data_ent=${this.dataEnt}&filial=${this.filial}`, config);
+            const logado = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/users/${decoded.id}`, config);
             this.apis = response.data;
+            this.setor = logado.data[0].setor;
             this.resultados = response.data.length;
             this.carregando = false;
         } catch (error) {
-            alert("Falha ao recarregar página.");
-            this.carregando = false;
+            this.mostraModal("Falha ao recarregar página.")
         }
     },
 },
 async created(){
     try {
-        const config = {
+        const token = document.cookie.replace('jwt=', '');
+        let config = {
             headers: {
-            'Authorization': document.cookie,
+                'Authorization': token
             }
-        }
-        const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/totvs/api/acy/get_all`, config);
+        };
+        const decoded = jwtDecode(token);
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/track_order/get_all?limit=100&pedido=&data_ent=&filial=`, config);
+        const logado = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/users/${decoded.id}`, config);
         this.apis = response.data;
+        this.setor = logado.data[0].setor;
+        this.nome = logado.data[0].name;
         this.resultados = response.data.length;
         this.carregando = false;
     } catch (error) {
-        console.log(error)
         alert("Erro ao carregar página. Favor tentar mais tarde.");
         this.carregando = false;
     }
