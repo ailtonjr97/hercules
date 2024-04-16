@@ -160,7 +160,6 @@ data(){
         setor: '',
         alertaPedido: false,
         numped: '',
-        filial: '',
         novoModal: false,
         abriu: false,
         popup: false,

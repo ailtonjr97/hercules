@@ -83,6 +83,7 @@
         </div>
     </ul>
   </div>
+  <h6 style="width: 5%; color: #fff; text-align: center;" v-if="mostraStatus">TOTVS INDISPONÍVEL</h6>
   <h6 style="width: 20%; color: #fff; text-align: center;">{{ name }}</h6>
 </nav>
 
@@ -96,6 +97,7 @@ import { jwtDecode } from "jwt-decode";
 export default{
     data(){
         return{
+            mostraStatus: false,
             isAdmin: 0,
             name: '',
         }
@@ -122,17 +124,23 @@ export default{
         }
     },
     async created(){
-        this.carregando = true;
-        const token = document.cookie.replace('jwt=', '');
-        let config = {
-            headers: {
-                'Authorization': token
-            }
-        };
-        const decoded = jwtDecode(token);
-        const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/users/${decoded.id}`, config);
-        this.isAdmin = response.data[0].admin;
-        this.name = response.data[0].name;
+        try {
+            this.carregando = true;
+            const token = document.cookie.replace('jwt=', '');
+            let config = {
+                headers: {
+                    'Authorization': token
+                }
+            };
+            const decoded = jwtDecode(token);
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/users/${decoded.id}`, config);
+            await axios.get(`${import.meta.env.VITE_BACKEND_IP}/totvs/companies`, config);
+            this.isAdmin = response.data[0].admin;
+            this.name = response.data[0].name;
+        } catch (error) {
+            console.log(error);
+            this.mostraStatus = true;
+        }
     }
 }
 </script>
