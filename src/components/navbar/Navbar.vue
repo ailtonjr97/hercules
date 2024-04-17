@@ -134,7 +134,7 @@ export default{
             };
             const decoded = jwtDecode(token);
             const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/users/${decoded.id}`, config);
-            await axios.get(`${import.meta.env.VITE_BACKEND_IP}/totvs/companies`, config);
+            await axios.get(`${import.meta.env.VITE_BACKEND_IP}/totvs/status`, config);
             this.isAdmin = response.data[0].admin;
             this.name = response.data[0].name;
         } catch (error) {

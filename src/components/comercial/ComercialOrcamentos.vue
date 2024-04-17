@@ -8,11 +8,11 @@
         </template>
     </table-top>
     <div class="row mb-2">
-        <form-floating  v-on:keyup.enter="pesquisa()" v-model="filial"     :id="'procuraBtn0'" :num="0" :placeholder="'Filial:'"          :type="'number'"> </form-floating>
-        <form-floating  v-on:keyup.enter="pesquisa()" v-model="numero"     :id="'procuraBtn1'" :num="1" :placeholder="'Número:'"          :type="'number'"> </form-floating>
-        <form-floating  v-on:keyup.enter="pesquisa()" v-model="dt_emissao" :id="'procuraBtn2'" :num="2" :placeholder="'Data de emissão:'" :type="'date'">   </form-floating>
-        <form-floating  v-on:keyup.enter="pesquisa()" v-model="cliente"    :id="'procuraBtn3'" :num="3" :placeholder="'Cliente:'"         :type="'text'">   </form-floating>
-        <form-floating  v-on:keyup.enter="pesquisa()" v-model="limit"      :id="'procuraBtn4'" :num="4" :placeholder="'Limite:'"          :type="'number'">   </form-floating>
+        <form-floating  v-on:keyup.enter="pesquisa()" v-model="filial"     :id="'procuraBtn0'" :num="0" :placeholder="'Filial:'"          :type="'number'"></form-floating>
+        <form-floating  v-on:keyup.enter="pesquisa()" v-model="numero"     :id="'procuraBtn1'" :num="1" :placeholder="'Número:'"          :type="'number'"></form-floating>
+        <form-floating  v-on:keyup.enter="pesquisa()" v-model="dt_emissao" :id="'procuraBtn2'" :num="2" :placeholder="'Data de emissão:'" :type="'date'"  ></form-floating>
+        <form-floating  v-on:keyup.enter="pesquisa()" v-model="cliente"    :id="'procuraBtn3'" :num="3" :placeholder="'Cliente:'"         :type="'text'"  ></form-floating>
+        <form-floating  v-on:keyup.enter="pesquisa()" v-model="limit"      :id="'procuraBtn4'" :num="4" :placeholder="'Limite:'"          :type="'number'"></form-floating>
     </div>
     <div class="table-wrapper table-responsive table-striped mb-5">
         <table class="fl-table" id="myTable">
@@ -23,6 +23,7 @@
             <th>Número</th>
             <th>Data de Emissão</th>
             <th>Cliente</th>
+            <th>Loja</th>
             <th>Ações</th>
             </tr>
         </thead>
@@ -33,7 +34,8 @@
                 <td>{{ api.CJ_NUM }}</td>
                 <td>{{ api.CJ_EMISSAO }}</td>
                 <td>{{ api.CJ_CLIENTE }}</td>
-                <td><button title="Detalhes" class="button-8" @click="abrirClienteModal(dado.cod)"><i style="font-size: 14px;" class="fa-solid fa-eye"></i></button></td>
+                <td>{{ api.CJ_LOJA }}</td>
+                <td><button title="Detalhes" class="button-8" @click="abrirOrcamentoModal(api.CJ_FILIAL, api.CJ_NUM, api.CJ_CLIENTE, api.CJ_LOJA)"><i style="font-size: 14px;" class="fa-solid fa-eye"></i></button></td>
             </tr>
         </tbody>
         </table>
@@ -48,6 +50,29 @@
     </template>
     <template v-slot:buttons v-if="!carregandoinfo">
         <button class="button-8 mt-2" @click="this.mostraErro = false">Fechar</button>
+    </template>
+</modal>
+
+<modal v-if="orcamentoModal" :title="`Pedido ${this.titulo}`">
+    <template v-slot:body>
+    <loading v-if="carregandoinfo"></loading>
+    <div v-if="!carregandoinfo">
+        <div class="row">
+            <div class="col">
+                <form-floating :placeholder="'Filial:'" :id="'filial'" :type="'text'" v-model="orcamento.CJ_FILIAL" readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Número:'" :id="'numero'" :type="'text'" v-model="orcamento.CJ_NUM" readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Número:'" :id="'numero'" :type="'text'" v-model="orcamento.CJ_NUM" readonly></form-floating>
+            </div>
+        </div>
+    </div>
+    </template>
+    <template v-slot:buttons v-if="!carregandoinfo">
+        <button class="button-8 mt-2" @click="fecharOrcamentoModal()">Fechar</button>
+        <button class="button-8 mt-2" @click="salvarOrcamentoModal()">Salvar</button>
     </template>
 </modal>
 
@@ -85,6 +110,9 @@ components: {
 },
 data(){
     return{
+        orcamento: [],
+        titulo: '',
+        orcamentoModal: false,
         mostraErro: false,
         textoPad: '',
         filial: '',
@@ -103,6 +131,27 @@ data(){
     }
 },
 methods: {
+    async fecharOrcamentoModal(){
+        this.carregandoinfo = false;
+        this.carregando = false;
+        this.orcamentoModal = false;
+        this.orcamento = [];
+    },
+    async abrirOrcamentoModal(filial, numero, cliente, loja){
+        try {
+            this.carregandoinfo = true;
+            this.orcamentoModal = true;
+            this.titulo = numero;
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/orcamentos/unico?filial=${filial}&numero=${numero}&cliente=${cliente}&loja=${loja}`, config);
+            this.orcamento = response.data
+            this.carregandoinfo = false;
+            console.log(this.orcamento)
+        } catch (error) {
+            this.mostraModal("Falha ao buscar resultados.");
+            this.carregandoinfo = false;
+            this.orcamentoModal = false;
+        }
+    },
     async mostraModal(erro){
         this.mostraErro = true;
         this.textoPad = erro;
