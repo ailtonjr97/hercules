@@ -59,13 +59,13 @@
     <div v-if="!carregandoinfo">
         <div class="row">
             <div class="col">
-                <form-floating :placeholder="'Filial:'" :id="'filial'" :type="'text'" v-model="orcamento.CJ_FILIAL" readonly></form-floating>
+                <form-floating :placeholder="'Filial:'" :id="'CJ_FILIAL'" :type="'text'" v-model="orcamento.CJ_FILIAL" readonly></form-floating>
             </div>
             <div class="col">
-                <form-floating :placeholder="'Número:'" :id="'numero'" :type="'text'" v-model="orcamento.CJ_NUM" readonly></form-floating>
+                <form-floating :placeholder="'Número:'" :id="'CJ_NUM'" :type="'text'" v-model="orcamento.CJ_NUM" readonly></form-floating>
             </div>
             <div class="col">
-                <form-floating :placeholder="'Número:'" :id="'numero'" :type="'text'" v-model="orcamento.CJ_NUM" readonly></form-floating>
+                <form-floating :placeholder="'Data de emissão:'" :id="'CJ_EMISSAO'" :type="'text'" v-model="orcamento.CJ_EMISSAO" readonly></form-floating>
             </div>
         </div>
     </div>
