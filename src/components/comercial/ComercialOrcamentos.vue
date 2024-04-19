@@ -67,6 +67,12 @@
             <div class="col">
                 <form-floating :placeholder="'Data de emissão:'" :id="'CJ_EMISSAO'" :type="'text'" v-model="orcamento.CJ_EMISSAO" readonly></form-floating>
             </div>
+            <div class="col">
+                <form-floating :placeholder="'Cliente:'" :id="'CJ_CLIENTE'" :type="'text'" v-model="orcamento.CJ_CLIENTE" readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Loja:'" :id="'CJ_LOJA'" :type="'text'" v-model="orcamento.CJ_LOJA" readonly></form-floating>
+            </div>
         </div>
     </div>
     </template>
