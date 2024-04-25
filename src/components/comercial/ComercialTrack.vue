@@ -405,9 +405,3 @@ async created(){
 }
 }
 </script>
-
-<style>
-.esconder{
-    display: none;
-}
-</style>
