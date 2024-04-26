@@ -7,7 +7,7 @@
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent" style="background-color: #3a619b; z-index: 99;">
     <div class="row">
-        <div class="col d-flex justify-content-evenly">
+        <div class="col d-flex justify-content-start">
             <router-link to="/home" class="nav-link" style="padding: 0 8px;">
                 <div class="item">
                     <img src="/images/logo_fibracem_F_1.png" alt="" style="width: 90%;">
@@ -35,7 +35,6 @@
 
         </div>
     </div>
-    <h6 style="width: 5%; color: #fff; text-align: center;" v-if="mostraStatus">TOTVS INDISPONÍVEL</h6>
   </div>
 </nav>
 

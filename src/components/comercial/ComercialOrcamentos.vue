@@ -53,7 +53,7 @@
     </template>
 </modal>
 
-<modal v-if="orcamentoModal" :title="`Pedido ${this.titulo}`">
+<modal v-if="orcamentoModal" :title="`Orçamento ${this.titulo}`">
     <template v-slot:body>
     <loading v-if="carregandoinfo"></loading>
     <div v-if="!carregandoinfo">
@@ -103,6 +103,20 @@
             </div>
             <div class="col">
                 <form-floating :placeholder="'Tipo Frete:'" :id="'CJ_TPFRETE'" :type="'text'" v-model="orcamento.CJ_TPFRETE" readonly></form-floating>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col">
+                <form-floating :placeholder="'DESC TABELA:'" :id="''" :type="'text'" readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Nome Vend:'" :id="''" :type="'text'" readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Frete + Imp:'" :id="'CJ_XFREIMP'" :type="'text'" v-model="orcamento.CJ_XFREIMP" readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Tp Liberação:'" :id="'CJ_TIPLIB'" :type="'text'" v-model="orcamento.CJ_TIPLIB" readonly></form-floating>
             </div>
         </div>
     </div>
