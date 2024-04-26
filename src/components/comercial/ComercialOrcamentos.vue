@@ -74,6 +74,37 @@
                 <form-floating :placeholder="'Loja:'" :id="'CJ_LOJA'" :type="'text'" v-model="orcamento.CJ_LOJA" readonly></form-floating>
             </div>
         </div>
+        <div class="row mt-2">
+            <div class="col-lg-6">
+                <form-floating :placeholder="'Nome:'" :id="'CJ_NOMCLI'" :type="'text'" readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Cliente Entr:'" :id="'CJ_CLIENT'" :type="'text'" v-model="orcamento.CJ_CLIENT" readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Loja Entrega:'" :id="'CJ_LOJAENT'" :type="'text'" v-model="orcamento.CJ_LOJAENT" readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Cond. Pagto:'" :id="'CJ_CONDPAG'" :type="'text'" v-model="orcamento.CJ_CONDPAG" readonly></form-floating>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col">
+                <form-floating :placeholder="'UF Cliente:'" :id="'CJ_XESTADO'" :type="'text'" v-model="orcamento.CJ_XESTADO" readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Pedido Korp:'" :id="'CJ_XPVKORP'" :type="'text'" v-model="orcamento.CJ_XPVKORP" readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Tabela:'" :id="'CJ_TABELA'" :type="'text'" v-model="orcamento.CJ_TABELA" readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Tipo Cliente:'" :id="'CJ_TIPOCLI'" :type="'text'" v-model="orcamento.CJ_TIPOCLI" readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Tipo Frete:'" :id="'CJ_TPFRETE'" :type="'text'" v-model="orcamento.CJ_TPFRETE" readonly></form-floating>
+            </div>
+        </div>
     </div>
     </template>
     <template v-slot:buttons v-if="!carregandoinfo">

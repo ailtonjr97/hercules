@@ -361,7 +361,6 @@ export default{
                 this.carregandoinfo = true;
                 this.clienteModal = true;
                 const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/clientes/${numped}`, config);
-                console.log(response.data)
                 this.cliente = response.data
                 this.carregandoinfo = false;
             } catch (error) {

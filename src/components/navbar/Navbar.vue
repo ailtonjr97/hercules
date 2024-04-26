@@ -6,85 +6,37 @@
   </button>
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent" style="background-color: #3a619b; z-index: 99;">
-    <ul class="navbar-nav mr-auto">
-        <div class="row">
-            <div class="col d-flex justify-content-start">
-                <li class="nav-item" style="width: 90px;">
-                    <router-link to="/home" class="nav-link" style="padding: 0 8px;">
-                        <div class="item">
-                            <img src="/images/logo_fibracem_F_1.png" alt="" style="width: 130%;">
-                        </div>
-                    </router-link>
-                </li>
-                <li class="nav-item" style="margin-left: 5%;" :style="[isAdmin != 0 ? {'display': 'block'} : {'display': 'none'}]">
-                    <router-link to="/totvs/apis" class="nav-link">
-                        <div class="item">
-                            <img src="/images/totvs_icon.png" alt="" style="width: 90%; border-radius: 5px;">
-                        </div>
-                    </router-link>
-                </li>
-                <li class="nav-item" style="margin: 0 5% 0 0; width: 55px;">
-                    <router-link to="/qualidade" class="nav-link">
-                        <div class="item">
-                            <i class="fa-solid fa-file-circle-check" style="margin-left: 50%;"></i>
-                            <span class="caption">Qualidade</span>
-                        </div>
-                    </router-link>
-                </li>
-                <!-- <li class="nav-item" style="margin: 0 0 0 10px; width: 40px;">
-                    <router-link to="/rh" class="nav-link">
-                        <div class="item">
-                            <i class="fa-solid fa-users"></i>
-                            <span class="caption">RH</span>
-                        </div>
-                    </router-link>
-                </li> -->
-                <li class="nav-item" style="margin: 0 0 0 1%; width: 100px;">
-                    <router-link to="/comercial" class="nav-link">
-                        <div class="item">
-                            <i class="fa-solid fa-comments-dollar" style="margin-left: 50%;"></i>
-                            <span class="caption">Comercial</span>
-                        </div>
-                    </router-link>
-                </li>
-                <!-- <li class="nav-item" style="margin: 0 0 0 1%; width: 90px;">
-                    <router-link to="/logistica" class="nav-link">
-                        <div class="item">
-                            <i class="fa-solid fa-truck" style="margin-left: 30%;"></i>
-                            <span class="caption">Logística</span>
-                        </div>
-                    </router-link>
-                </li> -->
-<!--                 <li class="nav-item" style="margin: 0 0 0 0; width: 110px;">
-                    <router-link to="/chamados" class="nav-link">
-                        <div class="item">
-                            <i class="fa-solid fa-table-cells" style="margin-left: 50%;"></i>
-                            <span class="caption">Chamados</span>
-                        </div>
-                    </router-link>
-                </li> -->
-                <li style="margin: 0 0 0 4%;" :style="[isAdmin != 0 ? {'display': 'block'} : {'display': 'none'}]" class="nav-item pl-1 bloqueados">
-                    <router-link to="/usuarios" class="nav-link">
-                        <div class="item">
-                            <i class="fa-solid fa-user" style="margin-left: 22%;"></i>
-                            <span class="caption">Usuários</span>
-                        </div>
-                    </router-link>
-                </li>
-                <li class="nav-item" @click="logout">
-                    <a href="#" class="nav-link">
-                        <div class="item">
-                            <i class="fa-solid fa-right-from-bracket"></i>
-                            <span class="caption">Sair</span>
-                        </div>
-                    </a>
-                </li>
+    <div class="row">
+        <div class="col d-flex justify-content-evenly">
+            <router-link to="/home" class="nav-link" style="padding: 0 8px;">
+                <div class="item">
+                    <img src="/images/logo_fibracem_F_1.png" alt="" style="width: 90%;">
+                </div>
+            </router-link>
+
+            <div class="dropdown" style="margin-left: 15%;">
+                <i class="fa-solid fa-comments-dollar" style="color: white; font-size: 20px; margin-top: 40%; cursor: pointer;" data-bs-toggle="dropdown"></i>
+                <div class="dropdown-menu">
+                    <h6 class="dropdown-header">Comercial</h6>
+                    <router-link to="/comercial/cotacao-de-frete" class="nav-link" style="padding: 0 8px;">Cotação de Frete</router-link>
+                    <router-link to="/comercial/track-order" class="nav-link" style="padding: 0 8px;">Track Order</router-link>
+                    <router-link to="/comercial/orcamentos" class="nav-link" style="padding: 0 8px;">Orçamentos</router-link>
+                </div>
             </div>
+
+            <div class="dropdown" style="margin-left: 25%;">
+                <i class="fa-solid fa-user" style="color: white; font-size: 20px; margin-top: 50%; cursor: pointer;" data-bs-toggle="dropdown"></i>
+                <div class="dropdown-menu">
+                    <h6 class="dropdown-header">{{ name }}</h6>
+                    <router-link to="/usuarios" class="nav-link" style="padding: 0 8px;">Usuários</router-link>
+                    <router-link to="#" @click="logout()" class="nav-link" style="padding: 0 8px;">Sair</router-link>
+                </div>
+            </div>
+
         </div>
-    </ul>
+    </div>
+    <h6 style="width: 5%; color: #fff; text-align: center;" v-if="mostraStatus">TOTVS INDISPONÍVEL</h6>
   </div>
-  <h6 style="width: 5%; color: #fff; text-align: center;" v-if="mostraStatus">TOTVS INDISPONÍVEL</h6>
-  <h6 style="width: 20%; color: #fff; text-align: center;">{{ name }}</h6>
 </nav>
 
 <slot name="content"></slot>
@@ -146,6 +98,16 @@ export default{
 </script>
 
 <style scoped>
+
+a{
+    color: inherit;
+}
+
+a:hover{
+    color: white;
+    background-color: #3a619b;
+}
+
 .bloqueados{
     display: none;
 }
@@ -165,11 +127,11 @@ div.item {
 }
 
 .navbar{
-    height: 65px;
+    height: 45px;
 }
 
 .navbar {
-    background-color: #3a619b;
+    background-color: #22577A;
 }
 .navbar .navbar-nav .nav-link {
     color: #fff;
