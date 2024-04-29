@@ -59,6 +59,12 @@
     <div v-if="!carregandoinfo">
         <div class="row">
             <div class="col">
+                <button class="button-8 mb-2" @click="mostraOrcamento()">Orçamento</button>
+                <button class="button-8 mb-2" @click="mostraOutros()">Outros</button>
+            </div>
+        </div>
+        <div class="row" v-if="optionsOrcamentos">
+            <div class="col">
                 <form-floating :placeholder="'Filial:'" :id="'CJ_FILIAL'" :type="'text'" v-model="orcamento.CJ_FILIAL" readonly></form-floating>
             </div>
             <div class="col">
@@ -74,7 +80,7 @@
                 <form-floating :placeholder="'Loja:'" :id="'CJ_LOJA'" :type="'text'" v-model="orcamento.CJ_LOJA" readonly></form-floating>
             </div>
         </div>
-        <div class="row mt-2">
+        <div class="row mt-2" v-if="optionsOrcamentos">
             <div class="col-lg-6">
                 <form-floating :placeholder="'Nome:'" :id="'CJ_NOMCLI'" :type="'text'" readonly></form-floating>
             </div>
@@ -88,7 +94,7 @@
                 <form-floating :placeholder="'Cond. Pagto:'" :id="'CJ_CONDPAG'" :type="'text'" v-model="orcamento.CJ_CONDPAG" readonly></form-floating>
             </div>
         </div>
-        <div class="row mt-2">
+        <div class="row mt-2" v-if="optionsOrcamentos">
             <div class="col">
                 <form-floating :placeholder="'UF Cliente:'" :id="'CJ_XESTADO'" :type="'text'" v-model="orcamento.CJ_XESTADO" readonly></form-floating>
             </div>
@@ -105,7 +111,7 @@
                 <form-floating :placeholder="'Tipo Frete:'" :id="'CJ_TPFRETE'" :type="'text'" v-model="orcamento.CJ_TPFRETE" readonly></form-floating>
             </div>
         </div>
-        <div class="row mt-2">
+        <div class="row mt-2" v-if="optionsOrcamentos">
             <div class="col">
                 <form-floating :placeholder="'DESC TABELA:'" :id="''" :type="'text'" readonly></form-floating>
             </div>
@@ -117,6 +123,149 @@
             </div>
             <div class="col">
                 <form-floating :placeholder="'Tp Liberação:'" :id="'CJ_TIPLIB'" :type="'text'" v-model="orcamento.CJ_TIPLIB" readonly></form-floating>
+            </div>
+        </div>
+        <div class="row mt-2" v-if="optionsOrcamentos">
+            <div class="col">
+                <TextareaFloating :placeholder="'Observação:'" :id="'CJ_XOBS'" v-model="orcamento.CJ_XOBS" readonly></TextareaFloating>
+            </div>
+        </div>
+        <div class="row mt-2" v-if="optionsOutros">
+            <div class="col">
+                <form-floating :placeholder="'Prospect:'" :id="'CJ_PROSPE'" :type="'text'" v-model="orcamento.CJ_PROSPE"  readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Loja Prosp.:'" :id="'CJ_LOJPRO'" :type="'text'" v-model="orcamento.CJ_LOJPRO"  readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Frete Cot.:'" :id="'CJ_CST_FTS'" :type="'text'" v-model="orcamento.CJ_CST_FTS"  readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Vlr. Frete:'" :id="'CJ_XFREMA'" :type="'text'" v-model="orcamento.CJ_XFREMA"  readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Simu. Frete:'" :id="'CJ_XFRESIM'" :type="'text'" v-model="orcamento.CJ_XFRESIM"  readonly></form-floating>
+            </div>
+        </div>
+        <div class="row mt-2" v-if="optionsOutros">
+            <div class="col">
+                <form-floating :placeholder="'Transp. Simu:'" :id="'CJ_XTRANSP'" :type="'text'" v-model="orcamento.CJ_XTRANSP"  readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Desconto 1'" :id="'CJ_DESC1'" :type="'text'" v-model="orcamento.CJ_DESC1"  readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Cotação/Ped.'" :id="'CJ_COTCLI'" :type="'text'" v-model="orcamento.CJ_COTCLI"  readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Frete'" :id="'CJ_FRETE'" :type="'text'" v-model="orcamento.CJ_FRETE"  readonly></form-floating>
+            </div>
+        </div>
+        <div class="row mt-2" v-if="optionsOutros">
+            <div class="col">
+                <form-floating :placeholder="'Seguro:'" :id="'CJ_SEGURO'" :type="'text'" v-model="orcamento.CJ_SEGURO" readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Despesa:'" :id="'CJ_DESPESA'" :type="'text'" v-model="orcamento.CJ_DESPESA" readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Frete Auton.:'" :id="'CJ_FRETAUT'" :type="'text'" v-model="orcamento.CJ_FRETAUT" readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Dt. Validade:'" :id="'CJ_VALIDA'" :type="'text'" v-model="orcamento.CJ_VALIDA" readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Moeda:'" :id="'CJ_MOEDA'" :type="'text'" v-model="orcamento.CJ_MOEDA" readonly></form-floating>
+            </div>
+        </div>
+        <div class="row mt-2" v-if="optionsOutros">
+            <div class="col">
+                <form-floating :placeholder="'Filial Venda:'" :id="'CJ_FILVEN'" :type="'text'" v-model="orcamento.CJ_FILVEN" readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Filial Entr.:'" :id="'CJ_FILENT'" :type="'text'" v-model="orcamento.CJ_FILENT" readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Carga:'" :id="'CJ_TPCARGA'" :type="'text'" v-model="orcamento.CJ_TPCARGA" readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Indenizacao:'" :id="'CJ_DESCONT'" :type="'text'" v-model="orcamento.CJ_DESCONT" readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Prazo Real:'" :id="'CJ_XENTREG'" :type="'text'" v-model="orcamento.CJ_XENTREG" readonly></form-floating>
+            </div>
+        </div>
+        <div class="row mt-2" v-if="optionsOutros">
+            <div class="col">
+                <form-floating :placeholder="'Log usuario:'" :id="'CJ_LOGUSL'" :type="'text'" v-model="orcamento.CJ_LOGUSL" readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Usuário Incl:'" :id="'CJ_XUSRINC'" :type="'text'" v-model="orcamento.CJ_XUSRINC" readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Percentual:'" :id="'CJ_XPERCEN'" :type="'text'" v-model="orcamento.CJ_XPERCEN" readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Proposta No.:'" :id="'CJ_PROPOST'" :type="'text'" v-model="orcamento.CJ_PROPOST" readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Val. Percent:'" :id="'CJ_XVALPER'" :type="'text'" v-model="orcamento.CJ_XVALPER" readonly></form-floating>
+            </div>
+        </div>
+        <div class="row mt-2" v-if="optionsOutros">
+            <div class="col">
+                <form-floating :placeholder="'Forma Pgto.:'" :id="'CJ_XFORMA'" :type="'text'" v-model="orcamento.CJ_XFORMA" readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Mot. Rejeita:'" :id="'CJ_XMOTREJ'" :type="'text'" v-model="orcamento.CJ_XMOTREJ" readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Oportunidade:'" :id="'CJ_NROPOR'" :type="'text'" v-model="orcamento.CJ_NROPOR" readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Vendedor 1:'" :id="'CJ_XVEND1'" :type="'text'" v-model="orcamento.CJ_XVEND1" readonly></form-floating>
+            </div>
+        </div>
+        <div class="row mt-2" v-if="optionsOutros">
+            <div class="col">
+                <form-floating :placeholder="'Vendedor 2:'" :id="'CJ_XVEND2'" :type="'text'" v-model="orcamento.CJ_XVEND2" readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Usuario lib.:'" :id="'CJ_XUSRLIB'" :type="'text'" v-model="orcamento.CJ_XUSRLIB" readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Revisao Op.:'" :id="'CJ_REVISA'" :type="'text'" v-model="orcamento.CJ_REVISA" readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Vendedor 3:'" :id="'CJ_XVEND3'" :type="'text'" v-model="orcamento.CJ_XVEND3" readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Taxa Moeda:'" :id="'CJ_TXMOEDA'" :type="'text'" v-model="orcamento.CJ_TXMOEDA" readonly></form-floating>
+            </div>
+        </div>
+        <div class="row mt-2" v-if="optionsOutros">
+            <div class="col">
+                <form-floating :placeholder="'Vendedor 4:'" :id="'CJ_XVEND4'" :type="'text'" v-model="orcamento.CJ_XVEND4" readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Presença Com:'" :id="'CJ_INDPRES'" :type="'text'" v-model="orcamento.CJ_INDPRES" readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Vendedor 5:'" :id="'CJ_XVEND5'" :type="'text'" v-model="orcamento.CJ_XVEND5" readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Cód. Interme:'" :id="'CJ_CODA1U'" :type="'text'" v-model="orcamento.CJ_CODA1U" readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Redespacho:'" :id="'CJ_XREDESP'" :type="'text'" v-model="orcamento.CJ_XREDESP" readonly></form-floating>
+            </div>
+        </div>
+        <div class="row mt-2" v-if="optionsOutros">
+            <div class="col">
+                <form-floating :placeholder="'Perc. Adian.:'" :id="'CJ_XFINPCD'" :type="'text'" v-model="orcamento.CJ_XFINPCD" readonly></form-floating>
+            </div>
+            <div class="col">
+                <form-floating :placeholder="'Vlr. Adian:'" :id="'CJ_XFINVLD'" :type="'text'" v-model="orcamento.CJ_XFINVLD" readonly></form-floating>
             </div>
         </div>
     </div>
@@ -161,6 +310,8 @@ components: {
 },
 data(){
     return{
+        optionsOrcamentos: true,
+        optionsOutros: false,
         orcamento: [],
         titulo: '',
         orcamentoModal: false,
@@ -182,6 +333,14 @@ data(){
     }
 },
 methods: {
+    async mostraOrcamento(){
+        this.optionsOrcamentos = true;
+        this.optionsOutros = false;
+    },
+    async mostraOutros(){
+        this.optionsOrcamentos = false;
+        this.optionsOutros = true;
+    },
     async fecharOrcamentoModal(){
         this.carregandoinfo = false;
         this.carregando = false;
@@ -196,7 +355,6 @@ methods: {
             const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/orcamentos/unico?filial=${filial}&numero=${numero}&cliente=${cliente}&loja=${loja}`, config);
             this.orcamento = response.data
             this.carregandoinfo = false;
-            console.log(this.orcamento)
         } catch (error) {
             this.mostraModal("Falha ao buscar resultados.");
             this.carregandoinfo = false;
@@ -233,7 +391,6 @@ methods: {
             this.resultados = response.data.length;
             this.carregando = false;
         } catch (error) {
-            console.log(error.response.status)
             if(error.response.status == 404){
                 this.carregando = false;
                 this.apis = [];
