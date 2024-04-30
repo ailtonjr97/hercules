@@ -79,7 +79,7 @@
                     {{ api.C5_XHSEPCD }}
                 </td>
                 <td>
-                    <input class="mt-4" @click="marcaLibFat(api.C5_FILIAL, api.C5_NUM, api.C5_XFATURD, $event)" type="checkbox" name="liberado_faturamento" id="liberado_faturamento" :checked="api.C5_XLIBFAT ? true : false" :disabled="!api.C5_XLIBCOM"><br>
+                    <input class="mt-4" @click="marcaLibFat(api.C5_FILIAL, api.C5_NUM, api.C5_XFATURD, $event)" type="checkbox" name="liberado_faturamento" id="liberado_faturamento" :checked="api.C5_XLIBFAT ? true : false" :disabled="!api.C5_XSEPCD"><br>
                     {{ api.C5_XNLIBFA  }}<br>
                     {{ api.C5_XHLIBFA }}
                 </td>

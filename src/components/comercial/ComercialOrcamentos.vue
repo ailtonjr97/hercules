@@ -71,7 +71,7 @@
                 <form-floating :placeholder="'Número:'" :id="'CJ_NUM'" :type="'text'" v-model="orcamento.CJ_NUM" readonly></form-floating>
             </div>
             <div class="col">
-                <form-floating :placeholder="'Data de emissão:'" :id="'CJ_EMISSAO'" :type="'text'" v-model="orcamento.CJ_EMISSAO" readonly></form-floating>
+                <form-floating :placeholder="'Data de emissão:'" :id="'cj_emissao'" :type="'text'" v-model="cj_emissao" readonly></form-floating>
             </div>
             <div class="col">
                 <form-floating :placeholder="'Cliente:'" :id="'CJ_CLIENTE'" :type="'text'" v-model="orcamento.CJ_CLIENTE" readonly></form-floating>
@@ -82,7 +82,7 @@
         </div>
         <div class="row mt-2" v-if="optionsOrcamentos">
             <div class="col-lg-6">
-                <form-floating :placeholder="'Nome:'" :id="'CJ_NOMCLI'" :type="'text'" readonly></form-floating>
+                <form-floating :placeholder="'Nome:'" :id="'nome_cliente'" :type="'text'" v-model="nome_cliente" readonly></form-floating>
             </div>
             <div class="col">
                 <form-floating :placeholder="'Cliente Entr:'" :id="'CJ_CLIENT'" :type="'text'" v-model="orcamento.CJ_CLIENT" readonly></form-floating>
@@ -310,6 +310,8 @@ components: {
 },
 data(){
     return{
+        cj_emissao: '',
+        nome_cliente: '',
         optionsOrcamentos: true,
         optionsOutros: false,
         orcamento: [],
@@ -353,7 +355,9 @@ methods: {
             this.orcamentoModal = true;
             this.titulo = numero;
             const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/orcamentos/unico?filial=${filial}&numero=${numero}&cliente=${cliente}&loja=${loja}`, config);
-            this.orcamento = response.data
+            this.orcamento = response.data[0]
+            this.nome_cliente = response.data[1].NOME_CLIENTE
+            this.cj_emissao = response.data[1].CJ_EMISSAO
             this.carregandoinfo = false;
         } catch (error) {
             this.mostraModal("Falha ao buscar resultados.");
