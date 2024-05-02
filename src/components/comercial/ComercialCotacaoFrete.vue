@@ -404,7 +404,7 @@ export default{
             try {
                 this.carregandoinfo = true;
                 if(numped && filial){
-                    const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/sck/${numped}`, config);
+                    const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/sck/${numped}/${filial}`, config);
                     if(response){
                         const itens = []
                         response.data.objects.forEach(element => {
