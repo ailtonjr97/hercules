@@ -18,8 +18,6 @@
                 <i class="fa-solid fa-comments-dollar" style="color: white; font-size: 20px; margin-top: 40%; cursor: pointer;" data-bs-toggle="dropdown"></i>
                 <div class="dropdown-menu">
                     <h6 class="dropdown-header">Comercial</h6>
-                    <router-link to="/comercial/cotacao-de-frete" class="nav-link" style="padding: 0 8px;">Cotação de Frete</router-link>
-                    <router-link to="/comercial/track-order" class="nav-link" style="padding: 0 8px;">Track Order</router-link>
                     <router-link to="/comercial/orcamentos" class="nav-link" style="padding: 0 8px;">Orçamentos</router-link>
                 </div>
             </div>
@@ -77,15 +75,20 @@ export default{
     async created(){
         try {
             this.carregando = true;
-            const token = document.cookie.replace('jwt=', '');
-            let config = {
+            function getCookie(name) {
+                const value = `; ${document.cookie}`;
+                const parts = value.split(`; ${name}=`);
+                if (parts.length === 2) return parts.pop().split(';').shift();
+            }
+            const config = {
                 headers: {
-                    'Authorization': token
+                'Authorization': `jwt=${getCookie('jwt')}`,
                 }
-            };
-            const decoded = jwtDecode(token);
+            }
+            const decoded = getCookie('jwt');
             const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/users/${decoded.id}`, config);
-            await axios.get(`${import.meta.env.VITE_BACKEND_IP}/totvs/status`, config);
+            //await axios.get(`${import.meta.env.VITE_BACKEND_IP}/totvs/status`, config);
+            console.log(response.data)
             this.isAdmin = response.data[0].admin;
             this.name = response.data[0].name;
         } catch (error) {

@@ -29,84 +29,79 @@ import ComercialTrack from './components/comercial/ComercialTrack.vue';
 
 import LogisticaLanding from './components/logistica/LogisticaLanding.vue';
 
+const routes = [
+  { path: '/', redirect: '/home' },
+  { path: '/login', component: Login, meta: { hideNavbar: true, requiresAuth: false } },
+  { path: '/home', component: Home },
+  { path: '/usuarios', component: Usuarios },
+  { path: '/usuarios/inativos', component: UsuariosInativos },
+  { path: '/controladoria', component: Controladoria, meta: { carregando: true } },
+  { path: '/qualidade', component: Qualidade, meta: { carregando: true } },
+  { path: '/qualidade/documentos', component: QualidadeDocumentos, meta: { carregando: true } },
+  { path: '/qualidade/documentos/arquivados', component: DocumentosArquivados, meta: { carregando: true } },
+  { path: '/rh', component: Rh },
+  { path: '/rh/documentos', component: RhDocumentos },
+  { path: '/chamados', component: ChamadosTi },
+  { path: '/totvs', component: Totvs },
+  { path: '/totvs/apis', component: TotvsApis },
+  { path: '/totvs/grupos-de-venda', component: TotvsGruposDeVenda },
+  { path: '/totvs/movimentos-servicos-wms', component: TotvsMovimentosServicosWms },
+  { path: '/arquivos', component: AnexPage },
+  { path: '/comercial', component: ComercialLanding },
+  { path: '/comercial/cotacao-de-frete', component: ComercialCotacaoFrete },
+  { path: '/comercial/grupos-de-clientes', component: ComercialGruposDeClientes },
+  { path: '/comercial/orcamentos', component: ComercialOrcamentos },
+  { path: '/comercial/clientes', component: ComercialClientes },
+  { path: '/comercial/vendedores', component: ComercialVendedores },
+  { path: '/comercial/track-order', component: ComercialTrack },
+  { path: '/logistica', component: LogisticaLanding },
+  { path: '/:notFound(.*)', redirect: '/home' }
+];
+
 const router = createRouter({
-    history: createWebHistory(),
-    routes: [
-      {path: '/', redirect: '/home' },
-      {path: '/login', component: Login, meta: {hideNavbar: true, requiresAuth: false }},
-      {path: '/home', component: Home},
-      {path: '/usuarios', component: Usuarios},
-      {path: '/usuarios/inativos', component: UsuariosInativos },
-      {path: '/controladoria', component: Controladoria, meta: {carregando: true}},
-      {path: '/qualidade', component: Qualidade, meta: {carregando: true}},
-      {path: '/qualidade/documentos', component: QualidadeDocumentos, meta: {carregando: true}},
-      {path: '/qualidade/documentos/arquivados', component: DocumentosArquivados, meta: {carregando: true}},
-      {path: '/rh', component: Rh},
-      {path: '/rh/documentos', component: RhDocumentos},
-      {path: '/chamados', component: ChamadosTi},
-      {path: '/totvs', component: Totvs},
-      {path: '/totvs/apis', component: TotvsApis},
-      {path: '/totvs/grupos-de-venda', component: TotvsGruposDeVenda},
-      {path: '/totvs/movimentos-servicos-wms', component: TotvsMovimentosServicosWms},
-      {path: '/arquivos', component: AnexPage},
-      {path: '/comercial', component: ComercialLanding},
-      {path: '/comercial/cotacao-de-frete', component: ComercialCotacaoFrete},
-      {path: '/comercial/grupos-de-clientes', component: ComercialGruposDeClientes},
-      {path: '/comercial/orcamentos', component: ComercialOrcamentos},
-      {path: '/comercial/clientes', component: ComercialClientes},
-      {path: '/comercial/vendedores', component: ComercialVendedores},
-      {path: '/comercial/track-order', component: ComercialTrack},
-      {path: '/logistica', component: LogisticaLanding},
-      { path: '/:notFound(.*)', redirect: '/home' }
-    ]
-  });
+  history: createWebHistory(),
+  routes
+});
 
+router.beforeEach(async (to, from, next) => {
+  if (to.path === '/login') {
+    return next();
+  }
 
-router.beforeEach(async function(to, from, next) {
-  let loggedIn = false;
-  if(to.path == '/login'){
+  const token = document.cookie;
+
+  if (!token) {
+    return next('/login');
+  }
+
+  let config = {
+    headers: {
+      'Authorization': token
+    }
+  };
+
+  try {
+    const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/auth/verify-jwt`, config);
+
+    if (response.status !== 200) {
+      return next('/login');
+    }
+
+    const decoded = jwtDecode(token);
+
+    if (to.path === '/usuarios' || to.path === '/totvs') {
+      const userResponse = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/users/${decoded.id}`, config);
+      const isAdmin = userResponse.data[0]?.admin;
+
+      if (isAdmin === 0) {
+        return next('/home');
+      }
+    }
+
     next();
-  }else{
-      if(document.cookie){
-        const token = document.cookie
-        let config = {
-            headers: {
-                'Authorization': token
-            }
-        }
-        const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/auth/verify-jwt`, config);
-        if(response.status == 200){
-          loggedIn = true;
-        }else{
-          loggedIn = false;
-        }
-      }else{
-        return next('/login')
-      }
-
-      if (!loggedIn) {
-        return next('/login');
-      } else if (loggedIn) {
-        if(to.path == '/usuarios' || to.path == '/totvs'){
-          const token = document.cookie
-          let config = {
-              headers: {
-                  'Authorization': token
-              }
-          }
-          const decoded = jwtDecode(token);
-          const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/users/${decoded.id}`, config)
-          const isAdmin = response.data[0].admin
-          if(isAdmin != 0){
-            return next();
-          }else{
-            return next('/home');
-          }
-        }
-        return next();
-      } else{
-        next()
-      }
+  } catch (error) {
+    console.error('Error during route guard:', error);
+    next('/login');
   }
 });
 
