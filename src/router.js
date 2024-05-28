@@ -30,7 +30,7 @@ import ComercialTrack from './components/comercial/ComercialTrack.vue';
 import LogisticaLanding from './components/logistica/LogisticaLanding.vue';
 
 const routes = [
-  { path: '/', redirect: '/home' },
+  { path: '/', name: 'Home', redirect: '/home' },
   { path: '/login', component: Login, meta: { hideNavbar: true, requiresAuth: false } },
   { path: '/home', component: Home },
   { path: '/usuarios', component: Usuarios },

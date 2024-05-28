@@ -79,16 +79,15 @@ export default{
                 const value = `; ${document.cookie}`;
                 const parts = value.split(`; ${name}=`);
                 if (parts.length === 2) return parts.pop().split(';').shift();
-            }
-            const config = {
-                headers: {
-                'Authorization': `jwt=${getCookie('jwt')}`,
                 }
-            }
-            const decoded = getCookie('jwt');
+                const token = getCookie('jwt')
+                let config = {
+                    headers: {
+                        'Authorization': `jwt=${token}`
+                    }
+            };
+            const decoded = jwtDecode(token);
             const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/users/${decoded.id}`, config);
-            //await axios.get(`${import.meta.env.VITE_BACKEND_IP}/totvs/status`, config);
-            console.log(response.data)
             this.isAdmin = response.data[0].admin;
             this.name = response.data[0].name;
         } catch (error) {

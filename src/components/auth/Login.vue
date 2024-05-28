@@ -1,12 +1,14 @@
 <template>
+  <div v-if="carregando" id="loading"></div>
   <div id="cabecalho">
       <div class="row"  style="width: 99.8%; margin-left: 0.2%; height: 100vh;">
         <div class="col-md-6 offset-md-3" style="width: 40%; margin-left: 30%;">
           <div class="card my-5" style="margin-top: 29% !important; ">
             <span class="card-body cardbody-color p-lg-5">
               <div class="text-center">
-                <button @click="redireciona()" class="btn btn-color px-5 mb-2 w-100">Login</button>
-                <div id="loading" v-if="logador" style="margin-bottom: 50%;"></div>
+                <form-floating :placeholder="'E-mail:'" :id="'email'" :type="'email'" v-model="email"></form-floating><br>
+                <form-floating :placeholder="'Senha:'" :id="'senha'" :type="'password'" v-model="password"></form-floating>
+                <button @click="login()" class="btn btn-color px-5 mb-2 w-100 mt-3">Login</button>
               </div>
             </span>
           </div>
@@ -20,82 +22,88 @@
       <template v-slot:buttons><button class="button-8" @click="close">Fechar</button></template>
     </modal>
   </template>
-  
-  <script>
-  import Modal from '../ui/Modal.vue';
-  
-  import axios from 'axios';
-  export default{
-    components: {
-      Modal
-    },
-      data(){
-          return {
-            reload: 1,
-            error: false,
-            logador: false,
-              form: {
-                  email: '',
-                  password: ''
-              }
-          }
-      },
-      methods: {
-          async redireciona(){
-            window.location.href = `http://aplicacao.fibracem.com/home`;
-          },
-          close(){
-            this.error = false
-          },
-          async submit(){
-              try {
-                this.logador = true;
-                function delete_cookie(name) {
-                  document.cookie = name +'=; Path=/qualidade; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-                }
-                delete_cookie('jwt')
-                  const response = await axios.post(`${import.meta.env.VITE_BACKEND_IP}/auth/login`, this.form);
-                  if(response && response.status == 200){
-                    document.cookie = `jwt=${response.data};path=/`
-                    window.location.href = `${import.meta.env.VITE_LOGIN_IP}/home`;
-                  }else{
-                    console.log(error)
-                    this.logador = false;
-                    throw new Error();
-                  }
-                  }catch (error) {
-                    console.log(error)
-                    this.logador = false;
-                    this.error = true;
-              }
-          }
-      },
+
+<script>
+const config = {
+    headers: {
+    'Authorization': document.cookie,
+    }
+}
+
+import axios from 'axios';
+import Cookies from 'js-cookie';
+
+import TableTop from '../ui/TableTop.vue';
+import TableSearch from '../ui/TableSearch.vue';
+import Modal from '../ui/Modal.vue';
+import Loading from '../ui/Loading.vue';
+import FormFloating from '../ui/FormFloating.vue';
+import TextareaFloating from '../ui/TextareaFloating.vue';
+import SelectFloating from '../ui/SelectFloating.vue';
+import Popup from '../ui/Popup.vue';
+
+export default {
+components: {
+  Loading,
+  FormFloating,
+  Modal
+},
+data(){
+    return{
+      carregando: false,
+      email: '',
+      password: ''
+    }
+},
+methods: {
+  async login(){
+    try {
+      this.carregando = true;
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_IP}/auth/login`, [{'email': this.email}, {'password': this.password}], config);
+      const token = response.data.token;
+
+      // Expira em 12 horas
+      const expires = new Date(new Date().getTime() + 12 * 60 * 60 * 1000);
+      Cookies.set('jwt', token, { expires });
+
+      this.$router.push({ name: 'Home' });
+
+    } catch (error) {
+      console.log(error)
+      this.carregando = false;
+      alert('Erro ao autenticar. Favor tentar novamente')
+    }
   }
-  </script>
-  
-  <style scoped>
-  #cabecalho{
-    background-image: url('../../../images/bg.jpg');
+},
+  async created(){
   }
-  .btn-color{
-    background-color: #0e1c36;
-    color: #fff;
-    
-  }
+}
+</script>
+
+
+<style scoped>
+#cabecalho{
+  background-image: url('../../../images/bg.jpg');
+}
+.btn-color{
+  background-color: #0e1c36;
+  color: #fff;
   
-  .profile-image-pic{
-    height: 200px;
-    width: 200px;
-    object-fit: cover;
-  }
-  
-  
-  
-  .cardbody-color{
-    background-color: #ebf2fa;
-  }
-  
-  a{
-    text-decoration: none;
-  }
-  </style>
+}
+
+.profile-image-pic{
+  height: 200px;
+  width: 200px;
+  object-fit: cover;
+}
+
+
+
+.cardbody-color{
+  background-color: #ebf2fa;
+}
+
+a{
+  text-decoration: none;
+}
+</style>
