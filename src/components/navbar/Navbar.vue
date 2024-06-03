@@ -69,7 +69,7 @@ export default{
                 document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
               }
               delete_cookie('jwt')
-            window.location.href = 'http://intranet.fibracem.com/logout';
+            window.location.href = 'http://fibracem.cloud/login';
         }
     },
     async created(){
