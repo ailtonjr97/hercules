@@ -38,7 +38,7 @@
                 <td>{{ api.CJ_NUM }}</td>
                 <td style="width: 50px;">{{ api.A1_NOME }}</td>
                 <td style="width: 50px;">{{ api.A3_NOME }}</td>
-                <td><button title="Detalhes" class="button-8" @click="abrirOrcamentoModal(api.CJ_FILIAL, api.CJ_NUM, api.CJ_CLIENTE, api.CJ_LOJA)"><i style="font-size: 14px;" class="fa-solid fa-eye"></i></button></td>
+                <td><button title="Detalhes" class="button-8" @click="abrirOrcamentoModal(api.CJ_FILIAL, api.CJ_NUM, api.CJ_CLIENTE, api.CJ_LOJA, api.A1_NOME)"><i style="font-size: 14px;" class="fa-solid fa-eye"></i></button></td>
             </tr>
         </tbody>
         </table>
@@ -57,17 +57,35 @@
         </div>
         <div class="row mt-2" v-if="optionsOrcamentos">
             <div class="col">
-                <form-span :span="'Número:'" :type="'text'" v-model="orcamento.CJ_NUM" readonly></form-span>
+                <form-span :span="'Número'" :type="'text'" v-model="orcamento.CJ_NUM" readonly></form-span>
             </div>
             <div class="col">
-                <form-span :span="'DT Emissão:'" :type="'text'" v-model="orcamento.CJ_EMISSAO" readonly></form-span>
+                <form-span :span="'DT Emissão'" :type="'text'" v-model="orcamento.CJ_EMISSAO" readonly></form-span>
             </div>
             <div class="col d-flex justify-content-evenly">
-                <form-span :span="'Cliente:'" :type="'text'" v-model="orcamento.CJ_CLIENTE" readonly></form-span>
-                <button style="margin-left: 1%;" class="button-8" @click="modalCliente(orcamento.CJ_CLIENTE, orcamento.CJ_LOJA)"><i style="font-size: 16px;" class="fas fa-search"></i></button>
+                <form-span :span="'Cliente'" :type="'text'" v-model="orcamento.CJ_CLIENTE" readonly></form-span>
+                <button style="margin-left: 1%;" class="button-8" @click="modalCliente(orcamento.CJ_FILIAL, orcamento.CJ_CLIENTE, orcamento.CJ_LOJA)"><i style="font-size: 16px;" class="fas fa-search"></i></button>
             </div>
             <div class="col">
-                <form-span :span="'Loja:'" :type="'text'" v-model="orcamento.CJ_LOJA" readonly></form-span>
+                <form-span :span="'Loja'" :type="'text'" v-model="orcamento.CJ_LOJA" readonly></form-span>
+            </div>
+            <div class="col">
+                <form-span :span="'Cliente Entr'" :type="'text'" v-model="orcamento.CJ_CLIENT" readonly></form-span>
+            </div>
+        </div>
+        <div class="row mt-2" v-if="optionsOrcamentos">
+            <div class="col-sm-2">
+                <form-span :span="'Loja Entrega'" :type="'text'" v-model="orcamento.CJ_LOJAENT" readonly></form-span>
+            </div>
+            <div class="col-sm-2 d-flex justify-content-evenly">
+                <form-span :span="'Cond.Pagto'" :type="'text'" v-model="orcamento.CJ_CONDPAG" readonly></form-span>
+                <button style="margin-left: 1%;" class="button-8"><i style="font-size: 16px;" class="fas fa-search"></i></button>
+            </div>
+            <div class="col-lg-6">
+                <form-span :span="'Nome Cliente'" :type="'text'" v-model="nomCli" readonly></form-span>
+            </div>
+            <div class="col-sm-2">
+                <form-span :span="'Tabela'" :type="'text'" v-model="orcamento.CJ_TABELA" readonly></form-span>
             </div>
         </div>
     </div>
@@ -77,13 +95,33 @@
     </template>
 </modal>
 
-<modal v-if="clienteModal" :title="`Informações do Cliente.`">
+<modal v-if="clienteModal" :title="`Informações do Cliente`">
     <template v-slot:body>
     <loading v-if="carregandoinfo"></loading>
     <div v-if="!carregandoinfo">
         <div class="row">
+            <div class="col-sm-2">
+                <form-span :span="'Código'" :type="'text'" v-model="clienteItems.A1_COD" readonly></form-span>
+            </div>
             <div class="col">
-                <form-span :span="'teste'" :type="'text'"  readonly></form-span>
+                <form-span :span="'Nome'" :type="'text'" v-model="clienteItems.A1_NOME" readonly></form-span>
+            </div>
+            <div class="col-md-3">
+                <form-span :span="'CNPJ'" :type="'text'" v-model="clienteItems.A1_CGC" readonly></form-span>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-md-4">
+                <form-span :span="'Endereço'" :type="'text'" v-model="clienteItems.A1_END" readonly></form-span>
+            </div>
+            <div class="col">
+                <form-span :span="'Município'" :type="'text'" v-model="clienteItems.A1_MUN" readonly></form-span>
+            </div>
+            <div class="col-sm-2">
+                <form-span :span="'Estado'" :type="'text'" v-model="clienteItems.A1_EST" readonly></form-span>
+            </div>
+            <div class="col-sm-2">
+                <form-span :span="'CEP'" :type="'text'" v-model="clienteItems.A1_CEP" readonly></form-span>
             </div>
         </div>
     </div>
@@ -125,6 +163,8 @@ components: {
 },
 data(){
     return{
+        nomCli: '',
+        clienteItems: null,
         clienteModal: false,
         vendedor: '',
         loja: '',
@@ -153,11 +193,12 @@ data(){
     }
 },
 methods: {
-    async modalCliente(cliente, loja){
+    async modalCliente(filial, cliente, loja){
         try {
             this.clienteModal = true;
             this.carregandoinfo = true;
-            const response =  await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/cliente-info?cliente=${cliente}&loja=${loja}`, config);
+            const response =  await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/cliente-info?filial=${filial}&cliente=${cliente}&loja=${loja}`, config);
+            this.clienteItems = response.data
             this.carregandoinfo = false;
         } catch (error) {
             this.carregandoinfo = false;
@@ -180,11 +221,12 @@ methods: {
             
         }
     },
-    async abrirOrcamentoModal(CJ_FILIAL, CJ_NUM, CJ_CLIENTE, CJ_LOJA){
+    async abrirOrcamentoModal(CJ_FILIAL, CJ_NUM, CJ_CLIENTE, CJ_LOJA, A1_NOME){
         try {
             this.orcamentoModal = true;
             this.carregandoinfo = true;
             const response =  await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/orcamento-info?filial=${CJ_FILIAL}&numero=${CJ_NUM}&cliente=${CJ_CLIENTE}&loja=${CJ_LOJA}`, config);
+            this.nomCli = A1_NOME;
             this.orcamento = response.data
             this.carregandoinfo = false;
         } catch (error) {
