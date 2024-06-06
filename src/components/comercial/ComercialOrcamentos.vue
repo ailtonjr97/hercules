@@ -79,14 +79,44 @@
             </div>
             <div class="col-sm-2 d-flex justify-content-evenly">
                 <form-span :span="'Cond.Pagto'" :type="'text'" v-model="orcamento.CJ_CONDPAG" readonly></form-span>
-                <button style="margin-left: 1%;" class="button-8"><i style="font-size: 16px;" class="fas fa-search"></i></button>
+                <button style="margin-left: 1%;" class="button-8" @click="modalCondPag(orcamento.CJ_CONDPAG)"><i style="font-size: 16px;" class="fas fa-search"></i></button>
             </div>
             <div class="col-lg-6">
                 <form-span :span="'Nome Cliente'" :type="'text'" v-model="nomCli" readonly></form-span>
             </div>
-            <div class="col-sm-2">
+            <div class="col-sm-2 d-flex justify-content-evenly">
                 <form-span :span="'Tabela'" :type="'text'" v-model="orcamento.CJ_TABELA" readonly></form-span>
+                <button style="margin-left: 1%;" class="button-8" @click="modalTabPre(orcamento.CJ_TABELA, orcamento.CJ_FILIAL)"><i style="font-size: 16px;" class="fas fa-search"></i></button>
             </div>
+        </div>
+        <div class="row mt-2">
+            <loading v-if="carregandoItemsOrc"></loading>
+        </div>
+        <div v-if="!carregandoItemsOrc && optionsOrcamentos" class="table-wrapper table-responsive table-striped mt-4">
+            <table class="fl-table" id="myTable">
+            <thead>
+                <tr style="height: 25px">
+                <th>Número</th>
+                <th>Código</th>
+                <th>Descrição</th>
+                <th>Unidade</th>
+                <th>Quantidade</th>
+                <th>Preço de Venda</th>
+                <th>Valor</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="item in itemsOrc" :key="item.CK_ITEM">
+                    <td>{{ item.CK_ITEM }}</td>
+                    <td>{{ item.CK_PRODUTO }}</td>
+                    <td>{{ item.CK_DESCRI }}</td>
+                    <td>{{ item.CK_UM }}</td>
+                    <td>{{ item.CK_QTDVEN }}</td>
+                    <td>{{ item.CK_PRCVEN }}</td>
+                    <td>{{ item.CK_VALOR }}</td>
+                </tr>
+            </tbody>
+            </table>
         </div>
     </div>
     </template>
@@ -128,6 +158,44 @@
     </template>
     <template v-slot:buttons v-if="!carregandoinfo">
         <button class="button-8 mt-2" @click="clienteModal = false">Fechar</button>
+    </template>
+</modal>
+
+<modal v-if="condPagModal" :title="`Condição de Pagamento`">
+    <template v-slot:body>
+    <loading v-if="carregandoinfo"></loading>
+    <div v-if="!carregandoinfo">
+        <div class="row">
+            <div class="col-sm-2">
+                <form-span :span="'Tipo'" :type="'text'" v-model="codPag.E4_TIPO" readonly></form-span>
+            </div>
+            <div class="col-md-3">
+                <form-span :span="'Descrição'" :type="'text'" v-model="codPag.E4_DESCRI" readonly></form-span>
+            </div>
+            <div class="col-sm-2">
+                <form-span :span="'Código'" :type="'text'" v-model="codPag.E4_CODIGO" readonly></form-span>
+            </div>
+        </div>
+    </div>
+    </template>
+    <template v-slot:buttons v-if="!carregandoinfo">
+        <button class="button-8 mt-2" @click="condPagModal = false">Fechar</button>
+    </template>
+</modal>
+
+<modal v-if="tabPreModal" :title="`Tabela de Preços`">
+    <template v-slot:body>
+    <loading v-if="carregandoinfo"></loading>
+    <div v-if="!carregandoinfo">
+        <div class="row">
+            <div class="col-sm-2">
+                <form-span :span="'Tipo'" :type="'text'" readonly></form-span>
+            </div>
+        </div>
+    </div>
+    </template>
+    <template v-slot:buttons v-if="!carregandoinfo">
+        <button class="button-8 mt-2" @click="tabPreModal = false">Fechar</button>
     </template>
 </modal>
 
@@ -190,9 +258,39 @@ data(){
         resultados: 0,
         carregando: true,
         apis: [],
+        itemsOrc: [],
+        carregandoItemsOrc: false,
+        condPagModal: false,
+        codPag: null,
+        tabPreModal: false,
+        tabPre: null
     }
 },
 methods: {
+    async modalTabPre(cod, filial){
+        try {
+            this.tabPreModal = true;
+            this.carregandoinfo = true;
+            // const response =  await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/cond-pag?cod=${cod}`, config);
+            // this.tabPre = response.data
+            this.carregandoinfo = false;
+        } catch (error) {
+            this.carregandoinfo = false;
+            alert('Falha ao executar ação. Tente novamente mais tarde');
+        }
+    },
+    async modalCondPag(cod){
+        try {
+            this.condPagModal = true;
+            this.carregandoinfo = true;
+            const response =  await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/cond-pag?cod=${cod}`, config);
+            this.codPag = response.data
+            this.carregandoinfo = false;
+        } catch (error) {
+            this.carregandoinfo = false;
+            alert('Falha ao executar ação. Tente novamente mais tarde');
+        }
+    },
     async modalCliente(filial, cliente, loja){
         try {
             this.clienteModal = true;
@@ -225,11 +323,16 @@ methods: {
         try {
             this.orcamentoModal = true;
             this.carregandoinfo = true;
+            this.carregandoItemsOrc = true;
             const response =  await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/orcamento-info?filial=${CJ_FILIAL}&numero=${CJ_NUM}&cliente=${CJ_CLIENTE}&loja=${CJ_LOJA}`, config);
             this.nomCli = A1_NOME;
             this.orcamento = response.data
             this.carregandoinfo = false;
+            const items =  await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/orcamento-items?filial=${CJ_FILIAL}&numero=${CJ_NUM}`, config);
+            this.itemsOrc = items.data
+            this.carregandoItemsOrc = false;
         } catch (error) {
+            console.log(error)
             alert('Falha ao executar ação. Tente novamente mais tarde');
         }
     },
