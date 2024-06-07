@@ -94,7 +94,7 @@
             </div>
             <div class="col-sm-2 d-flex justify-content-evenly">
               <form-span :span="'Tabela'" :type="'text'" v-model="orcamento.CJ_TABELA" readonly></form-span>
-              <button style="margin-left: 1%;" class="button-8" @click="openModalPadrao('Tabela de Preço', `/consulta/tab-preco?cod=${orcamento.CJ_TABELA}&filial=${orcamento.CJ_FILIAL}`, ['Código, Descrição'])">
+              <button style="margin-left: 1%;" class="button-8" @click="openModalPadrao('Tabela de Preço', `/consulta/tab-preco?cod=${orcamento.CJ_TABELA}&filial=${orcamento.CJ_FILIAL}`, ['Código', 'Descrição'])">
                 <i style="font-size: 16px;" class="fas fa-search"></i>
               </button>
             </div>
@@ -108,9 +108,15 @@
             </div>
             <div class="col-sm-2 d-flex justify-content-evenly">
               <form-span :span="'Vendedor 1'" :type="'text'" v-model="orcamento.CJ_XVEND1" readonly></form-span>
-              <button style="margin-left: 1%;" class="button-8">
+              <button style="margin-left: 1%;" class="button-8" @click="openModalPadrao('Vendedor', `/consulta/vendedor?filial=${orcamento.CJ_FILIAL}&codigo=${orcamento.CJ_XVEND1}`, ['Código', 'Nome'])">
                 <i style="font-size: 16px;" class="fas fa-search"></i>
               </button>
+            </div>
+            <div class="col-md-3">
+              <span-select :span="'Tp Liberação'" :options="tpLiberacao" v-model="orcamento.CJ_TIPLIB"></span-select>
+            </div>
+            <div class="col-sm-2">
+              <form-span :span="'UF Cliente'" :type="'text'" v-model="orcamento.CJ_XESTADO" readonly></form-span>
             </div>
           </div>
           <div class="row mt-2">
@@ -204,6 +210,10 @@
         modalPadraoTitle: '',
         modalPadraoItem: null,
         modalPadrao: false,
+        tpLiberacao: [
+          { valor: "1", descri: '1 - Libera por Item' },
+          { valor: "2", descri: '2 - Libera por Pedido' },
+        ],
         tiposFrete: [
           { valor: "C", descri: 'C - CIF' },
           { valor: "F", descri: 'F - FOB' },
