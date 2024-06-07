@@ -64,7 +64,7 @@
               <form-span :span="'Número'" :type="'text'" v-model="orcamento.CJ_NUM" readonly></form-span>
             </div>
             <div class="col">
-              <form-span :span="'DT Emissão'" :type="'text'" v-model="orcamento.CJ_EMISSAO" readonly></form-span>
+              <form-span :span="'DT Emissão'" :type="'date'" v-model="orcamento.CJ_EMISSAO" readonly></form-span>
             </div>
             <div class="col d-flex justify-content-evenly">
               <form-span :span="'Cliente'" :type="'text'" v-model="orcamento.CJ_CLIENTE" readonly></form-span>
@@ -119,6 +119,32 @@
               <form-span :span="'UF Cliente'" :type="'text'" v-model="orcamento.CJ_XESTADO" readonly></form-span>
             </div>
           </div>
+          <div class="row mt-2"  v-if="optionsOrcamentos">
+            <div class="col-sm-2">
+              <form-span :span="'PEDIDO KORP'" :type="'text'" v-model="orcamento.CJ_XPVKORP" readonly></form-span>
+            </div>
+            <div class="col-sm-2">
+              <span-select :span="'Tipo Cliente'" :options="tipoCliente" v-model="orcamento.CJ_TIPOCLI"></span-select>
+            </div>
+            <div class="col-md-4">
+              <form-span :span="'DESC TABELA'" :type="'text'" readonly></form-span>
+            </div>
+          </div>
+          <div class="row mt-2"  v-if="optionsOrcamentos">
+            <div class="col-md-4">
+              <form-span :span="'Nome Vend'" :type="'text'" v-model="orcamento.A3_NOME" readonly></form-span>
+            </div>
+            <div class="col-md-4">
+              <form-span :span="'Frete + Imp.'" :type="'text'" v-model="orcamento.CJ_XFREIMP" readonly></form-span>
+            </div>
+            <div class="col-md-4">
+              <form-span :span="'Dt. Validade'" :type="'date'" v-model="orcamento.CJ_VALIDA" readonly></form-span>
+            </div>
+          </div>
+          <div class="row mt-2"  v-if="optionsOrcamentos">
+            <loading v-if="carregandoItemsOrc"></loading>
+            <span-textarea :span="'Observacao'" :altura="50" v-model="orcamento.CJ_XOBS"></span-textarea>
+          </div>
           <div class="row mt-2">
             <loading v-if="carregandoItemsOrc"></loading>
           </div>
@@ -157,8 +183,8 @@
   
     <modal v-if="modalPadrao" :title="modalPadraoTitle">
       <template v-slot:body>
-        <loading v-if="carregandoinfo"></loading>
-        <div v-if="!carregandoinfo">
+        <loading v-if="carregandoInfoModal"></loading>
+        <div v-if="!carregandoInfoModal">
           <div class="row">
             <div v-for="(item, index) in modalPadraoItem" class="col-md-3 mt-2">
               <form-span :span="modalPadraoDescritivos[index]" :type="'text'" v-model="computedModalPadraoItems[index]" readonly></form-span>
@@ -166,7 +192,7 @@
           </div>
         </div>
       </template>
-      <template v-slot:buttons v-if="!carregandoinfo">
+      <template v-slot:buttons v-if="!carregandoInfoModal">
         <button class="button-8 mt-2" @click="modalPadrao = false">Fechar</button>
       </template>
     </modal>
@@ -187,6 +213,7 @@
   import SelectFloating from '../ui/SelectFloating.vue';
   import Popup from '../ui/Popup.vue';
   import SpanSelect from '../ui/spanSelect.vue';
+  import SpanTextarea from '../ui/spanTextarea.vue';
   
   const config = getAuthConfig();
   
@@ -202,14 +229,23 @@
       TextareaFloating,
       SelectFloating,
       FormSpan,
-      SpanSelect
+      SpanSelect,
+      SpanTextarea
     },
     data() {
       return {
+        carregandoInfoModal: false,
         modalPadraoDescritivos: null,
         modalPadraoTitle: '',
         modalPadraoItem: null,
         modalPadrao: false,
+        tipoCliente: [
+          { valor: "F", descri: 'F - Cons.Final' },
+          { valor: "L", descri: 'L - Prod.Rural' },
+          { valor: "R", descri: 'R - Revendedor' },
+          { valor: "S", descri: 'S - Solidario' },
+          { valor: "X", descri: 'X - Exportacao/Importacao'},
+        ],
         tpLiberacao: [
           { valor: "1", descri: '1 - Libera por Item' },
           { valor: "2", descri: '2 - Libera por Pedido' },
@@ -269,12 +305,12 @@
           this.modalPadraoDescritivos = descritivos;
           this.modalPadraoTitle = title;
           this.modalPadrao = true;
-          this.carregandoinfo = true;
+          this.carregandoInfoModal = true;
           const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}${api}`, config);
           this.modalPadraoItem = response.data;
-          this.carregandoinfo = false;
+          this.carregandoInfoModal = false;
         } catch (error) {
-          this.carregandoinfo = false;
+          this.carregandoInfoModal = false;
           if (error.response.status == 404) {
             alert('Não encontrado nenhum resultado.');
           } else {
