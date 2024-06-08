@@ -142,8 +142,24 @@
             </div>
           </div>
           <div class="row mt-2"  v-if="optionsOrcamentos">
-            <loading v-if="carregandoItemsOrc"></loading>
             <span-textarea :span="'Observacao'" :altura="50" v-model="orcamento.CJ_XOBS"></span-textarea>
+          </div>
+          <div class="row mt-2"  v-if="optionsOutros">
+            <div class="col-sm-2">
+              <form-span :span="'Prazo Real'" :type="'date'" v-model="orcamento.CJ_XENTREG"></form-span>
+            </div>
+            <div class="col-sm-2">
+              <form-span :span="'Frete Cot.'" :type="'text'" v-model="orcamento.CJ_CST_FTS" readonly></form-span>
+            </div>
+            <div class="col-sm-2">
+              <form-span :span="'Vlr. Frete'" :type="'text'" v-model="orcamento.CJ_XFREMA" readonly></form-span>
+            </div>
+            <div class="col-sm-2">
+              <form-span :span="'Transp. Simu'" :type="'text'" v-model="orcamento.CJ_XTRANSP" readonly></form-span>
+            </div>
+            <div class="col-sm-2">
+              <form-span :span="'Simu. Frete'" :type="'text'" v-model="orcamento.CJ_XFRESIM" readonly></form-span>
+            </div>
           </div>
           <div class="row mt-2">
             <loading v-if="carregandoItemsOrc"></loading>
