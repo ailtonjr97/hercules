@@ -19,6 +19,8 @@ import ComercialClientes from './components/comercial/ComercialClientes.vue';
 import ComercialVendedores from './components/comercial/ComercialVendedores.vue';
 import ComercialTrack from './components/comercial/ComercialTrack.vue';
 
+import LogisticaCte from './components/logistica/LogisticaCte.vue';
+
 const routes = [
   { path: '/', name: 'Home', redirect: '/home' },
   { path: '/login', component: Login, meta: { hideNavbar: true, requiresAuth: false } },
@@ -36,6 +38,7 @@ const routes = [
   { path: '/comercial/clientes', component: ComercialClientes },
   { path: '/comercial/vendedores', component: ComercialVendedores },
   { path: '/comercial/track-order', component: ComercialTrack },
+  { path: '/logistica/cte', component: LogisticaCte },
   { path: '/:notFound(.*)', redirect: '/home' }
 ];
 

@@ -22,6 +22,14 @@
                 </div>
             </div>
 
+            <div class="dropdown" style="margin-left: 15%;">
+                <i class="fa-solid fa-truck" style="color: white; font-size: 20px; margin-top: 40%; cursor: pointer;" data-bs-toggle="dropdown"></i>
+                <div class="dropdown-menu">
+                    <h6 class="dropdown-header">Logística</h6>
+                    <router-link to="/logistica/cte" class="nav-link" style="padding: 0 8px;">CTE</router-link>
+                </div>
+            </div>
+
             <div class="dropdown" style="margin-left: 25%;">
                 <i class="fa-solid fa-user" style="color: white; font-size: 20px; margin-top: 50%; cursor: pointer;" data-bs-toggle="dropdown"></i>
                 <div class="dropdown-menu">
