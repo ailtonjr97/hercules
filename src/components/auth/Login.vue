@@ -66,6 +66,7 @@ methods: {
       const expires = new Date(new Date().getTime() + 12 * 60 * 60 * 1000);
       Cookies.set('jwt', token, { expires });
 
+      window.location.href = `${import.meta.env.VITE_LOGIN_IP}/home`;
       this.$router.push({ name: 'Home' });
 
     } catch (error) {

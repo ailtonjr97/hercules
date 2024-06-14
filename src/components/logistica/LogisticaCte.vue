@@ -7,37 +7,37 @@
           <button class="button-8 mb-2" @click="refresh()">Atualizar</button>
         </template>
       </table-top>
-<!--       <div class="row mb-2">
+      <div class="row mb-2">
         <div class="col">
           <form-floating :placeholder="'Filial:'" :id="'filial'" :type="'number'" @keyup.enter="pesquisa()" v-model="filial"></form-floating>
         </div>
-      </div> -->
-<!--       <div class="table-wrapper table-responsive table-striped mb-5">
+      </div>
+      <div class="table-wrapper table-responsive table-striped mb-5">
         <table class="fl-table" id="myTable">
           <thead>
             <tr style="height: 25px">
-              <th>Filial</th>
-              <th>Número</th>
-              <th>Cliente</th>
-              <th>Vendedor</th>
+              <th>NF</th>
+              <th>CTE</th>
+              <th>Frete NF</th>
+              <th>Frete CTE</th>
               <th>Ações</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="api in apis" :key="api.R_E_C_N_O_">
-              <td>{{ api.CJ_FILIAL }}</td>
-              <td>{{ api.CJ_NUM }}</td>
-              <td style="width: 50px;">{{ api.A1_NOME }}</td>
-              <td style="width: 50px;">{{ api.A3_NOME }}</td>
+            <tr :style="{ backgroundColor: api.frete_cte > api.frete_nf ? '#fffacd' : 'initial' }" v-for="api in apis" :key="api.id">
+              <td>{{ api.numero_nf }}</td>
+              <td>{{ api.numero_cte }}</td>
+              <td>{{ api.frete_nf }}</td>
+              <td>{{ api.frete_cte }}</td>
               <td>
-                <button title="Detalhes" class="button-8" @click="abrirOrcamentoModal(api.CJ_FILIAL, api.CJ_NUM, api.CJ_CLIENTE, api.CJ_LOJA, api.A1_NOME)">
+                <button title="Detalhes" class="button-8">
                   <i style="font-size: 14px;" class="fa-solid fa-eye"></i>
                 </button>
               </td>
             </tr>
           </tbody>
         </table>
-      </div> -->
+      </div>
     </div>
 
   </template>
@@ -97,9 +97,11 @@
       async refresh() {
         try {
           this.carregando = true;
-          const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/logistica/refresh-cte`, config);
+          await axios.get(`${import.meta.env.VITE_BACKEND_IP}/logistica/refresh-cte`, config);
+          const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/financeiro/grid`, config);
+          this.apis = response.data;
+          this.resultados = response.data.length;
           this.carregando = false;
-          console.log(response.data)
         } catch (error) {
           this.carregando = false;
           if (error.response.status == 404) {
@@ -114,7 +116,7 @@
     async created() {
       try {
         const config = getAuthConfig();
-        const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/comercial/orcamentos`, config);
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/financeiro/grid`, config);
         this.apis = response.data;
         this.resultados = response.data.length;
         this.carregando = false;

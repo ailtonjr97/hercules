@@ -10,7 +10,7 @@
         <div class="col d-flex justify-content-start">
             <router-link to="/home" class="nav-link" style="padding: 0 8px;">
                 <div class="item">
-                    <img src="/images/logo_fibracem_F_1.png" alt="" style="width: 90%;">
+                    <img src="/images/image_Vq.png" alt="" style="width: 75%; border-radius: 5px">
                 </div>
             </router-link>
 
@@ -23,15 +23,15 @@
             </div>
 
             <div class="dropdown" style="margin-left: 15%;">
-                <i class="fa-solid fa-truck" style="color: white; font-size: 20px; margin-top: 40%; cursor: pointer;" data-bs-toggle="dropdown"></i>
+                <i class="fa-solid fa-dollar" style="color: white; font-size: 20px; margin-top: 80%; cursor: pointer;" data-bs-toggle="dropdown"></i>
                 <div class="dropdown-menu">
                     <h6 class="dropdown-header">Logística</h6>
-                    <router-link to="/logistica/cte" class="nav-link" style="padding: 0 8px;">CTE</router-link>
+                    <router-link to="/financeiro/cte" class="nav-link" style="padding: 0 8px;">CTE</router-link>
                 </div>
             </div>
 
-            <div class="dropdown" style="margin-left: 25%;">
-                <i class="fa-solid fa-user" style="color: white; font-size: 20px; margin-top: 50%; cursor: pointer;" data-bs-toggle="dropdown"></i>
+            <div class="dropdown" style="margin-left: 20%;">
+                <i class="fa-solid fa-user" style="color: white; font-size: 20px; margin-top: 60%; cursor: pointer;" data-bs-toggle="dropdown"></i>
                 <div class="dropdown-menu">
                     <h6 class="dropdown-header">{{ name }}</h6>
                     <router-link to="/usuarios" class="nav-link" style="padding: 0 8px;">Usuários</router-link>
