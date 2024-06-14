@@ -10,9 +10,11 @@
         </template>
       </table-top>
       <div class="row mb-2">
-        <div class="col">
-          <form-floating :placeholder="'Filial:'" :id="'filial'" :type="'number'" @keyup.enter="pesquisa()" v-model="filial"></form-floating>
-        </div>
+          <form-floating :placeholder="'ID:'"        :id="'id'"       :type="'number'" @keyup.enter="pesquisa()" v-model="filtroId"></form-floating>
+          <form-floating :placeholder="'NF:'"        :id="'nf'"       :type="'number'" @keyup.enter="pesquisa()" v-model="filtroNf"></form-floating>
+          <form-floating :placeholder="'CTE:'"       :id="'cte'"      :type="'number'" @keyup.enter="pesquisa()" v-model="filtroCte"></form-floating>
+          <form-floating :placeholder="'Frete NF:'"  :id="'freteNf'"  :type="'number'" @keyup.enter="pesquisa()" v-model="filtroFreteNf"></form-floating>
+          <form-floating :placeholder="'Frete CTE:'" :id="'freteCte'" :type="'number'" @keyup.enter="pesquisa()" v-model="filtroFreteCte"></form-floating>
       </div>
       <div class="table-wrapper table-responsive table-striped mb-5">
         <table class="fl-table" id="myTable">
@@ -76,6 +78,11 @@
     },
     data() {
       return {
+        filtroId: '',
+        filtroNf: '',
+        filtroCte: '',
+        filtroFreteNf: '',
+        filtroFreteCte: '',
         arquivada: 0,
         isFirstRequestInProgress: false,
         intervalId: null,
@@ -97,6 +104,25 @@
       };
     },
     methods: {
+        async pesquisa(){
+          try {
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/financeiro/grid`, {...config,
+                params: {
+                    arquivado: this.arquivada,
+                    id:        this.filtroId,
+                    nf:        this.filtroNf,
+                    cte:       this.filtroCte,
+                    freteNf:   this.filtroFreteNf,
+                    freteCte:  this.filtroFreteCte
+                }
+            });
+            this.apis = response.data;
+            this.resultados = response.data.length;
+          } catch (error) {
+            console.log(error)
+            alert('Falha ao executar ação. Tente novamente mais tarde.')
+          }
+        },
         async arquivadas(arquivada){
             try {
                 this.arquivada = arquivada;
