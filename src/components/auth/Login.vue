@@ -67,7 +67,6 @@ methods: {
       Cookies.set('jwt', token, { expires });
 
       window.location.href = `${import.meta.env.VITE_LOGIN_IP}/home`;
-      this.$router.push({ name: 'Home' });
 
     } catch (error) {
       console.log(error)
