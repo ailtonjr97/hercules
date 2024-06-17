@@ -10,7 +10,8 @@
         <div class="col d-flex justify-content-start">
             <router-link to="/home" class="nav-link" style="padding: 0 8px;">
                 <div class="item">
-                    <img src="/images/image_Vq.png" alt="" style="width: 75%; border-radius: 5px">
+                    <img v-if="logo == 'AUDITE'" src="/images/image_Vq.png" alt="" style="width: 75%; border-radius: 5px">
+                    <img v-if="logo == 'FIBRACEM'" src="/images/logo_fibracem_F_1.png" alt="" style="width: 85%; border-radius: 5px">
                 </div>
             </router-link>
 
@@ -54,6 +55,7 @@ import { jwtDecode } from "jwt-decode";
 export default{
     data(){
         return{
+            logo: null,
             mostraStatus: false,
             isAdmin: 0,
             name: '',
@@ -96,6 +98,7 @@ export default{
             };
             const decoded = jwtDecode(token);
             const response = await axios.get(`${import.meta.env.VITE_BACKEND_IP}/users/${decoded.id}`, config);
+            this.logo = import.meta.env.VITE_LOGO
             this.isAdmin = response.data[0].admin;
             this.name = response.data[0].name;
         } catch (error) {
