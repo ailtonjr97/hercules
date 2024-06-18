@@ -2,7 +2,8 @@
   <div v-if="carregando" id="loading"></div>
   <div id="fundo">
     <div class="formulario">
-      <img src="/images/image_Vq.png" alt="" style="margin-left: 25%; width: 50%; border-radius: 5px">
+      <img v-if="logo == 'AUDITE'" src="/images/image_Vq.png" alt="" style="margin-left: 25%; width: 50%; border-radius: 5px">
+      <img v-if="logo == 'FIBRACEM'" src="/images/logo_fibracem_F_1.png" alt="" style="margin-left: 25%; width: 50%; border-radius: 5px">
       <label class="labela" style="color: #ffffff" for="username">Usuário</label>
       <input class="botao-login" type="text" placeholder="E-mail" id="username" name="email" v-model="email">
       <label class="labela" style="color: #ffffff" for="password">Senha</label>
@@ -33,6 +34,7 @@ export default {
   },
   data() {
     return {
+      logo: null,
       carregando: false,
       email: '',
       password: ''
@@ -60,7 +62,15 @@ export default {
         alert('Erro ao autenticar. Favor tentar novamente');
       }
     }
-  }
+  },
+  async created(){
+        try {
+            this.logo = import.meta.env.VITE_LOGO
+        } catch (error) {
+            console.log(error);
+            this.mostraStatus = true;
+        }
+    }
 };
 </script>
 
