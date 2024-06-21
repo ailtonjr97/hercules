@@ -28,6 +28,7 @@
                 <div class="dropdown-menu">
                     <h6 class="dropdown-header">Logística</h6>
                     <router-link to="/financeiro/cte" class="nav-link" style="padding: 0 8px;">CTE</router-link>
+                    <router-link to="/financeiro/pdf-nf" class="nav-link" style="padding: 0 8px;">PDF NF</router-link>
                 </div>
             </div>
 

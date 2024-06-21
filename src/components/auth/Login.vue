@@ -3,7 +3,7 @@
   <div id="fundo">
     <div class="formulario">
       <img v-if="logo == 'AUDITE'" src="/images/image_Vq.png" alt="" style="margin-left: 25%; width: 50%; border-radius: 5px">
-      <img v-if="logo == 'FIBRACEM'" src="/images/logo_fibracem_F_1.png" alt="" style="margin-left: 25%; width: 50%; border-radius: 5px">
+      <img v-if="logo == 'FIBRACEM'" src="/images/logo_fibracem_F_1.png" alt="" style="margin-left: 25%; width: 50%">
       <label class="labela" style="color: #ffffff" for="username">Usuário</label>
       <input class="botao-login" type="text" placeholder="E-mail" id="username" name="email" v-model="email">
       <label class="labela" style="color: #ffffff" for="password">Senha</label>
@@ -107,7 +107,7 @@ export default {
     backdrop-filter: blur(10px);
     border: 2px solid rgba(255,255,255,0.1);
     box-shadow: 0 0 40px rgba(8,7,16,0.6);
-    padding: 50px 35px;
+    padding: 30px 35px;
 }
 .formulario *{
     font-family: 'Poppins',sans-serif;
