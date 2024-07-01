@@ -20,6 +20,7 @@
                 <div class="dropdown-menu">
                     <h6 class="dropdown-header">Comercial</h6>
                     <router-link to="/comercial/orcamentos" class="nav-link" style="padding: 0 8px;">Orçamentos</router-link>
+                    <router-link to="/comercial/pedidos" class="nav-link" style="padding: 0 8px;">Pedidos</router-link>
                 </div>
             </div>
 

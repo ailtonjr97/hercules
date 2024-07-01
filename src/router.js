@@ -18,6 +18,7 @@ import ComercialOrcamentos from './components/comercial/ComercialOrcamentos.vue'
 import ComercialClientes from './components/comercial/ComercialClientes.vue';
 import ComercialVendedores from './components/comercial/ComercialVendedores.vue';
 import ComercialTrack from './components/comercial/ComercialTrack.vue';
+import ComercialPedidos from './components/comercial/ComercialPedidos.vue';
 
 import FinanceiroCte from './components/financeiro/FinanceiroCte.vue';
 import FinanceiroPdfNf from './components/financeiro/FinanceiroPdfNf.vue';
@@ -39,7 +40,7 @@ const routes = [
   { path: '/comercial/clientes', component: ComercialClientes },
   { path: '/comercial/vendedores', component: ComercialVendedores },
   { path: '/comercial/track-order', component: ComercialTrack },
-  { path: '/comercial/track-order', component: ComercialTrack },
+  { path: '/comercial/pedidos', component: ComercialPedidos },
   { path: '/financeiro/cte', component: FinanceiroCte },
   { path: '/financeiro/pdf-nf', component: FinanceiroPdfNf },
   { path: '/:notFound(.*)', redirect: '/home' }
